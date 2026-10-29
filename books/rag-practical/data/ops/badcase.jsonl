@@ -1,0 +1,10 @@
+{"id": "F-001", "date": "2026-09-02", "session": "S-2041", "question": "屏幕一片黑但灯还亮", "expect": "T-1004", "actual": "T-1042", "type": "误拒", "note": "系统说不在范围，客户描述其实很清楚", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}
+{"id": "F-003", "date": "2026-09-03", "session": "S-2044", "question": "纸总卡在出纸口", "expect": "T-1003", "actual": "T-1011", "type": "漏召", "note": "还是拒答，客户改了个说法", "action": "查语料是否缺这条，缺就补工单，不缺就查切分", "status": "待复核"}
+{"id": "F-004", "date": "2026-09-05", "session": "S-2051", "question": "键盘洒了水", "expect": "T-1021", "actual": "T-1020", "type": "误拒", "note": "拒答，客户用的是口语", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}
+{"id": "F-005", "date": "2026-09-08", "session": "S-2060", "question": "机器上的灯闪三下", "expect": "T-1043", "actual": "T-1017", "type": "误拒", "note": "拒答，客户没说型号", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}
+{"id": "F-006", "date": "2026-09-10", "session": "S-2066", "question": "联不上 wifi", "expect": "T-1013", "actual": "T-1013", "type": "误拒", "note": "中英混写，拒答", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}
+{"id": "F-007", "date": "2026-09-12", "session": "S-2071", "question": "扫描件灰蒙蒙的", "expect": "T-1015", "actual": "T-1015", "type": "误拒", "note": "拒答", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}
+{"id": "F-008", "date": "2026-09-15", "session": "S-2077", "question": "电源一插就跳闸", "expect": "T-1017", "actual": "T-1018", "type": "误拒", "note": "答成了完全不通电那条", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}
+{"id": "F-009", "date": "2026-09-18", "session": "S-2083", "question": "换新的要等几天", "expect": "T-1034", "actual": "T-1048", "type": "漏召", "note": "答成了键帽卡住那条", "action": "查语料是否缺这条，缺就补工单，不缺就查切分", "status": "待复核"}
+{"id": "F-010", "date": "2026-09-20", "session": "S-2090", "question": "可以做定制吗", "expect": null, "actual": "T-1028", "type": "该拒未拒", "note": "不在范围内却答了保修凭证", "action": "补边界题到评测集，收紧 coverage 阈值", "status": "待复核"}
+{"id": "F-011", "date": "2026-09-22", "session": "S-2095", "question": "HY-100 保修几年", "expect": "T-1024", "actual": "T-1024", "type": "误拒", "note": "证据在却按批次冲突拒了", "action": "看 coverage 阈值与口语同义词，证据在前五就别拒", "status": "待复核"}

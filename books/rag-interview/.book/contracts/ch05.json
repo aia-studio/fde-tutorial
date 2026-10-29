@@ -1,0 +1,25 @@
+{
+  "chapter": "ch05",
+  "defines": [
+    {
+      "id": "C009",
+      "zh": "检索缺失",
+      "en": "Retrieval Miss",
+      "def": "正确证据没有进入候选集",
+      "aliases": []
+    },
+    {
+      "id": "C010",
+      "zh": "生成越界",
+      "en": "Generation Overreach",
+      "def": "证据在场，模型仍超出证据回答",
+      "aliases": []
+    }
+  ],
+  "provides": [],
+  "assumes": [
+    "重排不创造候选集里没有的答案（Ch04）",
+    "字面失效与粒度失效的分界（Ch02、Ch03）"
+  ],
+  "hook": "先看证据在不在，再看模型是否越界；引用只证明有出处，不证明结论成立"
+}

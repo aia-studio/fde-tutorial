@@ -1,0 +1,21 @@
+{
+  "theme": "neutral",
+  "htmlLabels": false,
+  "flowchart": {
+    "htmlLabels": false,
+    "curve": "basis",
+    "nodeSpacing": 30,
+    "rankSpacing": 40
+  },
+  "sequence": {
+    "useMaxWidth": true,
+    "wrap": true
+  },
+  "mindmap": {
+    "padding": 8
+  },
+  "themeVariables": {
+    "fontFamily": "Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif",
+    "fontSize": "14px"
+  }
+}

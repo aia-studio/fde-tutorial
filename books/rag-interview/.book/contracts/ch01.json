@@ -1,0 +1,15 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料，再让模型基于资料回答",
+      "aliases": ["RAG"]
+    }
+  ],
+  "provides": [],
+  "assumes": [],
+  "hook": "切分策略是 RAG 的第一个工程取舍"
+}

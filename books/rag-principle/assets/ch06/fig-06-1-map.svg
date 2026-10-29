@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230">
+  <rect width="680" height="230" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="28" font-size="13" fill="#6B6252" text-anchor="middle">三个前提同时成立，RAG 才成立</text>
+  <rect x="40" y="54" width="200" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="140" y="77" font-size="11" fill="#0C447C" text-anchor="middle">答案在语料里</text>
+  <rect x="40" y="104" width="200" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="140" y="127" font-size="11" fill="#0C447C" text-anchor="middle">答案能一次检索到</text>
+  <rect x="40" y="154" width="200" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="140" y="177" font-size="11" fill="#0C447C" text-anchor="middle">索引时效跟得上</text>
+  <line x1="240" y1="72" x2="296" y2="72" stroke="#6B6252" stroke-width="1.2"/>
+  <line x1="240" y1="122" x2="296" y2="122" stroke="#6B6252" stroke-width="1.2"/>
+  <line x1="240" y1="172" x2="296" y2="172" stroke="#6B6252" stroke-width="1.2"/>
+  <line x1="296" y1="72" x2="296" y2="172" stroke="#6B6252" stroke-width="1.2"/>
+  <line x1="296" y1="122" x2="330" y2="122" stroke="#6B6252" stroke-width="1.2" marker-end="url(#j)"/>
+  <defs><marker id="j" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6B6252"/></marker></defs>
+  <rect x="336" y="94" width="150" height="56" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="411" y="118" font-size="12" fill="#245024" text-anchor="middle">RAG 适用</text>
+  <text x="411" y="136" font-size="10" fill="#3B7A3B" text-anchor="middle">证据可摘取、可追溯</text>
+  <text x="570" y="112" font-size="10" fill="#A33A3A" text-anchor="middle">任一不成立</text>
+  <text x="570" y="130" font-size="10" fill="#A33A3A" text-anchor="middle">换查询接口或微调</text>
+  <text x="340" y="212" font-size="11" fill="#6B6252" text-anchor="middle">这不是效果问题，是前提问题：前提不成立，调参不会改善</text>
+</svg>

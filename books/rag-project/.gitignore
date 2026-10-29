@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+.book/*.tmp
+src/**/.venv/
+src/ch03/index.json
+src/*/__pycache__/

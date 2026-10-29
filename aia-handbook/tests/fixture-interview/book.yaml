@@ -1,0 +1,26 @@
+title: RAG 面试通关
+author: test
+license: CC0
+genre: interview
+lang: zh-CN
+audience:
+  who: 用来验证 interview 闸门的测试读者
+  level: intermediate
+  prerequisite:
+  - 做过检索项目
+spine: none
+scale:
+  chapters: 2
+  words_per_chapter:
+  - 280
+  - 400
+deliverables:
+- markdown
+- figures
+gates: hard
+concurrency: 1
+figure:
+  renderer: none
+  format: svg
+limits:
+  info_density_min: 0.6

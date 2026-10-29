@@ -1,0 +1,31 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料，再让模型基于资料回答",
+      "aliases": ["RAG"]
+    },
+    {
+      "id": "C013",
+      "zh": "最小可用",
+      "en": "Minimum Viable",
+      "def": "端到端跑通一条最窄链路，再逐步加厚",
+      "aliases": ["最小链路"]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch01/answer.py",
+      "api": "answer(question: str, rows: list[dict]) -> dict"
+    },
+    {
+      "module": "src/ch01/load.py",
+      "api": "load(path: str) -> list[dict]"
+    }
+  ],
+  "assumes": [],
+  "hook": "链路能跑通，但关键词匹配只能应付演示"
+}

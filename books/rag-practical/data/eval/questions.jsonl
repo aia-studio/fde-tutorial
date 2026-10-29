@@ -1,0 +1,20 @@
+{"id":"Q01","type":"事实型","question":"显示器黑屏但电源灯亮着","gold_ticket":"T-1004","gold_span":"背光板供电异常","expect":"answer"}
+{"id":"Q02","type":"事实型","question":"显卡花屏出现彩色条纹","gold_ticket":"T-1007","gold_span":"显存颗粒虚焊","expect":"answer"}
+{"id":"Q03","type":"事实型","question":"打印机连不上无线网络","gold_ticket":"T-1013","gold_span":"把打印机 IP 设为固定地址","expect":"answer"}
+{"id":"Q04","type":"事实型","question":"键盘进水失灵","gold_ticket":"T-1021","gold_span":"进液不在保修范围","expect":"answer"}
+{"id":"Q05","type":"事实型","question":"发票丢了还能保修吗","gold_ticket":"T-1028","gold_span":"用订单号、保修卡或机身序列号","expect":"answer"}
+{"id":"Q06","type":"事实型","question":"怎么预约上门维修","gold_ticket":"T-1036","gold_span":"在服务单里选上门服务","expect":"answer"}
+{"id":"Q07","type":"事实型","question":"换货要不要原包装","gold_ticket":"T-1035","gold_span":"原包装与缓冲材料","expect":"answer"}
+{"id":"Q08","type":"事实型","question":"扫描件发灰不白","gold_ticket":"T-1015","gold_span":"清洁扫描玻璃","expect":"answer"}
+{"id":"Q09","type":"型号与代码","question":"E-311 纸张尺寸不匹配","gold_ticket":"T-1011","gold_span":"纸盒侧向导板没有卡紧","expect":"answer"}
+{"id":"Q10","type":"型号与代码","question":"打印机报 E-204","gold_ticket":"T-1010","gold_span":"定影单元温度异常","expect":"answer"}
+{"id":"Q11","type":"型号与代码","question":"墨粉盒用哪个型号","gold_ticket":"T-1012","gold_span":"TN-210","expect":"answer"}
+{"id":"Q12","type":"型号与代码","question":"A100 显卡保修要什么凭证","gold_ticket":"T-1002","gold_span":"发票或电商订单截图","expect":"answer"}
+{"id":"Q13","type":"型号与代码","question":"HY-200 支架孔距","gold_ticket":"T-1044","gold_span":"VESA 100x100","expect":"answer"}
+{"id":"Q14","type":"型号与代码","question":"PS-500 电源指示灯闪红","gold_ticket":"T-1017","gold_span":"过载保护触发","expect":"answer"}
+{"id":"Q15","type":"型号与代码","question":"机器开不了机指示灯不亮","gold_ticket":"T-1001","gold_span":"更换同规格适配器","expect":"answer"}
+{"id":"Q16","type":"边界型","question":"HY-100 保修期是三年还是一年","gold_ticket":"T-1024","gold_span":"整机保修三年","expect":"refuse"}
+{"id":"Q17","type":"边界型","question":"显示器保修几年","gold_ticket":"","gold_span":"","expect":"refuse"}
+{"id":"Q18","type":"边界型","question":"你们支持比特币付款吗","gold_ticket":"","gold_span":"","expect":"refuse"}
+{"id":"Q19","type":"边界型","question":"能帮我写一份采购合同的违约条款吗","gold_ticket":"","gold_span":"","expect":"refuse"}
+{"id":"Q20","type":"边界型","question":"你们的机房在哪个城市","gold_ticket":"","gold_span":"","expect":"refuse"}

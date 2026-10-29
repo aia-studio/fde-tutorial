@@ -1,0 +1,35 @@
+{
+  "chapter": "ch08",
+  "defines": [
+    {
+      "id": "C015",
+      "zh": "灰度发布",
+      "en": "Canary Release",
+      "def": "新版本先接一小部分会话，拿指标对比过再全量",
+      "aliases": ["灰度"]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch08/badcase.py",
+      "api": "collect(rows: list[dict]) -> list[dict]"
+    },
+    {
+      "module": "src/ch08/reindex.py",
+      "api": "diff(old: dict, new: dict) -> dict"
+    },
+    {
+      "module": "src/ch08/release.py",
+      "api": "compare(items: list[dict], plans: list[tuple]) -> list[dict]"
+    },
+    {
+      "module": "src/ch08/report.py",
+      "api": "build(badcases: list[dict], rows: list[dict]) -> str"
+    }
+  ],
+  "assumes": [
+    "C013 会话状态",
+    "C009 评测集"
+  ],
+  "hook": "会话层能接追问了，接下来要让它在上线后继续变好"
+}

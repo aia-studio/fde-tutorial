@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 210">
+  <rect width="680" height="210" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="28" font-size="13" fill="#6B6252" text-anchor="middle">切分站在语料与索引之间：一次决定，长期生效</text>
+  <rect x="21" y="64" width="110" height="56" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="76" y="88" font-size="12" fill="#245024" text-anchor="middle">语料</text>
+  <text x="76" y="106" font-size="10" fill="#3B7A3B" text-anchor="middle">文档 / 工单</text>
+  <rect x="153" y="64" width="110" height="56" rx="6" fill="#FBEFE6" stroke="#A5611B" stroke-width="0.8"/>
+  <text x="208" y="88" font-size="12" fill="#7A3E0A" text-anchor="middle">切分</text>
+  <text x="208" y="106" font-size="10" fill="#A5611B" text-anchor="middle">粒度 / 切点</text>
+  <rect x="285" y="64" width="110" height="56" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="340" y="88" font-size="12" fill="#0C447C" text-anchor="middle">索引</text>
+  <text x="340" y="106" font-size="10" fill="#185FA5" text-anchor="middle">块与向量</text>
+  <rect x="417" y="64" width="110" height="56" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="472" y="88" font-size="12" fill="#0C447C" text-anchor="middle">检索</text>
+  <text x="472" y="106" font-size="10" fill="#185FA5" text-anchor="middle">召回候选</text>
+  <rect x="549" y="64" width="110" height="56" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="604" y="88" font-size="12" fill="#245024" text-anchor="middle">候选集</text>
+  <text x="604" y="106" font-size="10" fill="#3B7A3B" text-anchor="middle">送给生成</text>
+  <line x1="133" y1="92" x2="149" y2="92" stroke="#6B6252" stroke-width="1.2" marker-end="url(#d)"/>
+  <line x1="265" y1="92" x2="281" y2="92" stroke="#6B6252" stroke-width="1.2" marker-end="url(#d)"/>
+  <line x1="397" y1="92" x2="413" y2="92" stroke="#6B6252" stroke-width="1.2" marker-end="url(#d)"/>
+  <line x1="529" y1="92" x2="545" y2="92" stroke="#6B6252" stroke-width="1.2" marker-end="url(#d)"/>
+  <defs><marker id="d" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6B6252"/></marker></defs>
+  <text x="340" y="154" font-size="11" fill="#6B6252" text-anchor="middle">切分决定三件事：块多大、切点在哪、块与块是否重叠</text>
+  <text x="340" y="178" font-size="11" fill="#A5611B" text-anchor="middle">改一次切分，要重建整个索引：这是检索链路里最贵的一次修改</text>
+</svg>

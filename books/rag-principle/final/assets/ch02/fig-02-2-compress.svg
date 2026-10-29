@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 250">
+  <rect width="680" height="250" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="28" font-size="13" fill="#6B6252" text-anchor="middle">语义压缩的漏斗：主题留下，字面漏掉</text>
+  <rect x="40" y="60" width="140" height="112" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="110" y="84" font-size="12" fill="#245024" text-anchor="middle">原文</text>
+  <text x="110" y="108" font-size="10" fill="#3B7A3B" text-anchor="middle">一句话 + 数字</text>
+  <text x="110" y="126" font-size="10" fill="#3B7A3B" text-anchor="middle">条款编号</text>
+  <text x="110" y="144" font-size="10" fill="#3B7A3B" text-anchor="middle">否定词</text>
+  <text x="110" y="162" font-size="10" fill="#3B7A3B" text-anchor="middle">专有名词</text>
+  <polygon points="250,60 430,74 410,168 270,168" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="340" y="108" font-size="12" fill="#0C447C" text-anchor="middle">编码</text>
+  <text x="340" y="128" font-size="10" fill="#185FA5" text-anchor="middle">整段压成一个向量</text>
+  <text x="340" y="146" font-size="10" fill="#185FA5" text-anchor="middle">长度固定</text>
+  <rect x="470" y="88" width="96" height="48" rx="6" fill="#FBEFE6" stroke="#A5611B" stroke-width="0.8"/>
+  <text x="518" y="110" font-size="12" fill="#7A3E0A" text-anchor="middle">向量</text>
+  <text x="518" y="126" font-size="10" fill="#A5611B" text-anchor="middle">只剩距离</text>
+  <line x1="182" y1="116" x2="246" y2="116" stroke="#6B6252" stroke-width="1.2" marker-end="url(#c)"/>
+  <line x1="428" y1="116" x2="466" y2="112" stroke="#6B6252" stroke-width="1.2" marker-end="url(#c)"/>
+  <defs><marker id="c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6B6252"/></marker></defs>
+  <text x="340" y="200" font-size="11" fill="#7A3E0A" text-anchor="middle">丢弃：数字、编号、否定、稀有专名的细微差别</text>
+  <text x="340" y="224" font-size="11" fill="#3B7A3B" text-anchor="middle">保留：主题与语义角色，换来跨措辞召回</text>
+</svg>

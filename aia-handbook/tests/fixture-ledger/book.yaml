@@ -1,0 +1,26 @@
+title: 检索机制的原理
+author: test
+license: CC0
+genre: principle
+lang: zh-CN
+audience:
+  who: 用来验证 principle 闸门的测试读者
+  level: intermediate
+  prerequisite:
+  - 基础检索概念
+spine: none
+scale:
+  chapters: 2
+  words_per_chapter:
+  - 300
+  - 450
+deliverables:
+- markdown
+- figures
+gates: hard
+concurrency: 1
+figure:
+  renderer: none
+  format: svg
+limits:
+  info_density_min: 0.6

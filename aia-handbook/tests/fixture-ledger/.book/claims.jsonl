@@ -1,0 +1,2 @@
+{"id": "F001", "chapter": "ch01", "text": "混合检索的命中率", "value": 0.42, "unit": "ratio", "source": "tests/fixture-ledger 构造的对照实验", "date": "2026-10-30", "scope": "两组各 20 条"}
+{"id": "F002", "chapter": "ch01", "text": "纯向量检索的命中率", "value": 0.31, "unit": "ratio", "source": "tests/fixture-ledger 构造的对照实验", "date": "2026-10-30", "scope": "同上"}

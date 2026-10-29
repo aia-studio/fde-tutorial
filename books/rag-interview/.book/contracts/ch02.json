@@ -1,0 +1,24 @@
+{
+  "chapter": "ch02",
+  "defines": [
+    {
+      "id": "C002",
+      "zh": "切分",
+      "en": "Chunking",
+      "def": "把长文档切成可检索的小块",
+      "aliases": []
+    },
+    {
+      "id": "C003",
+      "zh": "切分粒度",
+      "en": "Chunk Granularity",
+      "def": "一个检索块包含多少上下文",
+      "aliases": []
+    }
+  ],
+  "provides": [],
+  "assumes": [
+    "检索与生成的责任划分（Ch01）"
+  ],
+  "hook": "块要装下回答一个问题所需的上下文，粒度决定召回的上下限"
+}

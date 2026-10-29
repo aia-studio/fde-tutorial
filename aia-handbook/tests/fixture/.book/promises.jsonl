@@ -1,0 +1,2 @@
+{"id": "P001", "opened_in": "ch01", "text": "数据能读了，但真实工单在数据库里。Ch02 讲怎么接进去。", "kind": "forward", "target": "ch02", "status": "kept", "closed_in": "ch02"}
+{"id": "P002", "opened_in": "ch02", "text": "数据接上了，下一步是让它能找相似。Ch07 会讲检索。", "kind": "forward", "target": "ch07", "status": "kept", "closed_in": "ch07"}

@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "terms": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料，再让模型基于资料回答",
+      "first_chapter": "ch01",
+      "aliases": [
+        "RAG"
+      ]
+    },
+    {
+      "id": "C002",
+      "zh": "切分",
+      "en": "Chunking",
+      "def": "把长文档切成可检索的小块",
+      "first_chapter": "ch02",
+      "aliases": [
+        "分块"
+      ]
+    },
+    {
+      "id": "C003",
+      "zh": "嵌入",
+      "en": "Embedding",
+      "def": "把文本压成固定维度的语义向量",
+      "first_chapter": "ch02",
+      "aliases": [
+        "向量化"
+      ]
+    },
+    {
+      "id": "C004",
+      "zh": "召回",
+      "en": "Recall",
+      "def": "正确内容是否出现在候选集里",
+      "first_chapter": "ch03",
+      "aliases": [
+        "召回率"
+      ]
+    },
+    {
+      "id": "C005",
+      "zh": "引用",
+      "en": "Citation",
+      "def": "答案里指向原文片段的标注",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C006",
+      "zh": "拒答",
+      "en": "Abstention",
+      "def": "证据不足时明确说答不了",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C007",
+      "zh": "混合检索",
+      "en": "Hybrid Retrieval",
+      "def": "同时用向量与关键词两路检索",
+      "first_chapter": "ch05",
+      "aliases": []
+    },
+    {
+      "id": "C008",
+      "zh": "重排",
+      "en": "Rerank",
+      "def": "对候选集再排一次序",
+      "first_chapter": "ch05",
+      "aliases": [
+        "精排"
+      ]
+    },
+    {
+      "id": "C009",
+      "zh": "评测集",
+      "en": "Evaluation Set",
+      "def": "固定的一组问题与期望答案",
+      "first_chapter": "ch06",
+      "aliases": [
+        "测试集"
+      ]
+    },
+    {
+      "id": "C010",
+      "zh": "Top-K",
+      "en": "Top-K",
+      "def": "按相似度取前 K 个候选",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C011",
+      "zh": "元数据过滤",
+      "en": "Metadata Filter",
+      "def": "按字段先筛掉不该出现的文档",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C012",
+      "zh": "幻觉",
+      "en": "Hallucination",
+      "def": "模型生成没有依据的内容",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C013",
+      "zh": "会话状态",
+      "en": "Conversation State",
+      "def": "多轮对话里保留的少量实体与上一轮结果，不含全部原文",
+      "first_chapter": "ch07",
+      "aliases": [
+        "上下文状态"
+      ]
+    },
+    {
+      "id": "C014",
+      "zh": "指代消解",
+      "en": "Coreference Resolution",
+      "def": "把「它」「那换屏呢」还原成带具体对象的完整问句",
+      "first_chapter": "ch07",
+      "aliases": [
+        "查询改写"
+      ]
+    },
+    {
+      "id": "C015",
+      "zh": "灰度发布",
+      "en": "Canary Release",
+      "def": "新版本先接一小部分会话，拿指标对比过再全量",
+      "first_chapter": "ch08",
+      "aliases": [
+        "灰度"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "terms": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料，再让模型基于资料回答",
+      "first_chapter": "ch01",
+      "aliases": [
+        "RAG"
+      ]
+    },
+    {
+      "id": "C002",
+      "zh": "相关性",
+      "en": "Relevance",
+      "def": "检索结果是否真的回答了用户问题",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C003",
+      "zh": "相似度",
+      "en": "Similarity",
+      "def": "向量空间里的距离度量",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C004",
+      "zh": "语义压缩",
+      "en": "Semantic Compression",
+      "def": "把文本压成向量时丢掉字面信息",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C005",
+      "zh": "切分粒度",
+      "en": "Chunk Granularity",
+      "def": "一个检索块包含多少上下文",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C006",
+      "zh": "边界切断",
+      "en": "Boundary Cut",
+      "def": "切分点落在语义单元中间",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C007",
+      "zh": "倒数排名融合",
+      "en": "Reciprocal Rank Fusion",
+      "def": "只按排名融合多路检索结果",
+      "first_chapter": "ch04",
+      "aliases": [
+        "RRF"
+      ]
+    },
+    {
+      "id": "C008",
+      "zh": "重排",
+      "en": "Rerank",
+      "def": "对候选集再排一次序",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C009",
+      "zh": "检索缺失",
+      "en": "Retrieval Miss",
+      "def": "正确证据没有进入候选集",
+      "first_chapter": "ch05",
+      "aliases": []
+    },
+    {
+      "id": "C010",
+      "zh": "生成越界",
+      "en": "Generation Overreach",
+      "def": "证据在场，模型仍超出证据回答",
+      "first_chapter": "ch05",
+      "aliases": []
+    },
+    {
+      "id": "C011",
+      "zh": "失效边界",
+      "en": "Failure Boundary",
+      "def": "机制不再成立的条件",
+      "first_chapter": "ch06",
+      "aliases": []
+    },
+    {
+      "id": "C012",
+      "zh": "抽样偏差",
+      "en": "Sampling Bias",
+      "def": "评测集与真实问题分布之间的偏离",
+      "first_chapter": "ch07",
+      "aliases": []
+    },
+    {
+      "id": "C013",
+      "zh": "长上下文",
+      "en": "Long Context",
+      "def": "把更长的输入一次装进模型，用它替代挑段落",
+      "first_chapter": "ch08",
+      "aliases": []
+    }
+  ]
+}

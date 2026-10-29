@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 150">
+  <rect width="680" height="150" rx="8" fill="#F7F4EF" stroke="#D9CFC0" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B5B45" text-anchor="middle">项目推进位置：本阶段只做需求与验收标准</text>
+  <rect x="30" y="55" width="120" height="50" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.4"/>
+  <text x="90" y="84" font-size="13" fill="#0C447C" text-anchor="middle">01 需求</text>
+  <rect x="180" y="55" width="120" height="50" rx="6" fill="#F2F2F2" stroke="#B9B9B9" stroke-width="0.6"/>
+  <text x="240" y="84" font-size="12" fill="#777777" text-anchor="middle">02 数据</text>
+  <rect x="330" y="55" width="120" height="50" rx="6" fill="#F2F2F2" stroke="#B9B9B9" stroke-width="0.6"/>
+  <text x="390" y="84" font-size="12" fill="#777777" text-anchor="middle">03 检索</text>
+  <rect x="480" y="55" width="80" height="50" rx="6" fill="#F2F2F2" stroke="#B9B9B9" stroke-width="0.6"/>
+  <text x="520" y="84" font-size="12" fill="#777777" text-anchor="middle">04 引用</text>
+  <text x="600" y="84" font-size="12" fill="#777777" text-anchor="middle">05–06</text>
+  <text x="340" y="128" font-size="11" fill="#6B5B45" text-anchor="middle">已完成 / 本阶段用深色，未开始用灰色</text>
+</svg>

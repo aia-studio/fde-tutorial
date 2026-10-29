@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 330">
+  <rect width="680" height="330" rx="8" fill="#F6F7F9" stroke="#CBD3DC" stroke-width="0.8"/>
+  <rect x="230" y="16" width="220" height="42" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.2"/>
+  <text x="340" y="35" font-size="13" fill="#0C447C" text-anchor="middle">效果不好，先问哪一层</text>
+  <text x="340" y="51" font-size="10" fill="#185FA5" text-anchor="middle">不先定位就加手段，等于同时改两个变量</text>
+
+  <line x1="340" y1="58" x2="340" y2="82" stroke="#7A8794" stroke-width="1.1"/>
+  <rect x="200" y="82" width="280" height="42" rx="6" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.9"/>
+  <text x="340" y="101" font-size="12" fill="#7A4A12" text-anchor="middle">正确块在候选集里吗</text>
+  <text x="340" y="117" font-size="10" fill="#B97A2A" text-anchor="middle">先把 k 扩大，看它露不露头</text>
+
+  <line x1="280" y1="124" x2="150" y2="160" stroke="#7A8794" stroke-width="1.1"/>
+  <line x1="400" y1="124" x2="530" y2="160" stroke="#7A8794" stroke-width="1.1"/>
+  <text x="196" y="150" font-size="10" fill="#5B6875" text-anchor="middle">在，只是排得后</text>
+  <text x="486" y="150" font-size="10" fill="#5B6875" text-anchor="middle">不在</text>
+
+  <rect x="30" y="160" width="240" height="66" rx="6" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="150" y="181" font-size="12" fill="#1F4D38" text-anchor="middle">排序问题：上重排</text>
+  <text x="150" y="199" font-size="10" fill="#2E6B4F" text-anchor="middle">候选集够，只是名次不对</text>
+  <text x="150" y="215" font-size="10" fill="#2E6B4F" text-anchor="middle">代价：多一次推理，延迟上升</text>
+
+  <rect x="410" y="160" width="240" height="66" rx="6" fill="#FBEAEA" stroke="#A63D3D" stroke-width="0.9"/>
+  <text x="530" y="181" font-size="12" fill="#7C2B2B" text-anchor="middle">召回问题：先补召回面</text>
+  <text x="530" y="199" font-size="10" fill="#7C2B2B" text-anchor="middle">字面失效加关键词，结构问题改切分</text>
+  <text x="530" y="215" font-size="10" fill="#A63D3D" text-anchor="middle">此处重排无效，只是把错的排整齐</text>
+
+  <rect x="30" y="254" width="620" height="58" rx="6" fill="#EDEBF7" stroke="#5B4B9E" stroke-width="0.9"/>
+  <text x="340" y="274" font-size="11" fill="#3D326E" text-anchor="middle">两个手段都要花钱：混合要维护两套索引，重排要多跑一次模型</text>
+  <text x="340" y="294" font-size="10" fill="#5B4B9E" text-anchor="middle">所以判据不是「有没有用」，是「这一层值不值得用」</text>
+</svg>

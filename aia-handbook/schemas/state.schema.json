@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aia-handbook.local/schemas/state.schema.json",
+  "title": "state.json",
+  "description": "章节状态机。多作者协作时是唯一的并发写入点，必须加锁读改写（见 scripts/state.py）。",
+  "type": "object",
+  "required": ["version", "created", "phase", "frozen", "chapters"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "created": { "type": "string" },
+    "phase": { "type": "string" },
+    "frozen": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "writers": {
+      "type": "object",
+      "description": "已登记的写手。owner 冲突时用它判断归属。",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["last_seen"],
+        "additionalProperties": false,
+        "properties": {
+          "last_seen": { "type": "string" },
+          "chapters": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "chapters": {
+      "type": "object",
+      "patternProperties": {
+        "^ch\\d{2}$": { "$ref": "#/definitions/chapter_state" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "chapter_state": {
+      "type": "object",
+      "required": ["status", "rev"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": ["pending", "ready", "writing", "checking", "repair",
+                   "merging", "done", "blocked", "failed"]
+        },
+        "attempts": { "type": "integer", "minimum": 0 },
+        "owner": { "type": ["string", "null"] },
+        "rev": { "type": "integer", "minimum": 0 },
+        "updated_at": { "type": "string" },
+        "last_error": { "type": ["string", "null"] },
+        "history": {
+          "type": "array",
+          "description": "repair 时保留的旧稿快照，用于回滚。",
+          "items": {
+            "type": "object",
+            "required": ["attempt", "path", "at"],
+            "additionalProperties": false,
+            "properties": {
+              "attempt": { "type": "integer", "minimum": 1 },
+              "path": { "type": "string" },
+              "at": { "type": "string" },
+              "error": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "chapter": "ch02",
+  "defines": [
+    {
+      "id": "C002",
+      "zh": "只读从库",
+      "en": "Read Replica",
+      "def": "只允许读的数据库副本",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch02/db.py",
+      "api": "fetch(keyword: str) -> list[dict]"
+    }
+  ],
+  "assumes": ["C001 最小可用"],
+  "hook": "数据接上了，下一步是让它能找相似"
+}

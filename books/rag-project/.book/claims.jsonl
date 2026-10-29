@@ -1,0 +1,15 @@
+{"id": "K001", "chapter": "ch03", "text": "二十条样本的 Top-5 召回", "value": 0.95, "unit": "ratio", "source": "本书 src/ch03/eval.py 实测输出", "date": "2026-10-30", "scope": "八篇工单、22 块，字符二元组哈希索引"}
+{"id": "K002", "chapter": "ch03", "text": "二十条样本的 MRR", "value": 0.83, "unit": "ratio", "source": "本书 src/ch03/eval.py 实测输出", "date": "2026-10-30", "scope": "同上"}
+{"id": "K003", "chapter": "ch05", "text": "并发 12 时的 P95", "value": 3032, "unit": "毫秒", "source": "本书 src/ch05/loadtest.py 实测输出", "date": "2026-10-30", "scope": "每档 200 请求，模拟压测"}
+{"id": "K004", "chapter": "ch05", "text": "并发 12 时的 P50", "value": 1796, "unit": "毫秒", "source": "本书 src/ch05/loadtest.py 实测输出", "date": "2026-10-30", "scope": "同上"}
+{"id": "K005", "chapter": "ch06", "text": "当日空召回占请求量", "value": 16.8, "unit": "百分比", "source": "本书 src/ch06/monitor.py 实测输出", "date": "2026-10-30", "scope": "千次请求的固定埋点快照"}
+{"id": "K006", "chapter": "ch06", "text": "当日可用性", "value": 98.0, "unit": "百分比", "source": "本书 src/ch06/monitor.py 实测输出", "date": "2026-10-30", "scope": "同上"}
+{"id": "K007", "chapter": "ch05", "text": "五档并发压测的 P50/P95/P99（毫秒）", "values": [928, 1198, 1311, 878, 1129, 1234, 885, 1192, 1284, 3927, 2475, 4000], "unit": "毫秒", "source": "src/ch05/loadtest.py 实测输出", "date": "2026-10-30", "scope": "每档 200 请求，服务容量 8 并发；1796 与 3032 见 K003/K004"}
+{"id": "K008", "chapter": "ch06", "text": "灰度五档的流量比例（百分比）", "values": [1, 5, 25, 50, 100], "unit": "百分比", "source": "Ch06 灰度策略设计", "date": "2026-10-30", "scope": "第一档到全量的放量阶梯"}
+{"id": "K009", "chapter": "ch06", "text": "错误率阈值（百分比）", "value": 2, "unit": "百分比", "source": "src/ch06/canary.py 的 MAX_ERROR", "date": "2026-10-30", "scope": "超阈值即回滚"}
+{"id": "K010", "chapter": "ch06", "text": "当日拒答率（百分比）", "value": 15.0, "unit": "百分比", "source": "src/ch06/monitor.py 实测输出", "date": "2026-10-30", "scope": "千次请求埋点快照"}
+{"id": "K011", "chapter": "ch06", "text": "拒答率阈值（百分比）", "value": 20, "unit": "百分比", "source": "src/ch06/canary.py 的 MAX_ABSTAIN", "date": "2026-10-30", "scope": "超阈值停在当前档"}
+{"id": "K012", "chapter": "ch06", "text": "当日引用点击率（百分比）", "value": 34.0, "unit": "百分比", "source": "src/ch06/monitor.py 实测输出", "date": "2026-10-30", "scope": "同上"}
+{"id": "K013", "chapter": "ch06", "text": "引用点击率下限（百分比）", "value": 10, "unit": "百分比", "source": "Ch06 运营指标口径", "date": "2026-10-30", "scope": "低于下限说明引用没被使用"}
+{"id": "K014", "chapter": "ch07", "text": "二期索引升级前的 MRR", "value": 0.938, "unit": "ratio", "source": "src/ch07/upgrade.py 实测输出", "date": "2026-10-30", "scope": "八个样本，升级前"}
+{"id": "K015", "chapter": "ch07", "text": "二期索引升级后的 MRR", "value": 1.0, "unit": "ratio", "source": "src/ch07/upgrade.py 实测输出", "date": "2026-10-30", "scope": "合并重复块后"}

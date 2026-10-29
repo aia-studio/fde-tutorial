@@ -1,0 +1,14 @@
+# 混合 genre 预设组合（SPEC §11）
+# 用法：python scripts/init_book.py --preset project-practical ...
+# 列表顺序即主类型：第一个决定骨架与 spine，其余只贡献可叠加维度。
+
+presets:
+  project-practical:
+    genre: [project, practical]
+    note: 交付驱动 + 动手细节。主线按项目阶段推进，正文补可执行步骤。
+  principle-practical:
+    genre: [principle, practical]
+    note: 先讲机制与失效边界，再落到可执行步骤。适合"原理 + 落地"双目标。
+  interview-principle:
+    genre: [interview, principle]
+    note: 考点驱动，每个答案背后要有机制解释。追问链是主体。

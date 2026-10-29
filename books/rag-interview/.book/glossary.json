@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "terms": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料，再让模型基于资料回答",
+      "first_chapter": "ch01",
+      "aliases": [
+        "RAG"
+      ]
+    },
+    {
+      "id": "C002",
+      "zh": "切分",
+      "en": "Chunking",
+      "def": "把长文档切成可检索的小块",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C003",
+      "zh": "切分粒度",
+      "en": "Chunk Granularity",
+      "def": "一个检索块包含多少上下文",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C004",
+      "zh": "召回",
+      "en": "Recall",
+      "def": "正确内容是否出现在候选集里",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C005",
+      "zh": "语义压缩",
+      "en": "Semantic Compression",
+      "def": "把文本压成向量时丢掉字面信息",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C006",
+      "zh": "混合检索",
+      "en": "Hybrid Retrieval",
+      "def": "同时用向量与关键词两路检索",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C007",
+      "zh": "倒数排名融合",
+      "en": "Reciprocal Rank Fusion",
+      "def": "只按排名融合多路检索结果",
+      "first_chapter": "ch04",
+      "aliases": [
+        "RRF"
+      ]
+    },
+    {
+      "id": "C008",
+      "zh": "重排",
+      "en": "Rerank",
+      "def": "对候选集再排一次序",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C009",
+      "zh": "检索缺失",
+      "en": "Retrieval Miss",
+      "def": "正确证据没有进入候选集",
+      "first_chapter": "ch05",
+      "aliases": []
+    },
+    {
+      "id": "C010",
+      "zh": "生成越界",
+      "en": "Generation Overreach",
+      "def": "证据在场，模型仍超出证据回答",
+      "first_chapter": "ch05",
+      "aliases": []
+    },
+    {
+      "id": "C011",
+      "zh": "评测集",
+      "en": "Evaluation Set",
+      "def": "固定的一组问题与期望答案",
+      "first_chapter": "ch06",
+      "aliases": []
+    },
+    {
+      "id": "C012",
+      "zh": "系统设计",
+      "en": "System Design",
+      "def": "在条件不全时先定约束与验收，再选组件",
+      "first_chapter": "ch07",
+      "aliases": []
+    },
+    {
+      "id": "C013",
+      "zh": "复盘",
+      "en": "Retrospective",
+      "def": "回看一次失败，找出当时判断错在哪并留下规则",
+      "first_chapter": "ch08",
+      "aliases": []
+    }
+  ]
+}

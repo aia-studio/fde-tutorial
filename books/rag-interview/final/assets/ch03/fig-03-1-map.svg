@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F6F7F9" stroke="#CBD3DC" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#2B3A47" text-anchor="middle">向量检索漏召回，先分三类再动手</text>
+
+  <rect x="24" y="44" width="200" height="80" rx="6" fill="#FBEAEA" stroke="#A63D3D" stroke-width="0.9"/>
+  <text x="124" y="66" font-size="12" fill="#7C2B2B" text-anchor="middle">一、字面失效</text>
+  <text x="124" y="86" font-size="10" fill="#7C2B2B" text-anchor="middle">型号、编号、人名、否定词</text>
+  <text x="124" y="102" font-size="10" fill="#7C2B2B" text-anchor="middle">被压进一个向量后消失</text>
+  <text x="124" y="118" font-size="10" fill="#A63D3D" text-anchor="middle">修法：关键词一路兜住</text>
+
+  <rect x="240" y="44" width="200" height="80" rx="6" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.9"/>
+  <text x="340" y="66" font-size="12" fill="#7A4A12" text-anchor="middle">二、粒度失效</text>
+  <text x="340" y="86" font-size="10" fill="#7A4A12" text-anchor="middle">块太长主题被稀释</text>
+  <text x="340" y="102" font-size="10" fill="#7A4A12" text-anchor="middle">块太短缺了条件句</text>
+  <text x="340" y="118" font-size="10" fill="#B97A2A" text-anchor="middle">修法：回到切分重定边界</text>
+
+  <rect x="456" y="44" width="200" height="80" rx="6" fill="#EDEBF7" stroke="#5B4B9E" stroke-width="0.9"/>
+  <text x="556" y="66" font-size="12" fill="#3D326E" text-anchor="middle">三、边界失效</text>
+  <text x="556" y="86" font-size="10" fill="#3D326E" text-anchor="middle">正确的块根本没入库</text>
+  <text x="556" y="102" font-size="10" fill="#3D326E" text-anchor="middle">或被元数据过滤掉</text>
+  <text x="556" y="118" font-size="10" fill="#5B4B9E" text-anchor="middle">修法：查入库与过滤条件</text>
+
+  <text x="340" y="158" font-size="11" fill="#5B6875" text-anchor="middle">三类都有同一个前置问题：正确内容在候选集里吗</text>
+
+  <rect x="40" y="176" width="130" height="46" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="105" y="197" font-size="11" fill="#0C447C" text-anchor="middle">1 查候选集</text>
+  <text x="105" y="213" font-size="10" fill="#185FA5" text-anchor="middle">扩大 k 看有没有</text>
+
+  <rect x="196" y="176" width="130" height="46" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="261" y="197" font-size="11" fill="#0C447C" text-anchor="middle">2 换一路检索</text>
+  <text x="261" y="213" font-size="10" fill="#185FA5" text-anchor="middle">关键词命中即字面</text>
+
+  <rect x="352" y="176" width="130" height="46" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="417" y="197" font-size="11" fill="#0C447C" text-anchor="middle">3 直喂原文</text>
+  <text x="417" y="213" font-size="10" fill="#185FA5" text-anchor="middle">答对即排序问题</text>
+
+  <rect x="508" y="176" width="130" height="46" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="573" y="197" font-size="11" fill="#0C447C" text-anchor="middle">4 才动模型</text>
+  <text x="573" y="213" font-size="10" fill="#185FA5" text-anchor="middle">前面三条都排除</text>
+
+  <line x1="170" y1="199" x2="192" y2="199" stroke="#7A8794" stroke-width="1.1"/>
+  <line x1="326" y1="199" x2="348" y2="199" stroke="#7A8794" stroke-width="1.1"/>
+  <line x1="482" y1="199" x2="504" y2="199" stroke="#7A8794" stroke-width="1.1"/>
+
+  <rect x="120" y="256" width="440" height="58" rx="6" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="340" y="277" font-size="11" fill="#1F4D38" text-anchor="middle">顺序颠倒的代价：先换模型，等于用最贵的手段换最小的解释力</text>
+  <text x="340" y="297" font-size="10" fill="#2E6B4F" text-anchor="middle">模型换了，切分和过滤的问题还在，只是你更难看清它</text>
+</svg>

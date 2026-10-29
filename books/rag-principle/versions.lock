@@ -1,0 +1,4 @@
+generated_by: aia-handbook assemble.py
+generated_at: '2026-10-30'
+note: 本书示例只依赖标准库；有第三方依赖时会锁主版本，C04 按主版本比对。
+dependencies: {}

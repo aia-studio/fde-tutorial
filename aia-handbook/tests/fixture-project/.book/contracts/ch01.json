@@ -1,0 +1,20 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "最小问答",
+      "en": "Minimum QA",
+      "def": "问题进、答案出的最窄链路",
+      "aliases": ["最小链路"]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch01/answer.py",
+      "api": "answer(q: str, rows: list[dict]) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "链路能跑通，但数据还在 csv 里"
+}

@@ -1,0 +1,41 @@
+{
+  "chapter": "ch02",
+  "defines": [
+    {
+      "id": "C002",
+      "zh": "切分",
+      "en": "Chunking",
+      "def": "把长文档切成可检索的小块",
+      "aliases": [
+        "分块"
+      ]
+    },
+    {
+      "id": "C003",
+      "zh": "嵌入",
+      "en": "Embedding",
+      "def": "把文本压成固定维度的语义向量",
+      "aliases": [
+        "向量化"
+      ]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch02/chunk.py",
+      "api": "chunk(text: str, size: int, overlap: int) -> list[str]"
+    },
+    {
+      "module": "src/ch02/embed.py",
+      "api": "embed(texts: list[str]) -> list[list[float]]"
+    },
+    {
+      "module": "src/ch02/index.py",
+      "api": "build(chunks: list[dict], path: str) -> None"
+    }
+  ],
+  "assumes": [
+    "C001 检索增强生成"
+  ],
+  "hook": "切分决定上下文，向量决定能不能找回来"
+}

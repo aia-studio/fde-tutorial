@@ -1,0 +1,28 @@
+title: 八章冒烟样本
+author: test
+license: CC0
+genre: practical
+lang: zh-CN
+audience:
+  who: 用来验证八章规模全链路的测试读者
+  level: beginner
+  prerequisite:
+  - Python 基础
+spine: running-example
+spine_name: 工单问答
+scale:
+  chapters: 8
+  words_per_chapter:
+  - 300
+  - 450
+deliverables:
+- markdown
+- figures
+gates: hard
+concurrency: 4
+figure:
+  renderer: none
+  format: svg
+limits:
+  info_density_min: 0.8
+  difficulty_max_run: 3

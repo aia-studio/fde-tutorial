@@ -1,0 +1,81 @@
+# book.yaml — 一本书的完整契约
+# 由 `scripts/init_book.py` 读取；schema 见 schemas/book.schema.json
+# 原则：genre 给默认值，这里只写差异。写进来的每个字段都要有理由。
+
+title: AI 应用评测入门
+
+# 作者与许可：版本声明附录和版权页从这里取
+author: 待填
+license: CC BY-NC-SA 4.0
+updated: "2026-10"      # 内容基准年月，写在版本声明里
+
+# 单类型；混合写成 [project, practical]，第一个为主类型（决定骨架/标注/练习/spine）
+genre: practical
+
+lang: zh-CN
+
+audience:
+  who: 已经能调通大模型 API、但不知道自己的应用到底好不好的工程师
+  level: intermediate
+  # 写进这里的前置知识，正文不再解释。所以不要多写。
+  prerequisite: [Python 基础, HTTP 与 JSON, 调用过大模型 API]
+
+# capstone：一条贯穿项目串全书，每章都要推进它
+# running-example：一个例子跨章复用，不要求每章推进
+# none：各章独立
+spine: capstone
+spine_name: 客服工单问答助手
+
+scale:
+  chapters: 10
+  # 中文按汉字计。[下限, 上限]，闸门允许 0.75×下限 ~ 1.25×上限
+  words_per_chapter: [4500, 6000]
+
+deliverables: [markdown, code, figures]
+
+gates: hard
+concurrency: 4
+
+output:
+  target: repo
+  # true：图许可、版本锁、索引按出版标准预留，但这一版不出 PDF
+  prepare_print: true
+
+figure:
+  renderer: mmdc
+  # svg 而非 png：体积小一个数量级、可 diff、不失真、将来出 PDF 不用重做
+  format: svg
+  # 关键。true 会用 <foreignObject> 包文字，Gitee 等阅读器渲染成白图
+  htmlLabels: false
+  theme: neutral
+  width: 1600
+
+limits:
+  max_core_terms: 35
+  # 每千汉字至少 1.2 个可操作单元（步骤组/代码块/表格/图/练习），防凑字数
+  info_density_min: 1.2
+  difficulty_max_run: 3
+  code_block_max_lines: 30
+  # capstone 每 5 章打一个快照 tag，读者可从任意节点开始
+  snapshot_every: 5
+
+claims:
+  # 与内置通用表合并。这里只补这本书的领域词
+  assertion_words: [准确率, 召回率, 幻觉率, 响应延迟, 单次成本, 标注一致率]
+  tolerance: 0.005
+
+stack:
+  python: "3.12"
+  llm: "OpenAI 兼容接口 + Ollama 本地兜底"
+  mock: true          # 没有 API Key 也能跑通全书示例
+  vector_store: "SQLite + numpy 暴力检索（先跑通再选型）"
+  framework: "FastAPI + Pydantic"
+
+# 目录名一般不用改
+# paths:
+#   chapters: chapters
+#   plans: 04-chapter-plans
+#   src: src
+#   figures: figures
+#   assets: assets
+#   final: final

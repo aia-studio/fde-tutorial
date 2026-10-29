@@ -1,0 +1,90 @@
+# genre: project · 可量化字段
+# 人读的解释在 project.md。标 [初值] 的由第一波校准覆盖。
+
+genre: project
+label: 项目实战
+extends: _core
+
+# ── 排他维度 ──
+exclusive:
+  skeleton: project-8          # 与 practical-9 不同：强调阶段交付与复盘
+  spine_constraint: capstone   # 强制贯穿项目，不允许 none
+
+# ── 可叠加维度 ──
+stackable:
+  annotations: [现场故事, 风险, 取舍, 返工, 验收, 代价, 待确认, 排查]
+  exercise_form: [里程碑交付物]
+  code_required: true
+
+# ── 骨架 ──
+skeleton:
+  - id: header
+    detect: keys
+    keys: [本阶段, 前置, 工期, 阶段目标]     # 注意：不是「本章解决」
+    required: true
+  - id: overview
+    detect: heading
+    aliases: [阶段全景, 项目全景, 本阶段位置]
+    required: true
+  - id: opening
+    detect: heading
+    aliases: [现场开场, 需求现场, 开场]
+    required: true
+    max_lines: 10
+  - id: body
+    detect: h3_range
+    min: 4
+    max: 6
+    required: true
+    # 每节必须含「决策 / 实施 / 验证」三段结构，由 check.py 按小节内 H4 或粗体检测
+    require_triad: [决策, 实施, 验证]
+  - id: deliverables
+    detect: heading
+    aliases: [阶段交付物, 交付物清单, 本阶段产物]
+    required: true
+    require_table: true        # 必须含「验收标准」列
+  - id: retro
+    detect: heading
+    aliases: [复盘, 阶段复盘]
+    required: true
+    require_parts: [做对了什么, 做错了什么, 下次怎么改]
+  - id: risks
+    detect: heading
+    aliases: [风险登记, 风险台账]
+    required: true
+    require_table: true
+  - id: next
+    detect: heading
+    aliases: [下一阶段]
+    required: true
+
+defaults:
+  words_per_chapter: [4500, 6500]
+  sections_per_chapter: [4, 6]
+  words_per_section: [900, 1500]
+  figures_min: 2
+  tables_min: 1
+  code_blocks_per_section_min: 1
+  code_block_max_lines: 30
+  info_density_min: 1.5        # 最高：项目书的每一节都该有可交付动作
+  difficulty_curve: wave       # 项目有攻坚期和平缓期，不是单调上升
+
+fingerprint:
+  avg_sentence_len:     { mean: 25, band: 8 }
+  avg_paragraph_len:    { mean: 78, band: 30 }
+  annotation_per_kchar: { mean: 1.5, band: 0.6 }   # 风险与权衡类标注更密
+  figures_per_section:  { mean: 0.8, band: 0.4 }
+  code_block_lines:     { mean: 22, band: 10 }
+  person_ratio:         { 你: 0.55, 我们: 0.35, 其他: 0.10 }
+
+assertion_words: [工期, 人天, 成本, 延迟, 并发, 验收通过率]
+
+anti_patterns:
+  - 玩具项目
+  - 无验收标准的交付物
+  - 只讲顺利路径不写返工
+  - 每章项目推倒重来
+  - 需求章节未做澄清与取舍
+  - 时间线跳过联调与上线
+
+plan_required_fields: [chapter, title, requires, references, target_words, difficulty, deliverable]

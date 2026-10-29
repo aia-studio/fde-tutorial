@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aia-handbook.local/schemas/dag.schema.json",
+  "title": "dag.json",
+  "description": "plan.py 的产物。依赖图必须由章纲编译，禁止手画。",
+  "type": "object",
+  "required": ["nodes", "waves"],
+  "properties": {
+    "book": { "type": "string" },
+    "genre": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    },
+    "nodes": {
+      "type": "object",
+      "patternProperties": {
+        "^ch\\d{2}$": {
+          "type": "object",
+          "required": ["requires", "references"],
+          "additionalProperties": false,
+          "properties": {
+            "requires": { "type": "array", "items": { "type": "string" } },
+            "references": { "type": "array", "items": { "type": "string" } },
+            "target_words": { "type": "integer", "minimum": 0 },
+            "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "waves": {
+      "type": "array",
+      "items": { "type": "array", "items": { "type": "string" } }
+    },
+    "metrics": { "type": "object" },
+    "problems": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  }
+}

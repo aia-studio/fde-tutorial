@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "terms": [
+    {
+      "id": "C001",
+      "zh": "向量检索",
+      "en": "Vector Search",
+      "def": "用向量距离找候选",
+      "first_chapter": "ch01",
+      "aliases": [
+        "稠密检索"
+      ]
+    },
+    {
+      "id": "C002",
+      "zh": "混合检索",
+      "en": "Hybrid Retrieval",
+      "def": "向量与关键词两路一起用",
+      "first_chapter": "ch01",
+      "aliases": []
+    }
+  ]
+}

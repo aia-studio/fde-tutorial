@@ -1,0 +1,31 @@
+{
+  "chapter": "ch05",
+  "defines": [
+    {
+      "id": "C010",
+      "zh": "P95 延迟",
+      "en": "P95 Latency",
+      "def": "95% 请求都能在此时间内返回",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch05/integration.py",
+      "api": "validate(payload: dict, spec: dict) -> list[str]"
+    },
+    {
+      "module": "src/ch05/loadtest.py",
+      "api": "one_round(concurrency: int, rng) -> Result"
+    },
+    {
+      "module": "src/ch05/drill.py",
+      "api": "handle(ticket: str) -> Outcome"
+    }
+  ],
+  "assumes": [
+    "请求与响应字段表已与客服系统对齐",
+    "P95 与错误率的阈值已写进合同"
+  ],
+  "hook": "联调协议冻结，拐点与降级出口有结论，可进入灰度"
+}

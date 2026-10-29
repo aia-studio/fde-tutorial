@@ -1,0 +1,43 @@
+{
+  "chapter": "ch03",
+  "defines": [
+    {
+      "id": "C004",
+      "zh": "召回",
+      "en": "Recall",
+      "def": "正确内容是否出现在候选集里",
+      "aliases": [
+        "召回率"
+      ]
+    },
+    {
+      "id": "C010",
+      "zh": "Top-K",
+      "en": "Top-K",
+      "def": "按相似度取前 K 个候选",
+      "aliases": []
+    },
+    {
+      "id": "C011",
+      "zh": "元数据过滤",
+      "en": "Metadata Filter",
+      "def": "按字段先筛掉不该出现的文档",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch03/search.py",
+      "api": "search(q: str, k: int) -> list[dict]"
+    },
+    {
+      "module": "src/ch03/eval_small.py",
+      "api": "recall_at_k(cases: list[dict], k: int) -> float"
+    }
+  ],
+  "assumes": [
+    "C002 切分",
+    "C003 嵌入"
+  ],
+  "hook": "Top-K 拿到了候选，但答案还没有依据"
+}

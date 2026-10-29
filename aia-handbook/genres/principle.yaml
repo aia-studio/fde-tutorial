@@ -1,0 +1,87 @@
+# genre: principle · 可量化字段
+# 人读的解释在 principle.md。标 [初值] 的由第一波校准覆盖。
+
+genre: principle
+label: 原理与设计
+extends: _core
+
+exclusive:
+  skeleton: principle-8        # 独有：权衡表 + 失效边界 + 延伸阅读
+  spine_constraint: null       # 通常 none，也允许 running-example
+
+stackable:
+  annotations: [前提, 争议, 边界, 反例, 推导, 代价, 常见误解, 待确认]
+  exercise_form: [推导题, 判断题, 找错题]
+  code_required: false         # 代码是佐证不是主体
+
+skeleton:
+  - id: header
+    detect: keys
+    keys: [本章回答, 前置, 读完你能判断]
+    required: true
+  - id: map
+    detect: heading
+    aliases: [概念地图, 本章位置, 概念关系]
+    required: true
+  - id: opening
+    detect: heading
+    aliases: [反直觉开场, 现象开场, 开场]
+    required: true
+    max_lines: 10
+    require_signal: counterintuitive   # 标记为反直觉，无法自动判定，仅提醒
+  - id: body
+    detect: h3_range
+    min: 4
+    max: 6
+    required: true
+  - id: tradeoff
+    detect: heading
+    aliases: [权衡表, 方案权衡, 取舍分析]
+    required: true
+    require_table: true
+    require_columns: [代价, 适用条件]
+  - id: boundary
+    detect: heading
+    aliases: [失效边界, 边界条件, 什么时候不成立]
+    required: true
+    count_range: [3, 5]
+  - id: reading
+    detect: heading
+    aliases: [延伸阅读, 参考资料]
+    required: true
+    count_range: [2, 3]
+  - id: next
+    detect: heading
+    aliases: [下一章]
+    required: true
+
+defaults:
+  words_per_chapter: [6000, 8000]
+  sections_per_chapter: [4, 6]
+  words_per_section: [1200, 1800]
+  figures_min: 2
+  tables_min: 2                # 权衡表 + 至少一张对比表
+  code_blocks_per_section_min: 0
+  code_block_max_lines: 20
+  info_density_min: 0.7        # 最低：论证密度不应被代码数量绑架
+  difficulty_curve: flat       # 原理书难度相对平稳，避免忽深忽浅
+
+fingerprint:
+  avg_sentence_len:     { mean: 30, band: 9 }      # 论证句更长
+  avg_paragraph_len:    { mean: 95, band: 35 }
+  annotation_per_kchar: { mean: 0.9, band: 0.4 }   # 标注更克制
+  figures_per_section:  { mean: 0.7, band: 0.3 }
+  code_block_lines:     { mean: 10, band: 5 }
+  person_ratio:         { 你: 0.50, 我们: 0.35, 其他: 0.15 }
+
+assertion_words: [复杂度, 吞吐, 延迟, 概率, 收敛, 开销]
+
+anti_patterns:
+  - 只给结论不给推导
+  - 只讲优点不讲失效边界
+  - 把某一实现当成原理
+  - 用类比代替机制
+  - 堆公式不解释符号
+  - 开场现象不反直觉
+
+plan_required_fields: [chapter, title, requires, references, target_words, difficulty, deliverable]

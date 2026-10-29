@@ -1,0 +1,34 @@
+{
+  "chapter": "ch02",
+  "defines": [
+    {
+      "id": "C003",
+      "zh": "只读从库",
+      "en": "Read Replica",
+      "def": "只允许读的数据库副本",
+      "aliases": []
+    },
+    {
+      "id": "C004",
+      "zh": "字段映射",
+      "en": "Field Mapping",
+      "def": "源字段与目标字段的对应表",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch02/db.py",
+      "api": "connect_readonly(dsn: str) -> sqlite3.Connection"
+    },
+    {
+      "module": "src/ch02/mapping.py",
+      "api": "apply(row: dict) -> dict"
+    }
+  ],
+  "assumes": [
+    "客户已提供只读账号，且账号可连从库",
+    "数据源盘点表已由客户 IT 与业务方确认"
+  ],
+  "hook": "工单数据已按只读方式接入，字段映射与抽样验收通过，可供切分使用"
+}

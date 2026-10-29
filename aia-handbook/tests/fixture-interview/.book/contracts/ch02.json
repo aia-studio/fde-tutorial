@@ -1,0 +1,20 @@
+{
+  "chapter": "ch02",
+  "defines": [
+    {
+      "id": "C002",
+      "zh": "召回失效",
+      "en": "Recall Failure",
+      "def": "应该被检索到的内容没有出现在候选里",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch02/diagnose.py",
+      "api": "diagnose(q: str) -> str"
+    }
+  ],
+  "assumes": ["C001 检索增强生成"],
+  "hook": "先分类再修复，别一上来就换模型"
+}

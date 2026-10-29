@@ -1,0 +1,43 @@
+{
+  "chapter": "ch07",
+  "defines": [
+    {
+      "id": "C013",
+      "zh": "会话状态",
+      "en": "Conversation State",
+      "def": "多轮对话里保留的少量实体与上一轮结果，不含全部原文",
+      "aliases": ["上下文状态"]
+    },
+    {
+      "id": "C014",
+      "zh": "指代消解",
+      "en": "Coreference Resolution",
+      "def": "把「它」「那换屏呢」还原成带具体对象的完整问句",
+      "aliases": ["查询改写"]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch07/session.py",
+      "api": "Conversation.ask(q: str) -> dict"
+    },
+    {
+      "module": "src/ch07/rewrite.py",
+      "api": "rewrite(q: str, state: dict) -> tuple[str, list[str]]"
+    },
+    {
+      "module": "src/ch07/eval_multi.py",
+      "api": "run(cases: list[dict], use_session: bool) -> list[dict]"
+    },
+    {
+      "module": "src/ch07/pipeline.py",
+      "api": "ask(q: str, k: int) -> dict"
+    }
+  ],
+  "assumes": [
+    "C009 评测集",
+    "C005 引用",
+    "C006 拒答"
+  ],
+  "hook": "单轮链路能上线了，用户开始连着问第二句"
+}

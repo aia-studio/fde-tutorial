@@ -1,0 +1,7 @@
+{"id": "P001", "opened_in": "ch01", "text": "Ch02 讲切分策略怎么选，这是 RAG 的第一个工程取舍。", "kind": "forward", "target": "ch02", "status": "kept", "closed_in": "ch02"}
+{"id": "P002", "opened_in": "ch02", "text": "Ch03 讲向量检索为什么会漏。切分决定库里有什么，检索决定捞不捞得出来，这两件事要分开定位。", "kind": "forward", "target": "ch03", "status": "kept", "closed_in": "ch03"}
+{"id": "P003", "opened_in": "ch03", "text": "Ch04 讲混合检索与重排。字面失效的常用修法是加一路关键词，但什么时候值得加、加了怎么融合，是另一个判断。", "kind": "forward", "target": "ch04", "status": "kept", "closed_in": "ch04"}
+{"id": "P004", "opened_in": "ch04", "text": "Ch05 讲幻觉怎么定位。检索把证据送到了，模型仍然可能说错，这是另一条链上的问题。", "kind": "forward", "target": "ch05", "status": "kept", "closed_in": "ch05"}
+{"id": "P005", "opened_in": "ch05", "text": "Ch06 讲怎么评测 RAG。定位靠个案，评测靠样本集；个案能救一次事故，样本集才能防下一次。", "kind": "forward", "target": "ch06", "status": "kept", "closed_in": "ch06"}
+{"id": "P006", "opened_in": "ch06", "text": "前六个考点到这里收束。Ch07 把它们串成一场系统设计。回到 Ch05 的定位表，把每一类错误挂到一条指标上；挂不上的那一类，就是你的评测还缺的样本。", "kind": "forward", "target": "ch07", "status": "kept", "closed_in": "ch07"}
+{"id": "P007", "opened_in": "ch07", "text": "方案讲完，面试官往往换一种问法：不聊设计，聊你自己。Ch08 处理的就是这类没有标准答案的问题。", "kind": "forward", "target": "ch08", "status": "kept", "closed_in": "ch08"}

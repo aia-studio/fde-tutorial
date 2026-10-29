@@ -1,0 +1,7 @@
+{"id": "P001", "opened_in": "ch01", "text": "链路能跑通，但关键词匹配只能应付演示。Ch02 讲怎么把文档切成块，并变成可检索的向量。", "kind": "forward", "target": "ch02", "status": "kept", "closed_in": "ch02"}
+{"id": "P002", "opened_in": "ch02", "text": "块和向量都有了，但还不能回答「哪几条最相关」。Ch03 接上检索：先过滤，再算相似度，最后用十条样本量一次召回。", "kind": "forward", "target": "ch03", "status": "kept", "closed_in": "ch03"}
+{"id": "P003", "opened_in": "ch03", "text": "有了候选，还不能直接回给客户。Ch04 把命中的块变成带原文的答案，并规定哪些情况下必须先说「答不了」。", "kind": "forward", "target": "ch04", "status": "kept", "closed_in": "ch04"}
+{"id": "P004", "opened_in": "ch04", "text": "答案有了，引用也能核对，但仍有整类问题查不到：型号、错误码、极短查询。Ch05 补一条字面检索通道，再谈要不要加重排。", "kind": "forward", "target": "ch05", "status": "kept", "closed_in": "ch05"}
+{"id": "P005", "opened_in": "ch05", "text": "链路走到这里，能答、能引、能拒、能补召回。剩下的问题是：这些改动到底有没有让系统变好，能不能交给客户。Ch06 用二十道题给出基线，并把上线前的检查项列成一张表。", "kind": "forward", "target": "ch06", "status": "kept", "closed_in": "ch06"}
+{"id": "P006", "opened_in": "ch06", "text": "把前六章的交付物串起来，就是一条能演示、能评测、能上线的问答链路。Ch07 接着解决用户连着追问时系统失忆的问题。", "kind": "forward", "target": "ch07", "status": "kept", "closed_in": "ch07"}
+{"id": "P007", "opened_in": "ch07", "text": "会话层接住追问之后，问题从「答不答得上」变成「答错的那条谁来修」。Ch08 把差评、语料更新、灰度与月报做成四条常规动作，让系统在交付之后继续变好。", "kind": "forward", "target": "ch08", "status": "kept", "closed_in": "ch08"}

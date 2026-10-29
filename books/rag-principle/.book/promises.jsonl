@@ -1,0 +1,6 @@
+{"id": "P001", "opened_in": "ch01", "text": "责任划分清楚了，下一步要问：检索本身为什么会失败。Ch02 从相似度与相关性的差别讲起。", "kind": "forward", "target": "ch02", "status": "kept", "closed_in": "ch02"}
+{"id": "P002", "opened_in": "ch02", "text": "分类里最贵的一步是切分。Ch03 讨论粒度与重叠各自换来什么，以及切分错了之后，为什么调优都在补一个结构性缺口。", "kind": "forward", "target": "ch03", "status": "kept", "closed_in": "ch03"}
+{"id": "P003", "opened_in": "ch03", "text": "切分定下候选块，候选怎么合并、怎么排序是下一步的问题。Ch04 讨论两路检索何时才互补，以及融合为什么常常只是重排。", "kind": "forward", "target": "ch04", "status": "kept", "closed_in": "ch04"}
+{"id": "P004", "opened_in": "ch04", "text": "候选定了，错误只剩两种归属。Ch05 给出一条定位流程：先确认证据在不在，再判断模型是否越界。", "kind": "forward", "target": "ch05", "status": "kept", "closed_in": "ch05"}
+{"id": "P005", "opened_in": "ch05", "text": "定位解决的是单次错误。Ch06 把视角拉到方案层：当语料、推理、时效三个前提有一个不成立时，RAG 本身就不该上。", "kind": "forward", "target": "ch06", "status": "kept", "closed_in": "ch06"}
+{"id": "P006", "opened_in": "ch07", "text": "Ch08 把这条结论拿去用：在检索、长上下文、微调与查询之间做选择，并说清每条路线换走了什么。", "kind": "forward", "target": "ch08", "status": "kept", "closed_in": "ch08"}

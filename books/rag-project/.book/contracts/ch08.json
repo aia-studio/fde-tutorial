@@ -1,0 +1,39 @@
+{
+  "chapter": "ch08",
+  "defines": [
+    {
+      "id": "C015",
+      "zh": "最终验收",
+      "en": "Final Acceptance",
+      "def": "逐项看可复测证据、零阻断后才发起的签字",
+      "aliases": []
+    },
+    {
+      "id": "C016",
+      "zh": "需求边界",
+      "en": "Scope Boundary",
+      "def": "把收尾期需求分成产品能力、配置项、待评估、不接四类",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch08/signoff.py",
+      "api": "blocked(items) -> list[Item]"
+    },
+    {
+      "module": "src/ch08/handover.py",
+      "api": "after_patch(drills) -> tuple[Drill, ...]"
+    },
+    {
+      "module": "src/ch08/boundary.py",
+      "api": "classify(a: Ask) -> tuple[str, str]"
+    }
+  ],
+  "assumes": [
+    "二期方案已通过评审并上线",
+    "交接对象是客户侧运维与业务各一人",
+    "终验证据以命令或查询形式留存"
+  ],
+  "hook": "客户独立运维，六项终验证据可复测，需求边界写进合同附件"
+}

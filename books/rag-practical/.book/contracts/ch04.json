@@ -1,0 +1,41 @@
+{
+  "chapter": "ch04",
+  "defines": [
+    {
+      "id": "C005",
+      "zh": "引用",
+      "en": "Citation",
+      "def": "答案里指向原文片段的标注",
+      "aliases": []
+    },
+    {
+      "id": "C006",
+      "zh": "拒答",
+      "en": "Abstention",
+      "def": "证据不足时明确说答不了",
+      "aliases": []
+    },
+    {
+      "id": "C012",
+      "zh": "幻觉",
+      "en": "Hallucination",
+      "def": "模型生成没有依据的内容",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch04/cite.py",
+      "api": "attach(result: dict, chunks: list[dict]) -> dict"
+    },
+    {
+      "module": "src/ch04/answer.py",
+      "api": "ask(q: str, k: int) -> dict"
+    }
+  ],
+  "assumes": [
+    "C004 召回",
+    "C010 Top-K"
+  ],
+  "hook": "答案有依据了，但字面检索还没补"
+}

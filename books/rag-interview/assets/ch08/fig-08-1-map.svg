@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 360">
+  <rect width="680" height="360" rx="8" fill="#F6F7F9" stroke="#CBD3DC" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#2B3A47" text-anchor="middle">失败题的四段：从现象走到规则</text>
+
+  <rect x="40" y="50" width="270" height="38" rx="5" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="175" y="74" font-size="11" fill="#0C447C" text-anchor="middle">现象：差在哪，谁先发现</text>
+  <line x1="175" y1="88" x2="175" y2="104" stroke="#7A8794" stroke-width="1"/>
+
+  <rect x="40" y="104" width="270" height="38" rx="5" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="175" y="128" font-size="11" fill="#0C447C" text-anchor="middle">归因：错在判断、执行还是条件</text>
+  <line x1="175" y1="142" x2="175" y2="158" stroke="#7A8794" stroke-width="1"/>
+
+  <rect x="40" y="158" width="270" height="38" rx="5" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.9"/>
+  <text x="175" y="182" font-size="11" fill="#7A4A12" text-anchor="middle">代价：谁为此多付出了什么</text>
+  <line x1="175" y1="196" x2="175" y2="212" stroke="#7A8794" stroke-width="1"/>
+
+  <rect x="40" y="212" width="270" height="38" rx="5" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="175" y="236" font-size="11" fill="#1F4D38" text-anchor="middle">规则：下次遇到同类问题怎么判</text>
+
+  <rect x="350" y="50" width="290" height="104" rx="6" fill="#EDEBF7" stroke="#5B4B9E" stroke-width="0.9"/>
+  <text x="495" y="70" font-size="11" fill="#3D326E" text-anchor="middle">面试官在验证这三件事</text>
+  <text x="495" y="92" font-size="10" fill="#5B4B9E" text-anchor="middle">一、是不是你亲历，细节对不对得上</text>
+  <text x="495" y="112" font-size="10" fill="#5B4B9E" text-anchor="middle">二、归因到了哪一层，有没有自己的判断</text>
+  <text x="495" y="132" font-size="10" fill="#5B4B9E" text-anchor="middle">三、经验能不能迁移到下一个项目</text>
+
+  <rect x="350" y="164" width="290" height="86" rx="6" fill="#FBEAEA" stroke="#A63D3D" stroke-width="0.9"/>
+  <text x="495" y="184" font-size="11" fill="#7C2B2B" text-anchor="middle">反问不是客套</text>
+  <text x="495" y="204" font-size="10" fill="#A63D3D" text-anchor="middle">问团队现在最头疼的是什么</text>
+  <text x="495" y="222" font-size="10" fill="#A63D3D" text-anchor="middle">问这个岗位半年内要解决的第一个问题</text>
+  <text x="495" y="240" font-size="10" fill="#7C2B2B" text-anchor="middle">说「没有问题」，前面攒的印象会被削掉</text>
+
+  <line x1="310" y1="177" x2="350" y2="177" stroke="#7A8794" stroke-width="1"/>
+  <line x1="310" y1="231" x2="350" y2="231" stroke="#7A8794" stroke-width="1"/>
+
+  <text x="340" y="288" font-size="11" fill="#5B6875" text-anchor="middle">停在第二段的人在讲执行，走到第四段的人在讲判断</text>
+  <text x="340" y="312" font-size="10" fill="#8A97A4" text-anchor="middle">补一句「这个规则在什么条件下不成立」，第四段才站得住</text>
+  <text x="340" y="336" font-size="10" fill="#8A97A4" text-anchor="middle">承认判断错，比承认执行不到位难，也更能说明你做过</text>
+</svg>

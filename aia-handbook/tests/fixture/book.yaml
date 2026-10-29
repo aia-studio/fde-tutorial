@@ -1,0 +1,22 @@
+title: 闸门自测样本
+author: test
+license: CC0
+genre: practical
+lang: zh-CN
+audience:
+  who: 用来验证 check.py 是否正确的测试读者
+  level: beginner
+  prerequisite: [无]
+spine: none
+scale:
+  chapters: 2
+  words_per_chapter: [280, 400]
+deliverables: [markdown, figures]
+gates: hard
+concurrency: 1
+figure:
+  renderer: none
+  format: svg
+limits:
+  info_density_min: 0.8
+  code_block_max_lines: 30

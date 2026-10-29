@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 280">
+  <rect width="680" height="280" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="30" font-size="15" fill="#0C447C" text-anchor="middle">一次检索的五步：过滤在排序之前</text>
+  <rect x="20" y="60" width="110" height="52" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="75" y="82" font-size="13" fill="#0C447C" text-anchor="middle">问题文本</text>
+  <text x="75" y="100" font-size="11" fill="#3C4C5C" text-anchor="middle">embed_one</text>
+  <rect x="160" y="60" width="110" height="52" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="215" y="82" font-size="13" fill="#0C447C" text-anchor="middle">SQL 过滤</text>
+  <text x="215" y="100" font-size="11" fill="#3C4C5C" text-anchor="middle">product / category</text>
+  <rect x="300" y="60" width="110" height="52" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="355" y="82" font-size="13" fill="#0C447C" text-anchor="middle">逐条点积</text>
+  <text x="355" y="100" font-size="11" fill="#3C4C5C" text-anchor="middle">向量已归一</text>
+  <rect x="440" y="60" width="110" height="52" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="495" y="82" font-size="13" fill="#0C447C" text-anchor="middle">排序取 Top-K</text>
+  <text x="495" y="100" font-size="11" fill="#3C4C5C" text-anchor="middle">K=5</text>
+  <rect x="580" y="60" width="80" height="52" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="620" y="82" font-size="13" fill="#245024" text-anchor="middle">候选</text>
+  <text x="620" y="100" font-size="11" fill="#2C4C2C" text-anchor="middle">带工单号</text>
+  <line x1="130" y1="86" x2="156" y2="86" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#c)"/>
+  <line x1="270" y1="86" x2="296" y2="86" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#c)"/>
+  <line x1="410" y1="86" x2="436" y2="86" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#c)"/>
+  <line x1="550" y1="86" x2="576" y2="86" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#c)"/>
+  <rect x="160" y="150" width="390" height="85" rx="6" fill="#FDF3E7" stroke="#B57A2A" stroke-width="0.8"/>
+  <text x="180" y="174" font-size="13" fill="#7A4A12">过滤写在 WHERE 里，不是先取 Top-K 再筛</text>
+  <text x="180" y="198" font-size="12" fill="#7A4A12">先取后筛会把本该命中的块挤出候选，召回直接归零</text>
+  <text x="180" y="220" font-size="12" fill="#7A4A12">条件写错时整片候选会被剪掉，先跑一次不过滤的版本做对照</text>
+  <defs><marker id="c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5B6B7B"/></marker></defs>
+</svg>

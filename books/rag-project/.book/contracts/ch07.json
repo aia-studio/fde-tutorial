@@ -1,0 +1,43 @@
+{
+  "chapter": "ch07",
+  "defines": [
+    {
+      "id": "C013",
+      "zh": "多租户",
+      "en": "Multi-Tenancy",
+      "def": "一套检索同时服务多个部门或公司，数据互不可见",
+      "aliases": []
+    },
+    {
+      "id": "C014",
+      "zh": "影子索引",
+      "en": "Shadow Index",
+      "def": "与线上并行的新索引，只用于比对，不接流量",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch07/intake.py",
+      "api": "evaluate(r: Request) -> tuple[str, str]"
+    },
+    {
+      "module": "src/ch07/tenancy.py",
+      "api": "retrieve(chunks, ctx, k=3) -> list[Chunk]"
+    },
+    {
+      "module": "src/ch07/upgrade.py",
+      "api": "metrics(index, with_synonym: bool) -> tuple[float, float, list[int]]"
+    },
+    {
+      "module": "src/ch07/report.py",
+      "api": "gate_rows() -> list[tuple[str, str, str, bool]]"
+    }
+  ],
+  "assumes": [
+    "一期系统已上线并稳定运行",
+    "语料块带所属租户与可见组标签",
+    "越权扫描按身份乘问题数统计"
+  ],
+  "hook": "二期方案通过评审：范围有结论、越权为零、索引升级可回退"
+}

@@ -1,0 +1,172 @@
+{
+  "id": "s4-95-embedding",
+  "order": 95,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "resources",
+  "title": "嵌入解释器",
+  "concepts": [
+    "embedding",
+    "Py_Initialize",
+    "free-threading",
+    "subinterpreters"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "反过来：把 Python 装进别的程序"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "嵌入的最小形态（不可在沙箱运行）"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "子解释器与 per-interpreter GIL"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "现实世界的嵌入长什么样"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python Packaging：嵌入 Python",
+      "url": "https://docs.python.org/3/extending/embedding.html"
+    },
+    {
+      "title": "Library Reference：C API 的初始化与终结",
+      "url": "https://docs.python.org/3/c-api/init.html"
+    }
+  ],
+  "prereq": [
+    94
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "反过来：把 Python 装进别的程序"
+    },
+    {
+      "type": "p",
+      "html": "前一课是\"用 Python 调 C\"；这一课是<strong>反过来</strong>——让 C/C++ 程序（游戏引擎、CAD、Blender 这类软件的脚本接口）内嵌一个 Python 解释器，用脚本驱动宿主。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "嵌入的最小形态（不可在沙箱运行）"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "c",
+      "code": "// embed.c —— 概念示意\n#include <Python.h>\n\nint main(void) {\n    Py_Initialize();                     // 启动解释器\n    PyRun_SimpleString(\"print('hello from embedded python')\");\n    Py_Finalize();                       // 终结：释放一切解释器资源\n    return 0;\n}",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "text",
+      "code": "编译与运行（Windows 示意）：\ncl embed.c /I<python include> /link <python3x.lib>\nembed.exe\n→ hello from embedded python",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "三个阶段对应三组 C API：<code>Py_Initialize</code>（分配解释器状态、初始化内置模块）、<code>PyRun_*</code>（执行字符串或文件）、<code>Py_Finalize</code>（终结）。<strong>finalize 之后不能再 Initialize</strong>——这是个单向门，需要重置就用子解释器。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "子解释器与 per-interpreter GIL"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "text",
+      "code": "3.12 起：Py_NewInterpreterFromConfig 可创建带独立 GIL 的子解释器\n3.14 起：解释器作为一等公民暴露（InterpreterPoolExecutor）",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "每个子解释器有自己的模块缓存与 GIL，<strong>互相之间可以真并行</strong>——这是 free-threading（去 GIL）之外，CPython 官方给出的另一条并发路线。3.15 里它仍在快速演进，生产使用需谨慎评估。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "现实世界的嵌入长什么样"
+    },
+    {
+      "type": "table",
+      "head": [
+        "软件",
+        "内嵌的脚本"
+      ],
+      "rows": [
+        [
+          "Blender",
+          "Python 驱动 3D 场景"
+        ],
+        [
+          "Unreal / 游戏引擎",
+          "关卡脚本、UI 逻辑"
+        ],
+        [
+          "Sublime / vim 插件",
+          "编辑器扩展 API"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "共同点：宿主是性能敏感的 C/C++ 程序，把\"可定制性\"外包给 Python——宿主快、脚本灵活，两者各司其职。"
+    },
+    {
+      "type": "quiz",
+      "question": "嵌入 Python 的宿主程序在 <code>Py_Finalize()</code> 之后想再跑一段脚本，正确的做法是？",
+      "options": [
+        "再次调用 Py_Initialize 并继续使用",
+        "finalize 是单向门，需要重新初始化就用子解释器或重启宿主",
+        "Py_Finalize 只是清理缓存，解释器还能继续用",
+        "调用 Py_ReInit()"
+      ],
+      "answer": 1,
+      "explain": "Py_Finalize 释放了模块缓存、类型对象等全部解释器状态，之后再 Py_Initialize 得到的是全新解释器，旧对象指针全部失效。运行期需要隔离/重置时用子解释器。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "嵌入三阶段：Initialize → Run → Finalize，finalize 是单向门。",
+        "子解释器（3.12+）可带独立 GIL，是并行的新路线。",
+        "嵌入的典型场景是给性能敏感的宿主加脚本能力。",
+        "free-threading（无 GIL 构建）与子解释器是两条并行演进的路线。"
+      ]
+    }
+  ],
+  "prev": "s4-94-c-extensions",
+  "next": "s4-96-c-api"
+}

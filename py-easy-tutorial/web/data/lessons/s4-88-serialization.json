@@ -1,0 +1,157 @@
+{
+  "id": "s4-88-serialization",
+  "order": 88,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "序列化与拷贝",
+  "concepts": [
+    "pickle",
+    "deepcopy",
+    "__reduce__",
+    "shallow vs deep"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "对象如何\"变成数据\"再变回来"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "深浅拷贝的分界线"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "deepcopy 的两个配套参数"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "pickle 的协议层：__reduce__"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：copy",
+      "url": "https://docs.python.org/3/library/copy.html"
+    },
+    {
+      "title": "Library Reference：pickle",
+      "url": "https://docs.python.org/3/library/pickle.html"
+    }
+  ],
+  "prereq": [
+    87
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "对象如何\"变成数据\"再变回来"
+    },
+    {
+      "type": "p",
+      "html": "序列化（pickle/JSON）和拷贝（copy/deepcopy）本质是同一件事：<strong>把对象图变成可传输/可复制的形态</strong>。理解 <code>__reduce__</code> 这层协议，两者就通了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "深浅拷贝的分界线"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import copy\n\ngrid = [[1, 2], [3, 4]]\n\nshallow = copy.copy(grid)\nshallow[0].append(9)\nprint(grid)\n\ndeep = copy.deepcopy(grid)\ndeep[1].append(9)\nprint(grid)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[[1, 2, 9], [3, 4]]\n[[1, 2, 9], [3, 4]]"
+    },
+    {
+      "type": "p",
+      "html": "浅拷贝只复制外层——内层列表仍是同一个对象，<code>append</code> 穿透。<code>deepcopy</code> 递归复制整棵对象图，两层完全独立。第 53 课陷阱合集的完整原理在这里。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>deepcopy</code> 的两个配套参数"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import copy\n\nclass Config:\n    def __init__(self, data):\n        self.data = data\n\n    def __deepcopy__(self, memo):\n        # memo 记录\"已复制的对象\"，防止循环引用死循环\n        new = Config(copy.deepcopy(self.data, memo))\n        memo[id(self)] = new\n        return new\n\n\ncfg = Config({\"a\": [1]})\ncfg.data[\"a\"].append(2)\nclone = copy.deepcopy(cfg)\nprint(clone.data)",
+      "runnable": true,
+      "editable": true,
+      "expect": "{'a': [1, 2]}"
+    },
+    {
+      "type": "p",
+      "html": "<code>memo</code> 字典以 <code>id()</code> 为键记录\"谁已复制\"，循环引用靠它防止无限递归。自定义 <code>__deepcopy__</code> 时必须把新对象写进 memo。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>pickle</code> 的协议层：<code>__reduce__</code>"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import pickle\n\nclass Versioned:\n    def __init__(self, value):\n        self.value = value\n\n    def __reduce__(self):\n        return (Versioned, (self.value,))  # (可调用对象, 参数元组)\n\n\noriginal = Versioned(42)\nrestored = pickle.loads(pickle.dumps(original))\nprint(restored.value, restored.value == original.value)",
+      "runnable": true,
+      "editable": true,
+      "expect": "42 True"
+    },
+    {
+      "type": "p",
+      "html": "<code>__reduce__</code> 回答\"怎么重建这个对象\"：返回 <code>(类, 构造参数)</code>。绝大多数类不需要手写——pickle 默认按 <code>__dict__</code> 处理。需要手写的场合：带打开资源、带全局状态、或想控制序列化格式的类。"
+    },
+    {
+      "type": "callout",
+      "kind": "danger",
+      "title": "pickle 的安全红线（重复第 59 课）",
+      "html": "<code>pickle.loads</code> 会执行对象图里的构造代码，<strong>加载来路不明的 pickle = 执行任意代码</strong>。第 59 课演示过攻击形态。跨信任边界传数据用 JSON；pickle 只用于自己的进程/机器之间。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>copy.copy</code> 与 <code>copy.deepcopy</code> 对嵌套列表 <code>[[1], [2]]</code> 的区别是？",
+      "options": [
+        "完全相同",
+        "copy 只复制外层，内层列表仍与原对象共享；deepcopy 递归复制全部",
+        "copy 更快所以内层也复制了",
+        "deepcopy 不支持列表"
+      ],
+      "answer": 1,
+      "explain": "copy 是一层浅拷贝：新外层容器，内层引用不变，改内层会穿透。deepcopy 用 memo 递归复制整棵对象图，且能处理循环引用。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "浅拷贝只复制外层，深拷贝递归复制并防循环（memo）。",
+        "自定义拷贝/序列化都基于 <code>__reduce__</code> 类协议。",
+        "pickle 默认按 <code>__dict__</code> 重建，特殊类才手写 <code>__reduce__</code>。",
+        "安全红线：不加载来路不明的 pickle。"
+      ]
+    }
+  ],
+  "prev": "s4-87-iterators-advanced",
+  "next": "s4-89-metaprogramming"
+}

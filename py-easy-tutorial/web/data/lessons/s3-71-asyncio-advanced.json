@@ -1,0 +1,158 @@
+{
+  "id": "s3-71-asyncio-advanced",
+  "order": 71,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "advanced",
+  "title": "asyncio 进阶",
+  "concepts": [
+    "wait_for",
+    "TaskGroup",
+    "timeout",
+    "Semaphore",
+    "cancellation"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "超时、限流与结构化并发"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "wait_for：给任务上一道保险"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "TaskGroup：结构化并发"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "Semaphore：限制并发数"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：asyncio.TaskGroup",
+      "url": "https://docs.python.org/3/library/asyncio-task.html#asyncio.TaskGroup"
+    },
+    {
+      "title": "Library Reference：asyncio 同步原语",
+      "url": "https://docs.python.org/3/library/asyncio-sync.html"
+    }
+  ],
+  "prereq": [
+    70
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "超时、限流与结构化并发"
+    },
+    {
+      "type": "p",
+      "html": "真实的异步程序要回答三个问题：任务卡死了怎么办（超时）、一万个请求怎么限流（信号量）、一批任务里一个失败怎么办（TaskGroup）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>wait_for</code>：给任务上一道保险"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import asyncio\n\n\nasync def slow():\n    await asyncio.sleep(5)\n    return \"永远等不到\"\n\n\nasync def main():\n    try:\n        await asyncio.wait_for(slow(), timeout=0.1)\n    except TimeoutError:\n        print(\"0.1 秒没跑完，取消\")\n\n\nasyncio.run(main())",
+      "runnable": true,
+      "editable": true,
+      "expect": "0.1 秒没跑完，取消"
+    },
+    {
+      "type": "p",
+      "html": "<code>wait_for</code> 超时会<strong>取消</strong>内部任务（抛 <code>CancelledError</code> 进去），不只是\"不等了\"。所以被等待的协程应当正确响应取消——用 <code>try/finally</code> 清理。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>TaskGroup</code>：结构化并发"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import asyncio\n\n\nasync def one():\n    await asyncio.sleep(0.01)\n    return 1\n\n\nasync def main():\n    async with asyncio.TaskGroup() as tg:\n        t1 = tg.create_task(one())\n        t2 = tg.create_task(asyncio.sleep(0.01, result=2))\n    print(t1.result(), t2.result())\n\n\nasyncio.run(main())",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 2"
+    },
+    {
+      "type": "p",
+      "html": "<code>async with TaskGroup</code> 保证：离开代码块时<strong>所有子任务都已完成</strong>；任何一个抛异常，其余任务被自动取消，异常打包成 <code>ExceptionGroup</code> 抛出。这是\"结构化并发\"——任务的生命周期不会逃出代码块。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>Semaphore</code>：限制并发数"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import asyncio\n\nresults = []\n\n\nasync def worker(sem, index):\n    async with sem:\n        await asyncio.sleep(0.01)\n        results.append(index)\n\n\nasync def main():\n    sem = asyncio.Semaphore(2)  # 同时最多 2 个\n    async with asyncio.TaskGroup() as tg:\n        for i in range(5):\n            tg.create_task(worker(sem, i))\n\n\nasyncio.run(main())\nprint(len(results))",
+      "runnable": true,
+      "editable": true,
+      "expect": "5"
+    },
+    {
+      "type": "p",
+      "html": "打一万URL但只允许 50 个并发——<code>Semaphore(50)</code> 包住请求就行。不加限流的并发请求会瞬间打挂对方服务器（或自己的 fd 上限）。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "超时分层",
+      "html": "单个请求用 <code>wait_for(timeout=...)</code>；整批任务外层再套一层 <code>wait_for</code>。两层超时的组合能同时表达\"单个卡死\"和\"整体太慢\"两种故障。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>TaskGroup</code> 中一个任务抛异常，会发生什么？",
+      "options": [
+        "只有该任务失败，其余继续",
+        "其余任务被取消，异常打包成 ExceptionGroup 向上抛",
+        "所有任务的结果变成 None",
+        "异常被 TaskGroup 吞掉"
+      ],
+      "answer": 1,
+      "explain": "这是结构化并发的核心：一个失败代表整组失败，TaskGroup 取消其余任务并把所有异常聚合抛出。compare gather(return_exceptions=True) 则是「各自收异常继续跑」，语义不同按需选择。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>wait_for</code> 超时即取消，被等协程要用 try/finally 清理。",
+        "<code>TaskGroup</code>：成组创建任务、全部等完、一败俱败（异常聚合）。",
+        "<code>Semaphore</code> 限并发数，批量请求必配。",
+        "超时要分层：单任务一层，整批一层。"
+      ]
+    }
+  ],
+  "prev": "s3-70-asyncio-basics",
+  "next": "s3-72-contextvars"
+}

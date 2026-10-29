@@ -1,0 +1,162 @@
+{
+  "id": "s2-50-unicode",
+  "order": 50,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "文本与 Unicode",
+  "concepts": [
+    "unicode",
+    "NFC",
+    "casefold",
+    "textwrap",
+    "combining"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "看起来相同，可能不是同一个字符串"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "组合字符：两种写法的 é"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "大小写：lower 不够用"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "textwrap：折行与缩略"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：unicodedata",
+      "url": "https://docs.python.org/3/library/unicodedata.html"
+    },
+    {
+      "title": "Library Reference：textwrap",
+      "url": "https://docs.python.org/3/library/textwrap.html"
+    }
+  ],
+  "prereq": [
+    49
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "看起来相同，可能不是同一个字符串"
+    },
+    {
+      "type": "p",
+      "html": "两个\"长相一样\"的字符串 <code>==</code> 却是 False，这是 Unicode 的深坑：<strong>同一个字形可以由不同的码点序列组成</strong>。处理用户输入、文件名、搜索时不知道这一点，迟早踩到。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "组合字符：两种写法的 é"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import unicodedata\n\ns1 = \"café\"\ns2 = \"cafe\\u0301\"\n\nprint(len(s1), len(s2))\nprint(s1 == s2)\nprint(unicodedata.normalize(\"NFC\", s2) == s1)",
+      "runnable": true,
+      "editable": true,
+      "expect": "4 5\nFalse\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>s1</code> 的 é 是<strong>一个码点</strong>（U+00E9）；<code>s2</code> 是 <code>e</code> 加上<strong>组合重音符</strong>（U+0301），5 个码点。显示完全一样，但字符串不同——文件名、数据库唯一键、哈希都会当作两个东西。"
+    },
+    {
+      "type": "p",
+      "html": "<code>unicodedata.normalize(\"NFC\", s)</code> 把组合序列合并成单个码点（NFD 反向拆开）。<strong>用户输入入库前先 NFC 归一化</strong>，是防止\"同名不同人\"的标准做法。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "大小写：<code>lower</code> 不够用"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "print(\"Straße\".casefold() == \"strasse\")\nprint(\"Straße\".lower() == \"strasse\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse"
+    },
+    {
+      "type": "p",
+      "html": "德语 ß 的大写形式是 SS，<code>lower()</code> 处理不了这种\"一对多\"映射，<code>casefold()</code> 专门为<strong>无大小写比较</strong>设计。做搜索、用户名去重，用 <code>casefold()</code> 而不是 <code>lower()</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "textwrap：折行与缩略"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import textwrap\n\nprint(textwrap.fill(\"a\" * 25, width=10))\nprint(textwrap.wrap(\"a\" * 25, width=10))",
+      "runnable": true,
+      "editable": true,
+      "expect": "aaaaaaaaaa\naaaaaaaaaa\naaaaa\n['aaaaaaaaaa', 'aaaaaaaaaa', 'aaaaa']"
+    },
+    {
+      "type": "p",
+      "html": "<code>fill</code> 就是 <code>\"\\n\".join(wrap(...))</code>，两者永远一致。另一种需求是截断：<code>textwrap.shorten(\"a b c d e f\", width=8, placeholder=\"…\")</code> 得到 \"a b c…\"，长摘要转短摘要用它。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "字符 ≠ 显示宽度",
+      "html": "<code>\"中文\"</code> 是 2 个字符，但终端占 4 格；组合字符让\"5 个字符\"看起来像 4 个。做表格对齐时按显示宽度算（<code>unicodedata.east_asian_width</code> 可以判断），按字符数算必然错位。"
+    },
+    {
+      "type": "quiz",
+      "question": "两个用户输入的昵称“看起来一样”，但判断相等是 False，最可能的原因是？",
+      "options": [
+        "其中一个多了隐藏的换行",
+        "两者码点序列不同（组合字符 vs 预组合字符）",
+        "Python 的字符串比较有随机性",
+        "编码是 UTF-16 导致的"
+      ],
+      "answer": 1,
+      "explain": "é 可以是一个码点也可以是 e+组合符，显示相同但序列不同。用 unicodedata.normalize('NFC', s) 归一化后再比较即可。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "同一字形可有不同码点序列，<code>==</code> 是逐码点比较。",
+        "入库/做键之前先 <code>unicodedata.normalize(\"NFC\", s)</code>。",
+        "无大小写比较用 <code>casefold()</code>。",
+        "字符数 ≠ 显示宽度，对齐按显示宽度算。"
+      ]
+    }
+  ],
+  "prev": "s2-49-regex",
+  "next": "s2-51-datetime"
+}

@@ -1,0 +1,197 @@
+{
+  "id": "s2-33-inheritance",
+  "order": 33,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "继承与组合",
+  "concepts": [
+    "inheritance",
+    "super",
+    "composition",
+    "isinstance",
+    "override"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "先问\"是什么\"，再问\"有一个\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "继承与方法覆盖"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "super() 是\"下一个\"，不是\"父类\""
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "组合：把零件装进去"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "怎么选"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 9.5：继承",
+      "url": "https://docs.python.org/3/tutorial/classes.html#inheritance"
+    },
+    {
+      "title": "Tutorial 9.6：私有变量",
+      "url": "https://docs.python.org/3/tutorial/classes.html#private-variables"
+    }
+  ],
+  "prereq": [
+    32
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "先问\"是什么\"，再问\"有一个\""
+    },
+    {
+      "type": "p",
+      "html": "继承表达\"is-a\"（狗是动物），组合表达\"has-a\"（车有引擎）。Python 两种都支持，但社区共识是：<strong>优先组合</strong>。这一课讲清两种写法和 <code>super()</code> 的真实行为。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "继承与方法覆盖"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        return \"...\"\n\n\nclass Dog(Animal):\n    def speak(self):\n        return f\"{self.name}: 汪\"\n\n\nprint(Dog(\"旺财\").speak())\nprint(Animal(\"无名\").speak())\nprint(isinstance(Dog(\"旺财\"), Animal))",
+      "runnable": true,
+      "editable": true,
+      "expect": "旺财: 汪\n...\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "子类覆盖 <code>speak</code> 后，父类版本被遮住。<code>isinstance</code> 沿继承链为 True。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>super()</code> 是\"下一个\"，不是\"父类\""
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Base:\n    def __init__(self, name):\n        self.name = name\n\n    def describe(self):\n        return f\"Base({self.name})\"\n\n\nclass Sub(Base):\n    def __init__(self, name, extra):\n        super().__init__(name)\n        self.extra = extra\n\n    def describe(self):\n        return super().describe() + f\" + {self.extra}\"\n\n\nprint(Sub(\"x\", \"y\").describe())",
+      "runnable": true,
+      "editable": true,
+      "expect": "Base(x) + y"
+    },
+    {
+      "type": "p",
+      "html": "<code>super().__init__(name)</code> 把父类的初始化逻辑接过来，再补充自己的部分。<strong>漏写这一行是继承最常见的 bug</strong>：子类自己写了 <code>__init__</code>，父类的属性就没了。"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "super() 为什么不直接写类名",
+      "html": "直接写 <code>Base.__init__(self, name)</code> 在单继承时没问题，但多继承时会把某个祖先初始化两次。<code>super()</code> 按 MRO 找\"下一个\"类，钻石结构也能每个类只初始化一次——第 78 课展开。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "组合：把零件装进去"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class Engine:\n    def start(self):\n        return \"引擎启动\"\n\n\nclass Car:\n    def __init__(self):\n        self.engine = Engine()\n\n    def start(self):\n        return self.engine.start()\n\n\nprint(Car().start())\nprint(isinstance(Car(), Engine))",
+      "runnable": true,
+      "editable": true,
+      "expect": "引擎启动\nFalse"
+    },
+    {
+      "type": "p",
+      "html": "<code>Car</code> 持有一个 <code>Engine</code>，把\"启动\"委托给它。<code>isinstance</code> 不成立——组合不建立类型关系，这正是它灵活的原因：换引擎不用动 <code>Car</code> 的继承树。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "怎么选"
+    },
+    {
+      "type": "table",
+      "head": [
+        "关系",
+        "用法",
+        "例子"
+      ],
+      "rows": [
+        [
+          "A 是一种 B",
+          "继承",
+          "金毛 → Dog → Animal"
+        ],
+        [
+          "A 有一个 B",
+          "组合",
+          "Car → Engine"
+        ],
+        [
+          "A 需要用到 B 的功能",
+          "组合/参数",
+          "日志器作为参数传入"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "继承树深超过 2~3 层，基本说明该用组合了。<strong>\"复用代码\"不是继承的理由，\"类型确实是同一种\"才是。</strong>"
+    },
+    {
+      "type": "quiz",
+      "question": "想让 <code>PdfDoc</code> 和 <code>WordDoc</code> 都能被 <code>save(doc)</code> 处理，且 <code>save</code> 不改代码。更适合哪种设计？",
+      "options": [
+        "让两个类继承自同一个基类，save 接收基类",
+        "给两个类各自写一个 save 方法，save 里 if isinstance 判断",
+        "两个类互不相关，save 里复制两份代码",
+        "把 save 写成全局函数，里面用全局变量区分类型"
+      ],
+      "answer": 0,
+      "explain": "这是「多态」的典型场景：save 只依赖基类接口，调用 doc.save() 时自动分发到各自的实现。isinstance 链条每加一种文档就要改一次，是维护黑洞。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "继承是 is-a，组合是 has-a；默认选组合。",
+        "子类写了 <code>__init__</code> 就必须 <code>super().__init__</code>，否则父类属性丢失。",
+        "<code>super()</code> 按 MRO 找\"下一个\"类，不是字面上的\"父类\"。",
+        "<code>isinstance</code> 沿继承链成立，组合不成立。"
+      ]
+    }
+  ],
+  "prev": "s2-32-classes",
+  "next": "s2-34-data-model"
+}

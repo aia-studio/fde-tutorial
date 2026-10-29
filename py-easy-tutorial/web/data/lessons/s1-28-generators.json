@@ -1,0 +1,181 @@
+{
+  "id": "s1-28-generators",
+  "order": 28,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "moderate",
+  "title": "生成器",
+  "concepts": [
+    "yield",
+    "generator",
+    "send",
+    "lazy evaluation",
+    "pipeline"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "函数可以\"暂停\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "生成器就是迭代器的快捷写法"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "惰性：不算完不占内存"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "send：双向通道"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "生成器表达式 vs 列表推导"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 9.9：生成器",
+      "url": "https://docs.python.org/3/tutorial/classes.html#generators"
+    },
+    {
+      "title": "Language Reference：yield 表达式",
+      "url": "https://docs.python.org/3/reference/expressions.html#yield-expressions"
+    }
+  ],
+  "prereq": [
+    27
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "函数可以\"暂停\""
+    },
+    {
+      "type": "p",
+      "html": "普通函数 <code>return</code> 就结束了；带 <code>yield</code> 的函数每次产出后<strong>停在原地</strong>，下次调用 <code>next()</code> 从断点继续。状态（局部变量、执行位置）都保留着。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "生成器就是迭代器的快捷写法"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\n\nprint(list(countdown(3)))\n\ngen = countdown(2)\nprint(next(gen), next(gen))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[3, 2, 1]\n2 1"
+    },
+    {
+      "type": "p",
+      "html": "不用写 <code>__iter__</code> / <code>__next__</code>，也不用自己抛 <code>StopIteration</code>——函数返回时解释器自动处理。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "惰性：不算完不占内存"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def squares(nums):\n    for n in nums:\n        yield n * n\n\n\nprint(sum(squares(range(4))))\nprint(list(squares(n for n in range(4) if n % 2 == 0)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "14\n[0, 4]"
+    },
+    {
+      "type": "p",
+      "html": "<code>squares(range(10**9))</code> 也不会爆内存，因为它一次只算一个。这是生成器最大的价值：<strong>用空间换时间的那一半被省掉了</strong>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>send</code>：双向通道"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def echo():\n    received = []\n    while True:\n        value = yield len(received)\n        received.append(value)\n\n\ng = echo()\nprint(next(g))\nprint(g.send(\"a\"))\nprint(g.send(\"b\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "0\n1\n2"
+    },
+    {
+      "type": "p",
+      "html": "<code>yield</code> 不只能往外送值，还能接收值：<code>g.send(x)</code> 会把 <code>x</code> 赋给 <code>value</code>，然后继续执行到下一个 <code>yield</code>。第一次必须先 <code>next(g)</code>（或 <code>send(None)</code>），把生成器推到第一个 <code>yield</code>。"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "为什么需要 send",
+      "html": "它是协程的雏形。<code>asyncio</code> 的 <code>await</code> 在底层就是这套机制的进化版——理解 <code>yield</code>/<code>send</code>，后面学 <code>async def</code> 会顺很多。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "生成器表达式 vs 列表推导"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "data = range(5)\n\ngen = (n * 2 for n in data)\nlst = [n * 2 for n in data]\n\nprint(type(gen).__name__, type(lst).__name__)\nprint(sum(gen), sum(gen))",
+      "runnable": true,
+      "editable": true,
+      "expect": "generator list\n20 0"
+    },
+    {
+      "type": "p",
+      "html": "第二次 <code>sum(gen)</code> 是 0，因为迭代器已经耗尽。<strong>能只用一次、且数据量大</strong>时用生成器；要反复遍历就用列表。"
+    },
+    {
+      "type": "quiz",
+      "question": "调用生成器函数 <code>countdown(3)</code> 时，函数体里的代码什么时候开始执行？",
+      "options": [
+        "调用时立刻执行到第一个 yield",
+        "第一次 next() 时才开始执行",
+        "函数返回时",
+        "永远不会自动执行"
+      ],
+      "answer": 1,
+      "explain": "调用生成器函数只创建生成器对象，不执行函数体。第一次 next()（或 for 循环第一次取值）才真正开始执行，直到遇到第一个 yield。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>yield</code> 让函数暂停并保留状态，下次 <code>next()</code> 从断点继续。",
+        "生成器是惰性的：不预先计算、不占整块内存。",
+        "<code>send()</code> 可以向生成器内部传值，是协程的基础。",
+        "生成器只能遍历一次，需要复用时用列表。"
+      ]
+    }
+  ],
+  "prev": "s1-27-iteration",
+  "next": "s1-29-project-todo"
+}

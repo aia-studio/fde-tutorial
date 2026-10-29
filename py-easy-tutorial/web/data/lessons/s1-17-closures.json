@@ -1,0 +1,205 @@
+{
+  "id": "s1-17-closures",
+  "order": 17,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "闭包与晚绑定",
+  "concepts": [
+    "closure",
+    "cell",
+    "late binding",
+    "factory function"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "函数记着自己的出生地"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "工厂函数：用闭包造函数"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "晚绑定：lambda 在循环里的经典坑"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python FAQ：闭包",
+      "url": "https://docs.python.org/3/faq/programming.html#why-do-lambdas-defined-in-a-loop-with-different-values-all-return-the-same-result"
+    },
+    {
+      "title": "Language Reference：函数定义",
+      "url": "https://docs.python.org/3/reference/compound_stmts.html#function-definitions"
+    }
+  ],
+  "prereq": [
+    16
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "函数记着自己的出生地"
+    },
+    {
+      "type": "p",
+      "html": "闭包 = <strong>函数 + 它引用的外层变量</strong>。内层函数不只是代码，它还带着一层\"环境\"。理解这一点，<code>lambda</code> 在循环里为什么全返回同一个值就迎刃而解了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "工厂函数：用闭包造函数"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def make_multiplier(factor):\n    def multiply(n):\n        return n * factor\n\n    return multiply\n\n\ndouble = make_multiplier(2)\ntriple = make_multiplier(3)\n\nprint(double(5), triple(5))",
+      "runnable": true,
+      "editable": true,
+      "expect": "10 15"
+    },
+    {
+      "type": "p",
+      "html": "<code>multiply</code> 用完 <code>factor</code> 之后，<code>make_multiplier</code> 已经返回了，但 <code>factor</code> 没有消失——它被存进了闭包单元（cell），跟着 <code>multiply</code> 一起活下去。"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def outer():\n    x = 42\n\n    def inner():\n        return x\n\n    return inner\n\n\nf = outer()\nprint(f.__closure__[0].cell_contents)",
+      "runnable": true,
+      "editable": true,
+      "expect": "42"
+    },
+    {
+      "type": "p",
+      "html": "<code>__closure__</code> 是内部结构，平时不用碰；但看一眼能确认\"值确实被记住了\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "晚绑定：lambda 在循环里的经典坑"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "funcs = [lambda: i for i in range(3)]\nprint([f() for f in funcs])",
+      "runnable": true,
+      "editable": true,
+      "expect": "[2, 2, 2]"
+    },
+    {
+      "type": "p",
+      "html": "三个函数都返回 2。它们<strong>没有各自保存 i 的值</strong>，只保存了\"变量 i 所在的那个作用域\"。循环结束时 <code>i</code> 是 2，于是三个函数调用时读到的都是 2。"
+    },
+    {
+      "type": "p",
+      "html": "这是<strong>晚绑定</strong>（late binding）：闭包捕获的是变量，不是值。"
+    },
+    {
+      "type": "p",
+      "html": "修法是把当前值绑定到参数默认值上——默认值在定义时求值："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "funcs = [lambda i=i: i for i in range(3)]\nprint([f() for f in funcs])",
+      "runnable": true,
+      "editable": true,
+      "expect": "[0, 1, 2]"
+    },
+    {
+      "type": "p",
+      "html": "另一个修法是再套一层函数："
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "def make(i):\n    return lambda: i\n\n\nfuncs = [make(i) for i in range(3)]\nprint([f() for f in funcs])",
+      "runnable": true,
+      "editable": true,
+      "expect": "[0, 1, 2]"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "这个坑不止出现在循环里",
+      "html": "任何\"延迟执行 + 可变外层变量\"的组合都会中招：事件回调、延迟任务、生成器表达式。判断方法很简单——<strong>函数体里读的那个名字，是不是之后还会变？</strong>"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>funcs = [lambda: i for i in range(3)]</code> 之后 <code>[f() for f in funcs]</code> 得到什么？",
+      "options": [
+        "[0, 1, 2]",
+        "[2, 2, 2]",
+        "[0, 0, 0]",
+        "报错"
+      ],
+      "answer": 1,
+      "explain": "三个 lambda 共用同一个外层变量 i，调用时才读取它的值。循环结束后 i 是 2，所以三个都返回 2。用 <code>lambda i=i: i</code> 把当前值固化成默认参数即可解决。"
+    },
+    {
+      "type": "exercise",
+      "id": "s1-17-ex1",
+      "title": "写一个计数器工厂",
+      "prompt": "实现 <code>make_counter(start=0)</code>：返回一个函数，每次调用返回递增后的值（第一次调用返回 start+1）。",
+      "starter": "def make_counter(start=0):\n    # 返回一个计数器函数\n    pass\n",
+      "solution": "def make_counter(start=0):\n    count = start\n\n    def step():\n        nonlocal count\n        count += 1\n        return count\n\n    return step\n",
+      "tests": [
+        {
+          "name": "测试 1",
+          "code": "c = make_counter(); assert c() == 1 and c() == 2, '默认从 0 开始递增'"
+        },
+        {
+          "name": "测试 2",
+          "code": "d = make_counter(10); assert d() == 11, '从 start 开始递增'"
+        },
+        {
+          "name": "测试 3",
+          "code": "c2 = make_counter(); assert c2() == 1, '两个计数器互不影响'"
+        }
+      ],
+      "hints": [
+        "在外层函数里放一个变量保存当前值。",
+        "内层函数要修改外层变量，必须声明 nonlocal。",
+        "结构：<code>count = start</code> → <code>def step(): nonlocal count; count += 1; return count</code> → <code>return step</code>。"
+      ],
+      "xp": 10
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "闭包捕获的是<strong>变量</strong>，不是值；变量活在 cell 里，函数返回后仍然存在。",
+        "循环里创建函数会共享同一个变量，导致晚绑定。",
+        "修法一：<code>lambda i=i: i</code> 用默认参数固化；修法二：再套一层工厂函数。",
+        "改外层变量要 <code>nonlocal</code>，否则会变成新的局部变量。"
+      ]
+    }
+  ],
+  "prev": "s1-16-scope",
+  "next": "s1-18-modules"
+}

@@ -1,0 +1,188 @@
+{
+  "id": "s1-18-modules",
+  "order": 18,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "模块与 `__main__`",
+  "concepts": [
+    "module",
+    "import",
+    "sys.modules",
+    "__main__",
+    "namespace"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "一个文件就是一个模块"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "脚本运行时，__name__ 是 __main__"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "导入会执行模块顶层代码"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "名字空间：模块就是一层命名空间"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 6：模块",
+      "url": "https://docs.python.org/3/tutorial/modules.html"
+    },
+    {
+      "title": "Language Reference §5：导入系统",
+      "url": "https://docs.python.org/3/reference/import.html"
+    }
+  ],
+  "prereq": [
+    17
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "一个文件就是一个模块"
+    },
+    {
+      "type": "p",
+      "html": "<code>import</code> 做的事比看起来多：找文件、执行模块顶层代码、把结果缓存进 <code>sys.modules</code>、把名字绑到当前命名空间。理解这四步，\"为什么改完代码没生效\"和\"为什么循环导入会炸\"就都有答案了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "脚本运行时，<code>__name__</code> 是 <code>__main__</code>"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "print(__name__)\nprint(__name__ == \"__main__\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "__main__\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "被 <code>import</code> 时，<code>__name__</code> 是模块名。所以那句 <code>if __name__ == \"__main__\":</code> 只是在问：<strong>我是被直接运行，还是被导入？</strong>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "导入会执行模块顶层代码"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import math\nimport sys\n\nprint(\"math\" in sys.modules)\nprint(math.sqrt(16))\nprint(math.__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\n4.0\nmath"
+    },
+    {
+      "type": "p",
+      "html": "<code>sys.modules</code> 是导入缓存。同一个模块无论 <code>import</code> 多少次，顶层代码只执行一次，之后直接拿缓存里的对象。"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import math\n\nfirst = id(math)\nimport math as again\n\nprint(first == id(again))",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "两次导入拿到的是同一个对象。这也是\"模块级状态\"能共享的原因——所有引用指向同一个模块实例。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "缓存也意味着：改完模块要重启",
+      "html": "交互式环境里改了 <code>mymodule.py</code> 再 <code>import</code>，拿到的还是旧的。要用 <code>importlib.reload()</code>，但更省事的做法是重启解释器。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "名字空间：模块就是一层命名空间"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import json\n\nprint(json.dumps({\"a\": 1}))\nprint(sorted(name for name in dir(json) if name in {\"dump\", \"dumps\", \"load\", \"loads\"}))",
+      "runnable": true,
+      "editable": true,
+      "expect": "{\"a\": 1}\n['dump', 'dumps', 'load', 'loads']"
+    },
+    {
+      "type": "p",
+      "html": "<code>dir(json)</code> 列出模块的公开名字。这也是为什么标准库模块名要短、函数名要具体——它们全在一个平面命名空间里。"
+    },
+    {
+      "type": "p",
+      "html": "<code>from ... import ...</code> 会把名字直接搬进当前命名空间，省前缀但容易撞名："
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "from math import sqrt\n\nprint(sqrt(9))",
+      "runnable": true,
+      "editable": true,
+      "expect": "3.0"
+    },
+    {
+      "type": "p",
+      "html": "写库代码时优先 <code>import math</code> 再 <code>math.sqrt</code>，读的人一眼知道来源；写脚本时 <code>from</code> 更省事。"
+    },
+    {
+      "type": "quiz",
+      "question": "直接运行 <code>python script.py</code> 时，<code>script.py</code> 里的 <code>__name__</code> 是什么？",
+      "options": [
+        "script",
+        "__main__",
+        "__init__",
+        "None"
+      ],
+      "answer": 1,
+      "explain": "被直接执行的模块，解释器会把 __name__ 设为 '__main__'；被导入时才是模块名。这就是 if __name__ == '__main__' 能区分入口与库的原因。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "一个 <code>.py</code> 文件就是一个模块，模块名默认是文件名。",
+        "导入 = 查找 + 执行顶层代码 + 存入 <code>sys.modules</code> + 绑定名字。",
+        "同一模块多次导入只会执行一次，拿到同一个对象。",
+        "<code>__name__ == \"__main__\"</code> 用来区分\"入口\"与\"被导入\"。"
+      ]
+    }
+  ],
+  "prev": "s1-17-closures",
+  "next": "s1-19-packages"
+}

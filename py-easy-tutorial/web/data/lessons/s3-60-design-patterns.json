@@ -1,0 +1,176 @@
+{
+  "id": "s3-60-design-patterns",
+  "order": 60,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "Pythonic 设计模式",
+  "concepts": [
+    "singleton",
+    "factory",
+    "strategy",
+    "observer",
+    "pythonic"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "用语言特性替代模式"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "单例：模块就是单例"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "策略：字典代替 if 链"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "观察者：回调列表"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "工厂：dict + 类"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：dataclasses 与枚举",
+      "url": "https://docs.python.org/3/library/dataclasses.html"
+    },
+    {
+      "title": "PEP 8：编程建议",
+      "url": "https://peps.python.org/pep-0008/#programming-recommendations"
+    }
+  ],
+  "prereq": [
+    59
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "用语言特性替代模式"
+    },
+    {
+      "type": "p",
+      "html": "GoF 的 23 种模式诞生于没有闭包、没有一等函数、没有字典的语言。Python 里大约三分之一被语言特性直接消化了。这一课讲四个最常用的，以及它们的 Pythonic 写法。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "单例：模块就是单例"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "# config.py 里写：\n# settings = load()   ← 全模块只有这一份\n#\n# 别处：\n# from config import settings\n\nclass App:\n    _instance = None\n\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\n\na = App()\nb = App()\nprint(a is b)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "Java 需要 <code>getInstance()</code> 双重检查锁；Python 里<strong>模块天然是单例</strong>（第 18 课的导入缓存）。必须用类时才用 <code>__new__</code>，且并发场景要加锁。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "策略：字典代替 if 链"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def discount_none(price):\n    return price\n\ndef discount_vip(price):\n    return price * 0.8\n\nSTRATEGIES = {\n    \"none\": discount_none,\n    \"vip\": discount_vip,\n    \"svip\": lambda p: p * 0.6,\n}\n\n\ndef price_for(level, price):\n    return STRATEGIES.get(level, discount_none)(price)\n\n\nprint(price_for(\"vip\", 100), price_for(\"svip\", 100), price_for(\"别的\", 100))",
+      "runnable": true,
+      "editable": true,
+      "expect": "80.0 60.0 100"
+    },
+    {
+      "type": "p",
+      "html": "面向对象版需要一个 <code>Strategy</code> 接口 + N 个子类；Python 里<strong>函数就是一等公民</strong>，字典直接把键映射到行为。新增策略就是加一个函数。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "观察者：回调列表"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class EventBus:\n    def __init__(self):\n        self._subscribers = {}\n\n    def subscribe(self, event, callback):\n        self._subscribers.setdefault(event, []).append(callback)\n\n    def emit(self, event, data):\n        for callback in self._subscribers.get(event, []):\n            callback(data)\n\n\nbus = EventBus()\nbus.subscribe(\"order\", lambda d: print(\"邮件：\", d))\nbus.subscribe(\"order\", lambda d: print(\"库存：\", d))\n\nbus.emit(\"order\", {\"id\": 1})",
+      "runnable": true,
+      "editable": true,
+      "expect": "邮件： {'id': 1}\n库存： {'id': 1}"
+    },
+    {
+      "type": "p",
+      "html": "发布者和订阅者互不知道对方存在。第 40 课的\"注册表装饰器\"可以再进一步：用 <code>@bus.on(\"order\")</code> 语法注册。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "工厂：dict + 类"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "def make_json():\n    return {\"type\": \"json\"}\n\ndef make_csv():\n    return {\"type\": \"csv\"}\n\nFACTORY = {\"json\": make_json, \"csv\": make_csv}\n\nobj = FACTORY[\"json\"]()\nprint(obj)",
+      "runnable": true,
+      "editable": true,
+      "expect": "{'type': 'json'}"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "判断标准：模式是\"问题的名字\"，不是\"要写的东西\"",
+      "html": "当你发现自己在写\"防重复创建\"\"按类型分支\"\"通知多个对象\"时，去查那个模式对应 Python 的哪种惯用法。反过来先写工厂单例观察者，再找地方用——那叫过度设计。"
+    },
+    {
+      "type": "quiz",
+      "question": "Python 里最自然的单例实现是？",
+      "options": [
+        "模块级对象：config.py 里的 settings",
+        "每个类加 __new__ 判断",
+        "全局变量 global settings",
+        "装饰器加锁"
+      ],
+      "answer": 0,
+      "explain": "模块在导入缓存里天然只有一份（第 18 课），settings 自动是单例，无锁无样板。__new__ 方案只在「必须用类承载」时才用，且并发初始化要自己处理。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "单例 → 模块；策略 → 字典映射函数；观察者 → 回调列表；工厂 → dict + 类。",
+        "语言特性（一等函数、导入缓存）消化了大多数经典模式。",
+        "模式是\"问题的名字\"：先有重复出现的问题，再套模式。"
+      ]
+    }
+  ],
+  "prev": "s3-59-security",
+  "next": "s3-61-packaging-basics"
+}

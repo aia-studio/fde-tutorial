@@ -1,0 +1,229 @@
+{
+  "id": "s1-15-functions",
+  "order": 15,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "函数与参数",
+  "concepts": [
+    "function",
+    "default argument",
+    "args",
+    "kwargs",
+    "keyword-only"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "参数的四种形态"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "默认参数与关键字传参"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "*args 与 **kwargs"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "那个著名的默认参数陷阱"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "仅关键字参数"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 4.8：定义函数",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html#defining-functions"
+    },
+    {
+      "title": "Tutorial 4.9：参数组合",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html#more-on-defining-functions"
+    }
+  ],
+  "prereq": [
+    14
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "参数的四种形态"
+    },
+    {
+      "type": "p",
+      "html": "Python 的函数签名能表达的信息比多数语言多：位置参数、默认值、可变位置、可变关键字、仅关键字参数。代价是有一套容易踩的规则，尤其是<strong>默认参数只求值一次</strong>这条。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "默认参数与关键字传参"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def greet(name, greeting=\"你好\"):\n    return f\"{greeting}，{name}\"\n\n\nprint(greet(\"Ada\"))\nprint(greet(\"Ada\", greeting=\"hi\"))\nprint(greet(greeting=\"hi\", name=\"Bob\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "你好，Ada\nhi，Ada\nhi，Bob"
+    },
+    {
+      "type": "p",
+      "html": "关键字传参让调用处自解释。参数一多，这个习惯能省掉大量查签名的时间。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>*args</code> 与 <code>**kwargs</code>"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def show(*args, **kwargs):\n    print(args)\n    print(sorted(kwargs.items()))\n\n\nshow(1, 2, a=3, b=4)",
+      "runnable": true,
+      "editable": true,
+      "expect": "(1, 2)\n[('a', 3), ('b', 4)]"
+    },
+    {
+      "type": "p",
+      "html": "<code>args</code> 是位置参数打包成的元组，<code>kwargs</code> 是关键字参数打包成的字典。名字可以改，<code>*</code> 和 <code>**</code> 才是语法。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "那个著名的默认参数陷阱"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def add_item(item, bucket=[]):\n    bucket.append(item)\n    return bucket\n\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['a']\n['a', 'b']"
+    },
+    {
+      "type": "p",
+      "html": "第二次调用没有传 <code>bucket</code>，却拿到了上次的列表。原因是<strong>默认值在函数定义时求值一次</strong>，之后每次调用都复用同一个对象。"
+    },
+    {
+      "type": "p",
+      "html": "正确写法是用 <code>None</code> 当哨兵："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "def add_item(item, bucket=None):\n    if bucket is None:\n        bucket = []\n    bucket.append(item)\n    return bucket\n\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['a']\n['b']"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "这条规则对所有可变默认值都成立",
+      "html": "<code>def f(x, cache={})</code>、<code>def f(x, seen=set())</code> 都是同一个坑。只有不可变默认值（数字、字符串、元组、<code>None</code>）才安全。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "仅关键字参数"
+    },
+    {
+      "type": "p",
+      "html": "<code>*</code> 单独出现时，表示\"后面的参数只能用关键字传\"："
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "def area(width, height, *, unit=\"cm\"):\n    return f\"{width * height} {unit}²\"\n\n\nprint(area(3, 4))\nprint(area(3, 4, unit=\"m\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "12 cm²\n12 m²"
+    },
+    {
+      "type": "p",
+      "html": "这对<strong>布尔开关</strong>特别有用：<code>open(path, \"w\", True)</code> 看不出 True 是什么，<code>sorted(data, reverse=True)</code> 一眼就懂。"
+    },
+    {
+      "type": "quiz",
+      "question": "下面哪个默认值是安全的？",
+      "options": [
+        "def f(x, cache={})",
+        "def f(x, seen=set())",
+        "def f(x, items=[])",
+        "def f(x, tag=None)"
+      ],
+      "answer": 3,
+      "explain": "只有不可变默认值安全。字典、集合、列表在函数定义时创建一次，所有调用共享同一个对象，会互相污染。"
+    },
+    {
+      "type": "exercise",
+      "id": "s1-15-ex1",
+      "title": "把数值夹在区间里",
+      "prompt": "实现 <code>clamp(value, low=0, high=100)</code>：小于 low 返回 low，大于 high 返回 high，否则原样返回。",
+      "starter": "def clamp(value, low=0, high=100):\n    # 在这里实现\n    pass\n",
+      "solution": "def clamp(value, low=0, high=100):\n    if value < low:\n        return low\n    if value > high:\n        return high\n    return value\n",
+      "tests": [
+        {
+          "name": "测试 1",
+          "code": "assert clamp(50) == 50, '区间内应原样返回'"
+        },
+        {
+          "name": "测试 2",
+          "code": "assert clamp(150) == 100, '超过上限应返回 high'"
+        },
+        {
+          "name": "测试 3",
+          "code": "assert clamp(-5) == 0, '低于下限应返回 low'"
+        },
+        {
+          "name": "测试 4",
+          "code": "assert clamp(5, low=10) == 10, '自定义下限也要生效'"
+        }
+      ],
+      "hints": [
+        "用两个 if 分别处理越界，最后兜底返回 value。",
+        "注意 low/high 有默认值，调用时可以只覆盖其中一个。"
+      ],
+      "xp": 10
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "默认参数在<strong>定义时</strong>求值一次，可变默认值会跨调用共享。",
+        "用 <code>None</code> 当哨兵，在函数体内创建新的可变对象。",
+        "<code>*args</code> 收位置参数，<code>**kwargs</code> 收关键字参数。",
+        "<code>*</code> 之后的参数只能关键字传，适合布尔开关。"
+      ]
+    }
+  ],
+  "prev": "s0-14-builtins",
+  "next": "s1-16-scope"
+}

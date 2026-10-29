@@ -1,0 +1,178 @@
+{
+  "id": "s3-64-perf-intuition",
+  "order": 64,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "性能直觉与 timeit",
+  "concepts": [
+    "timeit",
+    "complexity",
+    "membership",
+    "premature optimization"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "先建立量级直觉，再谈优化"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "成员判断：O(n) 与 O(1) 的量级差"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "用 timeit 的正确姿势"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "复杂度速查：常见操作的成本"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：timeit",
+      "url": "https://docs.python.org/3/library/timeit.html"
+    },
+    {
+      "title": "PEP 8：编程建议（过早优化）",
+      "url": "https://peps.python.org/pep-0008/#programming-recommendations"
+    }
+  ],
+  "prereq": [
+    62
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "先建立量级直觉，再谈优化"
+    },
+    {
+      "type": "p",
+      "html": "优化前必须知道两件事：<strong>量级差在哪</strong>（O(1) 与 O(n)），以及<strong>实测差多少</strong>（timeit）。这一课用数据建立几条直觉，之后写代码时的取舍就有了依据。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "成员判断：O(n) 与 O(1) 的量级差"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import timeit\n\nsetup = \"data = list(range(10000)); data_set = set(data)\"\nt_list = timeit.timeit(\"9999 in data\", setup=setup, number=1000)\nt_set = timeit.timeit(\"9999 in data_set\", setup=setup, number=1000)\nprint(t_set < t_list / 10)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "<code>in list</code> 要从头扫到尾，<code>in set</code> 直接算哈希。10 万元素、查 1000 次的量级下差距是数十倍——这是把 <code>in some_list</code> 改成 <code>in some_set</code> 的全部理由。注意结论只在<strong>数据量大、判断频繁</strong>时成立：三个元素的列表，先建 set 反而亏。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "用 timeit 的正确姿势"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import timeit\n\nt = timeit.timeit(\"'-'.join(str(n) for n in range(100))\", number=10000)\nprint(t > 0)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "<code>timeit</code> 的三个要点：默认<strong>关闭垃圾回收</strong>（测的是纯执行）、<code>number</code> 指定重复次数（总时长除以它）、<code>setup</code> 里放准备工作（不计时）。同机多次运行的波动通常在几个百分点内，量级差在个位数百分点内都能视为\"相当\"。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "避免过早优化",
+      "html": "PEP 8 引用 Knuth：「过早优化是万恶之源」。排序规则是：<strong>先正确，再可读，实测证明慢，最后才优化</strong>——且优化必须用 timeit/profiler 证明有效，而不是\"我觉得 set 快\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "复杂度速查：常见操作的成本"
+    },
+    {
+      "type": "table",
+      "head": [
+        "操作",
+        "list",
+        "dict / set"
+      ],
+      "rows": [
+        [
+          "<code>x in obj</code>",
+          "O(n)",
+          "O(1)"
+        ],
+        [
+          "<code>obj[i]</code>",
+          "O(1)",
+          "O(1)"
+        ],
+        [
+          "头部插入",
+          "O(n)",
+          "—"
+        ],
+        [
+          "<code>append</code> / <code>obj[k]=v</code>",
+          "O(1)",
+          "O(1) 摊还"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "这张表 + 实测习惯，覆盖日常 90% 的性能决策。更细的（字符串拼接、函数调用开销、PyPy 差异）等 profiler 告诉你，而不是背表。"
+    },
+    {
+      "type": "quiz",
+      "question": "发现程序慢，第一件事应该做什么？",
+      "options": [
+        "把循环里的方法调用换成内联代码",
+        "用 timeit/profiler 找到真正耗时的位置",
+        "把所有容器换成 set",
+        "用多线程并行所有循环"
+      ],
+      "answer": 1,
+      "explain": "直觉定位慢点通常是错的（常常是 IO 或某一个小函数）。先测量，找到占大头的 20%，再针对性优化——其余代码保持可读。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>in list</code> O(n)、<code>in set</code> O(1)，数据量大且频繁判断时才值得换。",
+        "<code>timeit</code> 关 GC、用 <code>setup</code> 隔离准备、看多次均值。",
+        "复杂度表建立直觉，实测确认结论。",
+        "反对过早优化：正确 → 可读 → 实测慢 → 才优化。"
+      ]
+    }
+  ],
+  "prev": "s3-63-publish-pypi",
+  "next": "s3-65-profiling"
+}

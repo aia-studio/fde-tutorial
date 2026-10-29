@@ -1,0 +1,176 @@
+{
+  "id": "s3-72-contextvars",
+  "order": 72,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "advanced",
+  "title": "contextvars 与任务上下文",
+  "concepts": [
+    "ContextVar",
+    "context",
+    "async isolation",
+    "threading.local"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "每个\"请求\"一份上下文"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "协程任务间的隔离"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "与 threading.local 的对比"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "实际用法：日志与链路追踪"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：contextvars",
+      "url": "https://docs.python.org/3/library/contextvars.html"
+    },
+    {
+      "title": "PEP 567：上下文变量",
+      "url": "https://peps.python.org/pep-0567/"
+    }
+  ],
+  "prereq": [
+    71
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "每个\"请求\"一份上下文"
+    },
+    {
+      "type": "p",
+      "html": "Web 服务里每个请求有自己的 request-id、当前用户。全局变量会把 A 请求的数据漏给 B 请求——并发下这是事故。<code>contextvars</code> 提供的是<strong>按任务隔离</strong>的\"全局变量\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "协程任务间的隔离"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import asyncio\nfrom contextvars import ContextVar\n\nrequest_id: ContextVar[str] = ContextVar(\"request_id\", default=\"-\")\nseen = []\n\n\nasync def handle(name):\n    request_id.set(name)\n    await asyncio.sleep(0.01)\n    seen.append(request_id.get())\n\n\nasync def main():\n    async with asyncio.TaskGroup() as tg:\n        tg.create_task(handle(\"req-1\"))\n        tg.create_task(handle(\"req-2\"))\n\n\nasyncio.run(main())\nprint(sorted(seen))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['req-1', 'req-2']"
+    },
+    {
+      "type": "p",
+      "html": "两个任务各自 <code>set</code> 了自己的值，互不覆盖——每个 <code>create_task</code> 运行在<strong>自己的上下文副本</strong>里。换成普通全局变量，后一个 <code>set</code> 会冲掉前一个。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "与 <code>threading.local</code> 的对比"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "<code>threading.local</code>",
+        "<code>contextvars.ContextVar</code>"
+      ],
+      "rows": [
+        [
+          "隔离单位",
+          "线程",
+          "线程 + 协程任务"
+        ],
+        [
+          "asyncio 任务间",
+          "<strong>不隔离</strong>（同线程共享）",
+          "隔离"
+        ],
+        [
+          "典型场景",
+          "线程池中的连接缓存",
+          "请求 ID、当前用户、trace 上下文"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import threading\n\nlocal = threading.local()\nlocal.value = \"主线程\"\n\nresults = []\n\n\ndef worker():\n    results.append(getattr(local, \"value\", \"子线程没有这个属性\"))\n\n\nt = threading.Thread(target=worker)\nt.start()\nt.join()\nprint(results)",
+      "runnable": true,
+      "editable": true,
+      "expect": "['子线程没有这个属性']"
+    },
+    {
+      "type": "p",
+      "html": "<code>threading.local</code> 只按线程隔离——线程内再开协程，所有协程共享同一份，等于没隔离。<strong>asyncio 代码里用 ContextVar</strong>，线程代码里才用 <code>threading.local</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "实际用法：日志与链路追踪"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import asyncio\nimport logging\nimport sys\nfrom contextvars import ContextVar\n\nrequest_id: ContextVar[str] = ContextVar(\"request_id\", default=\"-\")\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format=\"%(request_id)s %(message)s\",\n    stream=sys.stdout,\n)\nlog = logging.getLogger(\"app\")\n\n\nclass RequestFilter(logging.Filter):\n    def filter(self, record):\n        record.request_id = request_id.get()\n        return True\n\n\nlog.addFilter(RequestFilter())\n\n\nasync def handler(name):\n    request_id.set(name)\n    log.info(\"处理请求\")\n\n\nasync def main():\n    async with asyncio.TaskGroup() as tg:\n        tg.create_task(handler(\"r1\"))\n        tg.create_task(handler(\"r2\"))\n\n\nasyncio.run(main())",
+      "runnable": true,
+      "editable": true,
+      "expect": "r1 处理请求\nr2 处理请求"
+    },
+    {
+      "type": "p",
+      "html": "日志自动携带当前任务的 request-id——这就是 <code>ContextVar</code> 在真实系统里的头号用途：<strong>不用把 request-id 一层层当参数传</strong>。"
+    },
+    {
+      "type": "quiz",
+      "question": "在 asyncio 服务里给每个请求隔离存储 request-id，应该用？",
+      "options": [
+        "模块级全局变量 request_id",
+        "threading.local()",
+        "contextvars.ContextVar()",
+        "每个函数加一个 request_id 参数并逐层传递"
+      ],
+      "answer": 2,
+      "explain": "全局变量跨任务共享会互相覆盖；threading.local 只按线程隔离，同一线程上的所有协程共享。ContextVar 按「任务上下文」隔离，且日志框架可自动携带。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>ContextVar.set/get</code> 提供任务级隔离，<code>create_task</code> 各得一份副本。",
+        "asyncio 代码用 <code>ContextVar</code>，线程代码用 <code>threading.local</code>，别用反。",
+        "头号用途：日志注入请求 ID、trace 上下文，省掉逐层传参。",
+        "修改要在<strong>当前任务内</strong>做，跨任务修改没有意义。"
+      ]
+    }
+  ],
+  "prev": "s3-71-asyncio-advanced",
+  "next": "s3-73-capstone-cli"
+}

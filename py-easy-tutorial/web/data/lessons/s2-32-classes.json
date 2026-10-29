@@ -1,0 +1,158 @@
+{
+  "id": "s2-32-classes",
+  "order": 32,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "类与实例",
+  "concepts": [
+    "class",
+    "__init__",
+    "self",
+    "instance attribute",
+    "class attribute"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "类是模板，实例是复印件"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "self 是谁"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "类属性 vs 实例属性"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "方法也是属性"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 9.3：类定义初步",
+      "url": "https://docs.python.org/3/tutorial/classes.html#a-first-look-at-classes"
+    },
+    {
+      "title": "Language Reference §3.3：自定义类",
+      "url": "https://docs.python.org/3/reference/datamodel.html#customizing-class-creation"
+    }
+  ],
+  "prereq": [
+    31
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "类是模板，实例是复印件"
+    },
+    {
+      "type": "p",
+      "html": "类定义一种东西\"长什么样\"；实例是照着它造出来的具体对象。<code>__init__</code> 不是构造函数本体（构造是 <code>__new__</code>），它是<strong>实例创建后的初始化钩子</strong>——记住这个措辞，后面讲元类时不困惑。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "self 是谁"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Counter:\n    def __init__(self):\n        self.n = 0\n\n    def bump(self):\n        self.n += 1\n        return self.n\n\n\nc = Counter()\nc.bump()\nc.bump()\nprint(c.bump())\n\nd = Counter()\nprint(d.bump())",
+      "runnable": true,
+      "editable": true,
+      "expect": "3\n1"
+    },
+    {
+      "type": "p",
+      "html": "<code>self</code> 就是\"这个实例本身\"。<code>c.bump()</code> 等价于 <code>Counter.bump(c)</code>——<code>self.n</code> 改的是 <code>c</code> 自己的属性，所以两个计数器互不干扰。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "类属性 vs 实例属性"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Dog:\n    kind = \"犬科\"\n\n    def __init__(self, name):\n        self.name = name\n\n\na = Dog(\"旺财\")\nb = Dog(\"小黑\")\nprint(a.kind, b.kind, Dog.kind)\n\na.kind = \"特殊\"\nprint(a.kind, b.kind, Dog.kind)",
+      "runnable": true,
+      "editable": true,
+      "expect": "犬科 犬科 犬科\n特殊 犬科 犬科"
+    },
+    {
+      "type": "p",
+      "html": "给 <code>a.kind</code> 赋值<strong>没有修改类属性</strong>，而是给实例 a 新建了一个属性，把它遮住了——和第 3 课的名字绑定是同一个机制。真正改类要用 <code>Dog.kind = \"...\"</code>。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "不要用类属性存可变默认值",
+      "html": "<code>class Dog: toys = []</code> 会让<strong>所有实例共享同一个列表</strong>。要每只狗有自己的列表，就在 <code>__init__</code> 里 <code>self.toys = []</code>。这是第 8 课嵌套列表陷阱的另一个变体。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "方法也是属性"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class Calc:\n    def add(self, a, b):\n        return a + b\n\n\nc = Calc()\nprint(Calc.add(c, 1, 2))\nprint(c.add(3, 4))\nprint(type(Calc.add).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "3\n7\nfunction"
+    },
+    {
+      "type": "p",
+      "html": "<code>Calc.add</code> 就是一个普通函数；<code>c.add</code> 是绑定后的方法（原理在第 55 课讲描述符时拆开）。所以方法内漏写 <code>self</code> 参数，调用时会报\"参数数量不对\"——报错点在参数，不在 self。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>class Dog: toys = []</code>，然后 <code>a = Dog(); b = Dog()</code>，执行 <code>a.toys.append(\"球\")</code> 后 <code>b.toys</code> 是什么？",
+      "options": [
+        "[]",
+        "['球']",
+        "None",
+        "报错：无法访问"
+      ],
+      "answer": 1,
+      "explain": "toys 是类属性，所有实例共享同一个列表对象。append 是原地修改，b 看到的也是 ['球']。要每只狗独立，必须在 __init__ 里 self.toys = []。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>__init__</code> 是初始化钩子，<code>self</code> 就是实例本身。",
+        "类属性被所有实例共享；给实例赋值只是\"遮住\"，不是改类。",
+        "可变类属性是共享状态，别这么写。",
+        "方法在类上叫函数，在实例上叫绑定方法。"
+      ]
+    }
+  ],
+  "prev": "s1-31-testing",
+  "next": "s2-33-inheritance"
+}

@@ -1,0 +1,181 @@
+{
+  "id": "s3-54-logging",
+  "order": 54,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "日志",
+  "concepts": [
+    "logging",
+    "level",
+    "logger",
+    "handler",
+    "propagation"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "print 会在三个月后背叛你"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "级别：从低到高，可过滤"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "Logger 层级：按模块命名"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "异常要带栈"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：logging",
+      "url": "https://docs.python.org/3/library/logging.html"
+    },
+    {
+      "title": "HOWTO：logging 教程",
+      "url": "https://docs.python.org/3/howto/logging.html"
+    }
+  ],
+  "prereq": [
+    53
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "print 会在三个月后背叛你"
+    },
+    {
+      "type": "p",
+      "html": "<code>print</code> 的输出没有级别、没有来源、没有时间，也无法关闭。<code>logging</code> 解决的就是这三件事：<strong>分级</strong>（能不能关）、<strong>命名</strong>（谁说的）、<strong>输出目标</strong>（去控制台还是文件）。写库代码的第一天就该用 logging。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "级别：从低到高，可过滤"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import logging\nimport sys\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format=\"%(levelname)s %(name)s: %(message)s\",\n    stream=sys.stdout,\n)\nlog = logging.getLogger(\"app\")\n\nlog.info(\"启动\")\nlog.warning(\"磁盘快满\")\nlog.error(\"连不上\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "INFO app: 启动\nWARNING app: 磁盘快满\nERROR app: 连不上"
+    },
+    {
+      "type": "p",
+      "html": "级别依次是 DEBUG / INFO / WARNING / ERROR / CRITICAL。<code>basicConfig(level=...)</code> 设定<strong>全局开关</strong>，低于它的直接丢弃："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import logging\nimport sys\n\nlogging.basicConfig(\n    level=logging.WARNING,\n    format=\"%(levelname)s: %(message)s\",\n    stream=sys.stdout,\n)\nlog = logging.getLogger(\"app\")\n\nlog.info(\"这条不会出现\")\nlog.warning(\"这条会出现\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "WARNING: 这条会出现"
+    },
+    {
+      "type": "p",
+      "html": "调试时把级别调到 DEBUG，生产环境保持 INFO——代码不用改。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "logging 默认写到 stderr",
+      "html": "<code>basicConfig</code> 不指定 <code>stream</code> 时输出到 <code>sys.stderr</code>。stderr 和 stdout 是两条流， 重定向时（<code>app.py &gt; log.txt</code>）日志不会进文件——这是新手最常见的困惑之一。 本课示例显式传 <code>stream=sys.stdout</code>，真实项目里通常会传一个日志文件。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "Logger 层级：按模块命名"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import logging\nimport sys\n\nlogging.basicConfig(level=logging.INFO, format=\"%(levelname)s %(name)s: %(message)s\", stream=sys.stdout)\napp_log = logging.getLogger(\"app\")\ndb_log = logging.getLogger(\"app.db\")\n\ndb_log.info(\"数据库就绪\")\nprint(db_log.parent is app_log)",
+      "runnable": true,
+      "editable": true,
+      "expect": "INFO app.db: 数据库就绪\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "用 <code>logging.getLogger(__name__)</code> 取 logger，名字自动按模块层级组织。子 logger 的记录会<strong>向上传播</strong>到根 logger 的 handler，所以配置一次、全程序生效。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "别在库里调 basicConfig",
+      "html": "库代码只 <code>getLogger(__name__)</code> 并发记录；<code>basicConfig</code> 是<strong>应用程序入口</strong>的事。库里调它等于抢走了应用的配置权，这是 logging 的头号禁忌。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "异常要带栈"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import logging\nimport sys\n\nlogging.basicConfig(format=\"%(levelname)s %(message)s\", stream=sys.stdout)\nlog = logging.getLogger(\"app\")\n\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    log.error(\"计算失败\", exc_info=True)",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "这块不设预期输出：<code>exc_info=True</code> 会把<strong>完整 traceback</strong>写进日志（默认到 stderr），包括出错的文件与行号。生产日志里每一条 ERROR 都应该带它——没有栈的报错等于没报。"
+    },
+    {
+      "type": "p",
+      "html": "<code>exc_info=True</code> 把完整 traceback 附进日志。没有它，你只知道\"失败了\"，不知道在哪一行——这正是第 26 课\"看清再动手\"的前置条件。"
+    },
+    {
+      "type": "quiz",
+      "question": "写一个第三方库，正确的日志用法是？",
+      "options": [
+        "在库的 __init__.py 里调 basicConfig(level=INFO)",
+        "每个模块 getLogger(__name__)，只发记录不配置输出",
+        "用 print 输出，避免配置冲突",
+        "把所有日志都发到根 logger"
+      ],
+      "answer": 1,
+      "explain": "库只产生日志记录（ getLogger(__name__) ），格式、级别、输出目标全部由使用它的应用决定。库里调 basicConfig 会抢走应用的配置权。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "五个级别从 DEBUG 到 CRITICAL，<code>level</code> 是全局开关。",
+        "<code>getLogger(__name__)</code> 建立层级，记录向上传播。",
+        "异常日志带 <code>exc_info=True</code>，否则丢失定位线索。",
+        "库只发记录，应用才配置 basicConfig。"
+      ]
+    }
+  ],
+  "prev": "s2-53-pitfalls",
+  "next": "s3-55-cli"
+}

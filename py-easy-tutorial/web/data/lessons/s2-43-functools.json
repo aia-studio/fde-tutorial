@@ -1,0 +1,194 @@
+{
+  "id": "s2-43-functools",
+  "order": 43,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "functools",
+  "concepts": [
+    "lru_cache",
+    "partial",
+    "singledispatch",
+    "reduce",
+    "wraps"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "函数层面的工具箱"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "lru_cache：一行加缓存"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "partial：固定一部分参数"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "singledispatch：按类型分发"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "reduce：慎用但要知道"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：functools",
+      "url": "https://docs.python.org/3/library/functools.html"
+    },
+    {
+      "title": "Library Reference：lru_cache",
+      "url": "https://docs.python.org/3/library/functools.html#functools.lru_cache"
+    }
+  ],
+  "prereq": [
+    41
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "函数层面的工具箱"
+    },
+    {
+      "type": "p",
+      "html": "functools 的工具都围绕一个主题：<strong>把函数当值来操作</strong>——缓存它、固定参数、按类型分发、折叠序列。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>lru_cache</code>：一行加缓存"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from functools import lru_cache\n\ncalls = []\n\n\n@lru_cache(maxsize=None)\ndef fib(n):\n    calls.append(n)\n    return n if n < 2 else fib(n - 1) + fib(n - 2)\n\n\nprint(fib(30))\nprint(sorted(calls) == list(range(31)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "832040\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "没有缓存时 <code>fib(30)</code> 会递归上百万次；加上 <code>@lru_cache</code>，每个 n 只算一次（31 次调用，所以 <code>calls</code> 正好是 0..30）。这个数量级差别就是缓存的全部意义。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "缓存的前提是\"纯函数\"",
+      "html": "同样的参数必须返回同样的结果。参数里带可变对象、或函数有副作用，缓存会给出<strong>过期数据</strong>。<code>maxsize=None</code> 适合参数空间小的递归；参数空间大用 <code>@lru_cache(maxsize=1024)</code> 防内存失控。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>partial</code>：固定一部分参数"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from functools import partial\n\n\ndef power(base, exp):\n    return base ** exp\n\n\nsquare = partial(power, exp=2)\ncube = partial(power, exp=3)\n\nprint(square(9), cube(3), square(base=4))",
+      "runnable": true,
+      "editable": true,
+      "expect": "81 27 16"
+    },
+    {
+      "type": "p",
+      "html": "<code>partial(power, exp=2)</code> 返回一个<strong>预填了关键字参数</strong>的新函数。比 <code>lambda x: power(x, 2)</code> 好：不用写参数转发，<code>repr</code> 里还能看到绑定的值。"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from functools import partial\n\n\ndef power(base, exp):\n    return base ** exp\n\n\ntwo_to = partial(power, 2)\nprint(two_to(5), two_to(8))",
+      "runnable": true,
+      "editable": true,
+      "expect": "32 256"
+    },
+    {
+      "type": "p",
+      "html": "按位置预填就固定了 <code>base=2</code>。注意 <code>square(3, 3)</code> 这种写法会报错——<code>exp</code> 已经被关键字占住，再传第二个位置参数就是\"多重赋值\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>singledispatch</code>：按类型分发"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from functools import singledispatch\n\n\n@singledispatch\ndef render(x):\n    return f\"默认：{type(x).__name__}\"\n\n\n@render.register\ndef _(x: int):\n    return f\"整数 {x}\"\n\n\n@render.register\ndef _(x: str):\n    return f\"字符串 {x}\"\n\n\nprint(render(7))\nprint(render(\"hi\"))\nprint(render(1.5))",
+      "runnable": true,
+      "editable": true,
+      "expect": "整数 7\n字符串 hi\n默认：float"
+    },
+    {
+      "type": "p",
+      "html": "不用 <code>isinstance</code> 链就能按类型分支，新类型注册一个函数即可。比一长串 <code>isinstance</code> 更好扩展，也把每种类型的处理放在了各自的位置上。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>reduce</code>：慎用但要知道"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "from functools import reduce\nfrom operator import mul\n\nprint(reduce(mul, [1, 2, 3, 4]))\nprint(reduce(mul, [], 1))",
+      "runnable": true,
+      "editable": true,
+      "expect": "24\n1"
+    },
+    {
+      "type": "p",
+      "html": "<code>reduce</code> 把序列折叠成一个值，第三个参数是初始值（空序列时必需）。多数场景 <code>sum</code> / <code>max</code> / <code>any</code> / <code>all</code> 更可读——reduce 留给真正\"两两合并\"的场合。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>@lru_cache</code> 装饰的函数，什么样的函数不适合？",
+      "options": [
+        "参数是元组的函数",
+        "有副作用或返回值依赖外部状态的函数",
+        "递归函数",
+        "参数超过两个的函数"
+      ],
+      "answer": 1,
+      "explain": "缓存的前提是相同参数必有相同结果。读文件、查数据库、依赖随机数/时间/全局变量的函数被缓存后会返回过期数据。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>lru_cache</code> 一行加缓存，只适合纯函数；递归加速立竿见影。",
+        "<code>partial</code> 预填参数，比 lambda 转发更清楚。",
+        "<code>singledispatch</code> 按类型分发，替代 isinstance 链。",
+        "<code>reduce</code> 折叠序列，日常优先 sum/max/any/all。"
+      ]
+    }
+  ],
+  "prev": "s2-42-itertools",
+  "next": "s2-44-collections"
+}

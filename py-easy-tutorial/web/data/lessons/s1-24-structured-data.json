@@ -1,0 +1,162 @@
+{
+  "id": "s1-24-structured-data",
+  "order": 24,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "结构化数据：json、csv、toml",
+  "concepts": [
+    "json",
+    "csv",
+    "tomllib",
+    "configparser",
+    "serialization"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "三种格式，三种脾气"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "JSON：默认的交换格式"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "CSV：表格，但别手写分割"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "TOML：配置文件的现代选择"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：json",
+      "url": "https://docs.python.org/3/library/json.html"
+    },
+    {
+      "title": "Library Reference：csv",
+      "url": "https://docs.python.org/3/library/csv.html"
+    }
+  ],
+  "prereq": [
+    23
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "三种格式，三种脾气"
+    },
+    {
+      "type": "p",
+      "html": "配置文件、数据交换、日志导出——日常遇到的格式基本就这几类。选错格式会让代码变复杂：JSON 存不了注释，CSV 表达不了嵌套，TOML 不适合流式写入。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "JSON：默认的交换格式"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import json\n\nraw = '{\"name\": \"Ada\", \"age\": 36, \"langs\": [\"Python\"]}'\ndata = json.loads(raw)\n\nprint(data[\"name\"], data[\"age\"])\nprint(json.dumps(data, ensure_ascii=False))",
+      "runnable": true,
+      "editable": true,
+      "expect": "Ada 36\n{\"name\": \"Ada\", \"age\": 36, \"langs\": [\"Python\"]}"
+    },
+    {
+      "type": "p",
+      "html": "<code>loads</code> / <code>dumps</code> 在字符串上操作，<code>load</code> / <code>dump</code> 直接对文件。记住 s 代表 string。"
+    },
+    {
+      "type": "p",
+      "html": "JSON 的类型映射很窄：Python 的 <code>tuple</code> 变成 <code>list</code>，<code>datetime</code> 根本不能直接序列化，<code>dict</code> 的键必须是字符串。所以\"能 dump\"不等于\"能无损往返\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "CSV：表格，但别手写分割"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import csv\nimport io\n\nbuf = io.StringIO()\nwriter = csv.writer(buf, lineterminator=\"\\n\")\nwriter.writerow([\"name\", \"score\"])\nwriter.writerow([\"Ada\", 90])\n\nprint(buf.getvalue().strip())\n\nrows = list(csv.DictReader(io.StringIO(buf.getvalue())))\nprint(rows[0][\"name\"], rows[0][\"score\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "name,score\nAda,90\nAda 90"
+    },
+    {
+      "type": "p",
+      "html": "<code>csv</code> 会正确处理引号、逗号、换行——手写 <code>line.split(\",\")</code> 在字段含逗号时立刻失效。<code>DictReader</code> 用首行当表头，读起来更直观。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "TOML：配置文件的现代选择"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import tomllib\n\nconfig = tomllib.loads(\"\"\"\n[db]\nhost = \"localhost\"\nport = 5432\n\n[db.pool]\nsize = 5\n\"\"\")\n\nprint(config[\"db\"][\"port\"] + 1)\nprint(sorted(config[\"db\"]))\nprint(config[\"db\"][\"pool\"][\"size\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "5433\n['host', 'pool', 'port']\n5"
+    },
+    {
+      "type": "p",
+      "html": "<code>tomllib</code> 是<strong>只读</strong>的：标准库只提供解析，写 TOML 要装 <code>tomli-w</code>。这是有意的设计——配置文件通常由人写，程序只读。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "怎么选",
+      "html": "与外部系统交换用 JSON；给人看的配置用 TOML；表格数据（Excel 导出）用 CSV。别用 JSON 存配置——不能写注释，改一次要翻半天。"
+    },
+    {
+      "type": "quiz",
+      "question": "把含 <code>datetime</code> 的对象直接 <code>json.dumps</code> 会怎样？",
+      "options": [
+        "自动转成 ISO 字符串",
+        "抛 TypeError：not JSON serializable",
+        "转成时间戳数字",
+        "静默丢弃该字段"
+      ],
+      "answer": 1,
+      "explain": "json 只认 dict/list/str/int/float/bool/None。日期要先自己转成字符串（如 isoformat()），或者用 default= 参数指定转换函数。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>json.loads/dumps</code> 操作字符串，<code>load/dump</code> 操作文件。",
+        "JSON 类型窄：元组变列表、日期不能直接序列化、键必须是字符串。",
+        "CSV 用 <code>csv</code> 模块，别手工 split；<code>DictReader</code> 按表头取值。",
+        "TOML 标准库只读不写，适合人写的配置。"
+      ]
+    }
+  ],
+  "prev": "s1-23-paths",
+  "next": "s1-25-exceptions"
+}

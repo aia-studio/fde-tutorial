@@ -1,0 +1,204 @@
+{
+  "id": "s0-02-docs-map",
+  "order": 2,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "文档地图与查资料的方法",
+  "concepts": [
+    "docs",
+    "docstring",
+    "dir",
+    "inspect",
+    "help"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "先学会查，再学会背"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "文档就在对象身上"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "dir() 告诉你有什么，inspect 告诉你长什么样"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "三份文档各管一段"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python 文档首页",
+      "url": "https://docs.python.org/3/"
+    },
+    {
+      "title": "内置函数帮助：help()",
+      "url": "https://docs.python.org/3/library/functions.html#help"
+    }
+  ],
+  "prereq": [
+    1
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "先学会查，再学会背"
+    },
+    {
+      "type": "p",
+      "html": "Python 的标准库有两百多个模块、上千个函数。没有任何人靠记忆写代码——大家都是在<strong>确切知道自己要找什么</strong>的前提下，几秒钟内查到。这一课只讲一件事：文档在哪里，以及怎么用最短路径拿到它。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "文档就在对象身上"
+    },
+    {
+      "type": "p",
+      "html": "你不需要打开浏览器就能看到一个函数是干什么的。每个函数、类、模块都带一个 <code>__doc__</code> 字符串。"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def greet(name):\n    \"\"\"把名字拼成问候语。\"\"\"\n    return \"hi \" + name\n\n\nprint(greet.__doc__)\nprint(type(greet.__doc__).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "把名字拼成问候语。\nstr"
+    },
+    {
+      "type": "p",
+      "html": "标准库函数同理——第一行通常就是一句话定义："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "print(len.__doc__.strip().splitlines()[0])",
+      "runnable": true,
+      "editable": true,
+      "expect": "Return the number of items in a container."
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "这也是写注释的理由",
+      "html": "你写的 docstring 不只是给人看的，它会被 <code>help()</code>、IDE 提示、<code>inspect.getdoc()</code> 直接读走。一行话把\"做什么\"说清楚，比三行注释讲\"怎么做\"更有用。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>dir()</code> 告诉你有什么，<code>inspect</code> 告诉你长什么样"
+    },
+    {
+      "type": "p",
+      "html": "记不住某个类型有哪些方法时，先列出来再筛："
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "methods = [name for name in dir(str) if name.startswith(\"split\")]\nprint(methods)",
+      "runnable": true,
+      "editable": true,
+      "expect": "['split', 'splitlines']"
+    },
+    {
+      "type": "p",
+      "html": "想知道一个函数要什么参数："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import inspect\n\n\ndef greet(name):\n    \"\"\"把名字拼成问候语。\"\"\"\n    return \"hi \" + name\n\n\nprint(inspect.signature(greet))\nprint(inspect.signature(dict.get))",
+      "runnable": true,
+      "editable": true,
+      "expect": "(name)\n(self, key, default=None, /)"
+    },
+    {
+      "type": "p",
+      "html": "第二行里的 <code>/</code> 是<strong>位置参数分隔符</strong>：它左边的参数只能用位置传，不能写成 <code>key=...</code>。这个符号在标准库里到处都是，看不懂就很容易写出 <code>d.get(key=\"a\")</code> 然后报错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "三份文档各管一段"
+    },
+    {
+      "type": "table",
+      "head": [
+        "文档",
+        "回答什么问题",
+        "什么时候用"
+      ],
+      "rows": [
+        [
+          "Tutorial",
+          "这是什么、怎么开始",
+          "第一次接触某个主题"
+        ],
+        [
+          "Library Reference",
+          "这个模块/函数的确切行为",
+          "查参数、返回值、异常"
+        ],
+        [
+          "Language Reference",
+          "语法和语义的正式定义",
+          "想搞清楚\"为什么这样\""
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "大多数人只翻第一份，遇到细节就猜——这是 bug 的主要来源之一。<strong>参数默认值、异常类型、边界条件，只在 Reference 里写得准。</strong>"
+    },
+    {
+      "type": "quiz",
+      "question": "想知道 <code>list.sort()</code> 在元素不可比较时会抛什么异常，最该查哪份文档？",
+      "options": [
+        "Tutorial 里关于列表的章节",
+        "Library Reference 里 list.sort 的条目",
+        "Language Reference 的表达式章节",
+        "搜索引擎第一条结果"
+      ],
+      "answer": 1,
+      "explain": "异常类型、参数默认值、稳定性保证这类精确行为，只在 Library Reference 里写。Tutorial 讲用法，Language Reference 讲语法语义。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>obj.__doc__</code> 和 <code>help(obj)</code> 是最快的入口，不用联网。",
+        "<code>dir(obj)</code> 列出成员，<code>inspect.signature(f)</code> 给出参数表，注意 <code>/</code> 和 <code>*</code> 的含义。",
+        "Tutorial 讲入门、Library 讲行为、Language Reference 讲语义，别拿错。",
+        "查文档的能力，比记住 API 更耐用。"
+      ]
+    }
+  ],
+  "prev": "s0-01-install-repl",
+  "next": "s0-03-names-objects"
+}

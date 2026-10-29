@@ -1,0 +1,158 @@
+{
+  "id": "s3-66-optimization",
+  "order": 66,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "优化实战：从算法到内置工具",
+  "concepts": [
+    "algorithm",
+    "Counter",
+    "join",
+    "builtin",
+    "optimization"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "优化顺序：算法 → 数据结构 → 内置 → 最后才是微优化"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "第一层：换数据结构（收益最大）"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "第二层：减少 O(n²) 的拼接"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "第三层：微优化，收益有限"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：timeit",
+      "url": "https://docs.python.org/3/library/timeit.html"
+    },
+    {
+      "title": "Library Reference：collections.Counter",
+      "url": "https://docs.python.org/3/library/collections.html#collections.Counter"
+    }
+  ],
+  "prereq": [
+    65
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "优化顺序：算法 → 数据结构 → 内置 → 最后才是微优化"
+    },
+    {
+      "type": "p",
+      "html": "这一课演示三层优化的实际收益差多少，并给出\"什么时候停手\"的判断标准。所有对比都用 <code>timeit</code> 实测。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "第一层：换数据结构（收益最大）"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import timeit\n\nitems = [\"a\", \"b\"] * 5000\n\nmanual = \"counts = {}\\nfor x in items:\\n    counts[x] = counts.get(x, 0) + 1\"\ncounter = \"Counter(items)\"\n\nt_manual = timeit.timeit(manual, globals={\"items\": items}, number=50)\nt_counter = timeit.timeit(counter, globals={\"items\": items, \"Counter\": __import__(\"collections\").Counter}, number=50)\n\nprint(t_counter < t_manual)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "手写循环 → <code>Counter</code>：C 实现的 <code>_count_elements</code> 替代了 Python 层循环。这种\"换成内置/换数据结构\"的优化，通常比微调语句快几倍，且代码更短。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "第二层：减少 O(n²) 的拼接"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import timeit\n\nparts = [\"x\"] * 5000\n\nt_concat = timeit.timeit(\n    \"s = ''\\nfor p in parts:\\n    s = s + p\",\n    globals={\"parts\": parts}, number=20\n)\nt_join = timeit.timeit(\n    \"''.join(parts)\",\n    globals={\"parts\": parts}, number=20\n)\n\nprint(t_join < t_concat / 10)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "字符串不可变，<code>s = s + p</code> 每次都复制整个字符串——循环拼接是 O(n²)。<code>join</code> 一次成型，O(n)。这是字符串处理里收益最大的一条规则。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "第三层：微优化，收益有限"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import timeit\n\nsetup = \"f = str.upper; data = ['a', 'b'] * 1000\"\nt_method = timeit.timeit(\"[x.upper() for x in data]\", setup=setup, number=100)\nt_bound = timeit.timeit(\"[f(x) for x in data]\", setup=setup, number=100)\n\nprint(f\"方法调用 {t_method:.4f}s，预绑定 {t_bound:.4f}s\")",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "把 <code>x.upper()</code> 换成预先绑定的 <code>f(x)</code> 快一点（省一次属性查找），但差距常在个位数百分比到 30% 之间漂移，甚至可能翻转——所以这块没有预期输出。<strong>只有 profiler 显示这个循环真是热点时才值得做</strong>，否则是给代码可读性上税。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "什么时候停手",
+      "html": "每层优化后重测整体耗时。出现以下情况立即停：改完的数据没人能看懂、优化点在实测中占比不足 5%、为省 10% 内存引入了新依赖。优化是投入产出比的游戏，不是竞技。"
+    },
+    {
+      "type": "quiz",
+      "question": "字符串循环拼接 <code>s = s + p</code> 慢的根本原因是？",
+      "options": [
+        "+ 运算符本身慢",
+        "字符串不可变，每次拼接都要复制整个新串，O(n²)",
+        "解释器无法优化循环",
+        "join 是 C 实现所以一定更快"
+      ],
+      "answer": 1,
+      "explain": "核心是不可变性带来的复制成本。join 先算总长度一次性分配，是 O(n)。「join 是 C 实现」是顺带的好处，不是根本原因。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "顺序：换算法/数据结构 → 消灭 O(n²) 模式 → 最后微优化。",
+        "计数用 <code>Counter</code>，拼接用 <code>join</code>，成员判断用 <code>set</code>。",
+        "每层优化都用 timeit 验证，并重测整体耗时。",
+        "占比不足 5% 的热点不值得优化。"
+      ]
+    }
+  ],
+  "prev": "s3-65-profiling",
+  "next": "s3-67-threading"
+}

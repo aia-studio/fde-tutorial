@@ -1,0 +1,163 @@
+{
+  "id": "s4-96-c-api",
+  "order": 96,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "resources",
+  "title": "C API：对象协议与引用计数",
+  "concepts": [
+    "PyObject",
+    "refcount",
+    "PyArg_ParseTuple",
+    "borrowed reference"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "引用计数显形了"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "PyObject 与引用计数"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "从 C 侧看一个调用"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "可变的另一面：对象不变性"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python C API：对象协议",
+      "url": "https://docs.python.org/3/c-api/object.html"
+    },
+    {
+      "title": "Python C API：引用计数",
+      "url": "https://docs.python.org/3/c-api/refcounting.html"
+    }
+  ],
+  "prereq": [
+    95
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "引用计数显形了"
+    },
+    {
+      "type": "p",
+      "html": "第 81 课说\"CPython 靠引用计数回收\"。C API 是这个机制<strong>显形</strong>的地方：每个 <code>PyObject</code> 都带计数器，每个 API 调用都明确写着\"这是新引用还是借用引用\"。读一遍 C API，Python 层的所有\"约定俗成\"都有了物证。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "PyObject 与引用计数"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import sys\n\nx = \"hello\"\nbase = sys.getrefcount(x)\n\ny = x          # 强引用 +1\nprint(sys.getrefcount(x) - base)\n\ndel y          # 归还\nprint(sys.getrefcount(x) - base)",
+      "runnable": true,
+      "editable": true,
+      "expect": "1\n0"
+    },
+    {
+      "type": "p",
+      "html": "C 层对应两条规则："
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<strong>新引用</strong>（new reference）：<code>PyTuple_GetItem</code> 之外的大多数\"创建/获取\"调用——调用方拥有它，用完必须 <code>Py_DECREF</code>。",
+        "<strong>借用引用</strong>（borrowed reference）：如 <code>PyTuple_GetItem</code>——不拥有，只在使用期内有效；宿主一释放它就悬空。"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "C 扩展里绝大多数内存 bug 是这两类搞混：该 <code>Py_DECREF</code> 的没减（泄漏），不该减的减了（悬空崩溃）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "从 C 侧看一个调用"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "c",
+      "code": "// C API 版本的 \"result = parse(text)\"（概念示意）\nstatic PyObject *parse(PyObject *self, PyObject *args) {\n    const char *text;\n    if (!PyArg_ParseTuple(args, \"s\", &text))   // 解析参数，失败自动设置异常\n        return NULL;                           // 返回 NULL = 向 Python 抛异常\n    long value = atol(text);\n    return PyLong_FromLong(value);             // 返回新引用\n}",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "<code>PyArg_ParseTuple</code> 的格式串（<code>\"s\"</code>、<code>\"l\"</code>）是 C API 的\"类型注解\"；返回 <code>NULL</code> 等价于 Python 层的 <code>raise</code>（异常已在全局状态里设置）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "可变的另一面：对象不变性"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "text",
+      "code": "Python 层观察到的：\n- 不可变对象（int/str/tuple）永不改变——所以能当 dict 键\n- 可变对象（list/dict）原地修改——引用它的所有名字同步看到\n\nC 层的真实情况：\n- 所谓不可变 = 实现 __hash__ 与 __eq__ 后，C 代码\"约定\"不去改它\n- mutable 默认参数、别名共享等陷阱，全是「引用同一个 C 结构体」的表现",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "第 3 课的\"名字是标签\"、第 53 课的深浅拷贝，到这里都能落回同一条物证：<strong>Python 对象在 C 里就是一个带计数器的结构体，名字只是指针</strong>。"
+    },
+    {
+      "type": "quiz",
+      "question": "C 扩展函数 <code>PyTuple_GetItem</code> 返回的是借用引用，这意味着？",
+      "options": [
+        "必须立刻 Py_DECREF，否则泄漏",
+        "只在宿主对象存活期间使用；不拥有它，不需要也不应该 Py_DECREF",
+        "借用引用是线程安全的",
+        "借用引用会自动升级为新引用"
+      ],
+      "answer": 1,
+      "explain": "借用引用不拥有对象：只要不 Py_DECREF 就不会泄漏；但宿主对象一旦被回收（比如列表被缩小），这个指针就悬空。需要长期持有必须 Py_INCREF 或换成 PyTuple_GetItemRef。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>PyObject</code> = 对象头（含引用计数）+ 具体数据；一切皆 PyObject。",
+        "C API 区分<strong>新引用</strong>（要 DECREF）与<strong>借用引用</strong>（不可 DECREF）。",
+        "<code>PyArg_ParseTuple</code> 是参数层的\"类型注解\"；返回 NULL 即抛异常。",
+        "Python 层的不可变性、别名共享，在 C 层都是显式的指针操作。"
+      ]
+    }
+  ],
+  "prev": "s4-95-embedding",
+  "next": "s5-97-glossary"
+}

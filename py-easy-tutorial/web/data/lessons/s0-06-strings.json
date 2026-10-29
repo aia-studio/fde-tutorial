@@ -1,0 +1,194 @@
+{
+  "id": "s0-06-strings",
+  "order": 6,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "字符串：不可变序列",
+  "concepts": [
+    "str",
+    "slicing",
+    "fstring",
+    "immutability",
+    "split"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "切片、方法、格式化"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "索引与切片"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "常用方法都是返回新字符串"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "不可变意味着什么"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "f-string 是默认选择"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 3.1.2：字符串",
+      "url": "https://docs.python.org/3/tutorial/introduction.html#strings"
+    },
+    {
+      "title": "Library Reference：文本序列类型 str",
+      "url": "https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str"
+    }
+  ],
+  "prereq": [
+    5
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "切片、方法、格式化"
+    },
+    {
+      "type": "p",
+      "html": "字符串是 Python 里最常用的类型，没有之一。它有两个性质决定了所有用法：<strong>是序列</strong>（能索引、能切片、能迭代），<strong>不可变</strong>（任何\"修改\"都产生新字符串）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "索引与切片"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "s = \"Python\"\n\nprint(s[0], s[-1])\nprint(s[1:4])\nprint(s[::-1])\nprint(len(s))",
+      "runnable": true,
+      "editable": true,
+      "expect": "P n\nyth\nnohtyP\n6"
+    },
+    {
+      "type": "p",
+      "html": "切片是 <code>start:stop:step</code>，<strong>含头不含尾</strong>。<code>s[1:4]</code> 取下标 1、2、3。<code>s[::-1]</code> 是最常用的反转写法——step 为负时默认从尾到头。"
+    },
+    {
+      "type": "p",
+      "html": "负索引不是\"从右边数第几个\"的语法糖，它就是 <code>len(s) + i</code>，所以 <code>s[-1]</code> 是最后一个字符。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "常用方法都是返回新字符串"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "raw = \"  Hello, World  \"\n\nprint(raw.strip())\nprint(raw.strip().lower())\nprint(raw.strip().upper())\nprint(raw.strip().replace(\"World\", \"Python\"))\nprint(\"a,b,c\".split(\",\"))\nprint(\"-\".join([\"a\", \"b\", \"c\"]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "Hello, World\nhello, world\nHELLO, WORLD\nHello, Python\n['a', 'b', 'c']\na-b-c"
+    },
+    {
+      "type": "p",
+      "html": "<code>split</code> 和 <code>join</code> 是一对：<code>join</code> 的分隔符在前，被拼接的列表在后，顺序别记反（<code>\",\".join(items)</code> 而不是 <code>items.join(\",\")</code>，后者在 Python 里不存在）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "不可变意味着什么"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "s = \"abc\"\n\ntry:\n    s[0] = \"z\"\nexcept TypeError as exc:\n    print(type(exc).__name__, exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "TypeError 'str' object does not support item assignment"
+    },
+    {
+      "type": "p",
+      "html": "想\"改\"一个字符，只能拼一个新的："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "s = \"abc\"\ns2 = s[:1] + \"z\" + s[2:]\nprint(s)\nprint(s2)",
+      "runnable": true,
+      "editable": true,
+      "expect": "abc\nazc"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "为什么不可变反而是优点",
+      "html": "不可变对象可以安全地共享、可以作为 <code>dict</code> 的键、可以被缓存哈希值。第 9 课会看到：可变对象不能当键，正是因为哈希值会变。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "f-string 是默认选择"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "name = \"世界\"\npi = 3.14159\n\nprint(f\"你好，{name}！\")\nprint(f\"{pi:.2f}\")\nprint(f\"{42:>5}|\")\nprint(f\"{0.256:.1%}\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "你好，世界！\n3.14\n   42|\n25.6%"
+    },
+    {
+      "type": "p",
+      "html": "格式说明符跟在冒号后面：<code>.2f</code> 两位小数、<code>&gt;5</code> 右对齐占 5 格、<code>.1%</code> 百分比一位小数。这套语法值得花十分钟翻一遍文档——<code>str.format()</code> 和 <code>%</code> 都属于\"见得到但不必写\"的旧写法。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>\"abcdef\"[1:4]</code> 的结果是？",
+      "options": [
+        "abcd",
+        "bcd",
+        "bcde",
+        "bcdef"
+      ],
+      "answer": 1,
+      "explain": "切片含头不含尾，取下标 1、2、3，即 b、c、d。要包含下标 4 得写 [1:5]。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "字符串是序列：索引、切片、迭代都支持，切片含头不含尾。",
+        "所有\"修改\"方法都返回新字符串，原对象不变。",
+        "<code>split</code> / <code>join</code> 配对使用，<code>join</code> 的调用者是分隔符。",
+        "格式化优先用 f-string，格式说明符写在冒号后。"
+      ]
+    }
+  ],
+  "prev": "s0-05-floating-point",
+  "next": "s0-07-bytes"
+}

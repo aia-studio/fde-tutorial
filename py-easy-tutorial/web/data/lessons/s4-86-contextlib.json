@@ -1,0 +1,151 @@
+{
+  "id": "s4-86-contextlib",
+  "order": 86,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "contextlib 全家桶",
+  "concepts": [
+    "ExitStack",
+    "redirect_stdout",
+    "closing",
+    "reentrant"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "contextmanager 之外的四件武器"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "ExitStack：数量不定的资源"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "redirect_stdout：捕获第三方库的输出"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "closing：只有 close 没有 with 的对象"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：contextlib",
+      "url": "https://docs.python.org/3/library/contextlib.html"
+    },
+    {
+      "title": "Library Reference：ExitStack",
+      "url": "https://docs.python.org/3/library/contextlib.html#contextlib.ExitStack"
+    }
+  ],
+  "prereq": [
+    85
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "contextmanager 之外的四件武器"
+    },
+    {
+      "type": "p",
+      "html": "<code>@contextmanager</code> 是最常用的，但 contextlib 还有几件解决\"特殊形状问题\"的工具：动态数量的资源（ExitStack）、捕获输出（redirect_stdout）、只要收尾（closing）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "ExitStack：数量不定的资源"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from contextlib import ExitStack\n\nfiles = [\"a.txt\", \"b.txt\"]\n\nwith ExitStack() as stack:\n    handles = [\n        stack.enter_context(open(name, \"w\", encoding=\"utf-8\"))\n        for name in files\n    ]\n    for handle in handles:\n        handle.write(\"x\")\n\nprint(\"两个文件都已写入并关闭\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "两个文件都已写入并关闭"
+    },
+    {
+      "type": "p",
+      "html": "<code>with open(...) as f1, open(...) as f2:</code> 写法在文件数量<strong>固定</strong>时可用；数量运行时才知道，就该用 <code>ExitStack</code> 动态压栈，退出时按<strong>后进先出</strong>自动关闭。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>redirect_stdout</code>：捕获第三方库的输出"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import io\nfrom contextlib import redirect_stdout\n\nbuffer = io.StringIO()\n\nwith redirect_stdout(buffer):\n    print(\"这行不会出现在控制台\")\n\nprint(\"抓到：\", buffer.getvalue().strip())",
+      "runnable": true,
+      "editable": true,
+      "expect": "抓到： 这行不会出现在控制台"
+    },
+    {
+      "type": "p",
+      "html": "有些库固执地用 <code>print</code> 而不是 logging——<code>redirect_stdout</code> 把它\"骗\"到你的缓冲区里。同族的 <code>redirect_stderr</code>、<code>suppress</code>（第 39 课）是同门。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>closing</code>：只有 close 没有 with 的对象"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from contextlib import closing\n\n\nclass Connection:\n    def __init__(self):\n        self.closed = False\n\n    def close(self):\n        self.closed = True\n\n\nwith closing(Connection()) as conn:\n    print(\"使用连接：\", not conn.closed)\n\nprint(\"连接已关闭：\", conn.closed)",
+      "runnable": true,
+      "editable": true,
+      "expect": "使用连接： True\n连接已关闭： True"
+    },
+    {
+      "type": "p",
+      "html": "Some 对象有 <code>close()</code> 却没实现上下文协议——<code>closing()</code> 给它包一层，退出时自动调 <code>close()</code>。不用为了用 with 而去改别人的类。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>ExitStack</code> 与多个 <code>with</code> 语句（<code>with a as f1, b as f2:</code>）的核心区别是？",
+      "options": [
+        "ExitStack 更快",
+        "ExitStack 支持运行时才知道数量的资源，按后进先出收尾",
+        "ExitStack 可以吞异常",
+        "没有区别，只是写法不同"
+      ],
+      "answer": 1,
+      "explain": "逗号连接的 with 数量在写代码时固定；ExitStack 用循环 enter_context 动态压栈，且退出顺序严格后进先出——与嵌套 with 的语义完全一致。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>ExitStack</code> 处理\"数量运行时才知道\"的资源，LIFO 收尾。",
+        "<code>redirect_stdout/stderr</code> 捕获不守规矩的第三方输出。",
+        "<code>closing()</code> 让只有 <code>close()</code> 的对象接入 with。",
+        "<code>@contextmanager</code> 产出的管理器<strong>不可复用</strong>，重复 with 需重新调用工厂。"
+      ]
+    }
+  ],
+  "prev": "s4-85-exceptions-advanced",
+  "next": "s4-87-iterators-advanced"
+}

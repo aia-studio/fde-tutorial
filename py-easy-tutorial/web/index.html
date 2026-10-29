@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>交互式 Python 教程</title>
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<a class="skip-link" href="#view">跳到正文</a>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#/">
+      <span class="brand-mark">Py</span>
+      <span class="brand-text">
+        <strong>交互式 Python</strong>
+        <small id="brand-sub">本地运行 · 真实执行</small>
+      </span>
+    </a>
+    <nav class="nav" id="nav" aria-label="课程目录"></nav>
+    <div class="side-foot">
+      <div class="foot-info">
+        <span id="progress-text">加载中…</span>
+        <span id="xp-text"></span>
+      </div>
+      <div class="foot-btns">
+        <button class="icon-btn" id="export-btn" title="导出进度" aria-label="导出进度">↓</button>
+        <button class="icon-btn" id="import-btn" title="导入进度" aria-label="导入进度">↑</button>
+        <button class="icon-btn" id="theme-btn" title="切换主题" aria-label="切换主题">◐</button>
+      </div>
+    </div>
+    <input type="file" id="import-file" accept="application/json,.json" hidden>
+  </aside>
+
+  <button class="drawer-btn" id="drawer-btn" aria-label="打开目录">☰</button>
+
+  <main class="main" id="main">
+    <div class="main-inner" id="view">
+      <div class="loading">正在载入…</div>
+    </div>
+    <aside class="toc-rail" id="toc-rail" aria-label="本页目录"></aside>
+  </main>
+</div>
+
+<div class="overlay" id="palette" hidden>
+  <div class="overlay-box" role="dialog" aria-label="搜索">
+    <input id="palette-input" class="palette-input" type="text"
+           placeholder="搜索课程、概念或小节…" autocomplete="off" spellcheck="false">
+    <div class="palette-results" id="palette-results"></div>
+    <div class="overlay-hint"><kbd>↑</kbd><kbd>↓</kbd> 选择 · <kbd>Enter</kbd> 打开 · <kbd>Esc</kbd> 关闭</div>
+  </div>
+</div>
+
+<div class="overlay" id="shortcuts" hidden>
+  <div class="overlay-box" role="dialog" aria-label="快捷键">
+    <h3 class="overlay-title">快捷键</h3>
+    <dl class="keys">
+      <div><dt><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd></dt><dd>运行当前代码块</dd></div>
+      <div><dt><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd></dt><dd>搜索课程与小节</dd></div>
+      <div><dt><kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd></dt><dd>上一课 / 下一课</dd></div>
+      <div><dt><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></dt><dd>在编辑器里缩进 / 反缩进</dd></div>
+      <div><dt><kbd>?</kbd></dt><dd>打开这张表</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>关闭弹层</dd></div>
+    </dl>
+    <div class="overlay-hint">按 <kbd>Esc</kbd> 关闭</div>
+  </div>
+</div>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

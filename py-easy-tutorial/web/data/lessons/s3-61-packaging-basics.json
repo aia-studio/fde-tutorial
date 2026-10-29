@@ -1,0 +1,174 @@
+{
+  "id": "s3-61-packaging-basics",
+  "order": 61,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "打包基础：pyproject 与项目布局",
+  "concepts": [
+    "pyproject",
+    "src layout",
+    "dependencies",
+    "build-system"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "pyproject.toml 是项目的身份证"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "一个最小的 pyproject.toml"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "两种布局，差别在\"测试谁\""
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "依赖怎么写"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python Packaging User Guide：pyproject.toml",
+      "url": "https://packaging.python.org/en/latest/guides/writing-pyproject-toml/"
+    },
+    {
+      "title": "Packaging：src 布局与扁平布局",
+      "url": "https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/"
+    }
+  ],
+  "prereq": [
+    60
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>pyproject.toml</code> 是项目的身份证"
+    },
+    {
+      "type": "p",
+      "html": "从 2021 年起，Python 打包的入口只有一个文件：<code>pyproject.toml</code>。它声明三件事——<strong>怎么构建</strong>（build-system）、<strong>项目是什么</strong>（project）、<strong>工具怎么配置</strong>（tool.*）。setup.py 时代可以翻篇了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "一个最小的 <code>pyproject.toml</code>"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import tomllib\n\npyproject = tomllib.loads(\"\"\"\n[build-system]\nrequires = [\"setuptools>=77\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"mytool\"\nversion = \"0.1.0\"\nrequires-python = \">=3.15\"\ndependencies = [\"rich>=13\"]\n\n[project.scripts]\nmytool = \"mytool.cli:main\"\n\"\"\")\n\nprint(pyproject[\"build-system\"][\"build-backend\"])\nprint(pyproject[\"project\"][\"name\"])\nprint(pyproject[\"project\"][\"scripts\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "setuptools.build_meta\nmytool\n{'mytool': 'mytool.cli:main'}"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>build-system</code>：用什么后端把项目变成可安装的包（还有 hatchling、flit 等）。",
+        "<code>project</code>：名字、版本、Python 版本下限、依赖清单。",
+        "<code>project.scripts</code>：装完后生成 <code>mytool</code> 命令，指向 <code>mytool/cli.py</code> 的 <code>main</code>。"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "两种布局，差别在\"测试谁\""
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "text",
+      "code": "扁平布局（flat）          src 布局（推荐发布用）\nmytool/                   mytool/\n├── pyproject.toml        ├── pyproject.toml\n├── mytool/               ├── src/\n│   ├── __init__.py       │   └── mytool/\n│   └── cli.py            │       ├── __init__.py\n└── tests/                │       └── cli.py\n                          └── tests/",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "扁平布局里，在仓库根目录跑测试时 <code>import mytool</code> 拿到的是<strong>源码目录</strong>，而不是安装后的包——\"本地能跑、装完就坏\"的问题大多源于此。<code>src/</code> 布局强制先安装再测试，测的就是用户会拿到的东西。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "依赖怎么写"
+    },
+    {
+      "type": "table",
+      "head": [
+        "写法",
+        "含义",
+        "例子"
+      ],
+      "rows": [
+        [
+          "<code>rich&gt;=13</code>",
+          "至少 13",
+          "库的最常见写法"
+        ],
+        [
+          "<code>rich&gt;=13,&lt;14</code>",
+          "锁定大版本",
+          "应用锁定依赖"
+        ],
+        [
+          "<code>rich</code>",
+          "任何版本",
+          "基本不用"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "库与应用的策略相反",
+      "html": "<strong>库</strong>（给别人装的）依赖写得宽松（<code>&gt;=13</code>），让使用者自己解冲突；<strong>应用</strong>（自己部署的）依赖锁死（精确版本或 lock 文件），保证部署可复现。把库的依赖写成 <code>==</code> 是发布时的常见事故。"
+    },
+    {
+      "type": "quiz",
+      "question": "为什么要用 <code>src/</code> 布局？",
+      "options": [
+        "import 更快",
+        "强制测试运行「安装后的包」而不是仓库里的源码目录",
+        "setuptools 只支持 src 布局",
+        "避免 pyproject.toml 和代码混淆"
+      ],
+      "answer": 1,
+      "explain": "扁平布局下，仓库根目录在 sys.path 里，import mytool 拿到的是当前目录的源码。src/ 布局让根目录下没有 mytool，必须先安装（pip install -e .）才能导入，测试环境更接近用户。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>pyproject.toml</code> 三段：build-system / project / tool 配置。",
+        "<code>project.scripts</code> 生成命令行入口，指向 <code>模块:函数</code>。",
+        "<code>src/</code> 布局强制\"先安装再测试\"，消灭本地假阳性。",
+        "库依赖宽松、应用依赖锁死，策略相反。"
+      ]
+    }
+  ],
+  "prev": "s3-60-design-patterns",
+  "next": "s3-62-build-wheel"
+}

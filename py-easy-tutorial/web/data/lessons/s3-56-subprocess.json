@@ -1,0 +1,177 @@
+{
+  "id": "s3-56-subprocess",
+  "order": 56,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "子进程与外部命令",
+  "concepts": [
+    "subprocess",
+    "capture_output",
+    "check",
+    "timeout",
+    "shell injection"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "调用外部程序的唯一正道"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "基本用法与返回值"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "check=True：失败要响"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "timeout：别等一个卡死的进程"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "本教程自身的执行引擎也是这么写的"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：subprocess",
+      "url": "https://docs.python.org/3/library/subprocess.html"
+    },
+    {
+      "title": "Tutorial 11.1：subprocess",
+      "url": "https://docs.python.org/3/tutorial/stdlib.html#process-parameters"
+    }
+  ],
+  "prereq": [
+    55
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "调用外部程序的唯一正道"
+    },
+    {
+      "type": "p",
+      "html": "调用别的程序（git、ffmpeg、另一个 Python 脚本）只有一种正确姿势：<code>subprocess.run</code>。老教程里的 <code>os.system</code> 和 <code>os.popen</code> 已经没有存在理由——它们拿不到返回值，还默认经过 shell。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "基本用法与返回值"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import subprocess\nimport sys\n\nresult = subprocess.run(\n    [sys.executable, \"-c\", \"print('来自子进程')\"],\n    capture_output=True,\n    text=True,\n)\nprint(result.returncode)\nprint(result.stdout.strip())",
+      "runnable": true,
+      "editable": true,
+      "expect": "0\n来自子进程"
+    },
+    {
+      "type": "p",
+      "html": "参数是<strong>列表</strong>（程序名 + 各参数），不走 shell，不用拼字符串。<code>capture_output=True</code> 抓下 stdout/stderr，<code>text=True</code> 让它们是 str 而不是 bytes。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>check=True</code>：失败要响"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import subprocess\nimport sys\n\ntry:\n    subprocess.run(\n        [sys.executable, \"-c\", \"raise ValueError('子进程失败')\"],\n        check=True,\n        capture_output=True,\n        text=True,\n    )\nexcept subprocess.CalledProcessError as exc:\n    print(type(exc).__name__, exc.returncode)",
+      "runnable": true,
+      "editable": true,
+      "expect": "CalledProcessError 1"
+    },
+    {
+      "type": "p",
+      "html": "默认 <code>check=False</code>，非零退出码静默通过——<strong>这几乎总是错的</strong>。失败要么抛异常（<code>check=True</code>），要么显式检查 <code>returncode</code>，二选一。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>timeout</code>：别等一个卡死的进程"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import subprocess\nimport sys\n\ntry:\n    subprocess.run(\n        [sys.executable, \"-c\", \"while True: pass\"],\n        timeout=1,\n        capture_output=True,\n    )\nexcept subprocess.TimeoutExpired:\n    print(\"超时终止\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "超时终止"
+    },
+    {
+      "type": "callout",
+      "kind": "danger",
+      "title": "永远不要用 <code>shell=True</code> 拼接用户输入",
+      "html": "<code>subprocess.run(\"git log \" + filename, shell=True)</code> 里，文件名叫 <code>; rm -rf /</code> 就出事了。规则：<strong>参数列表里出现用户输入是安全的，整条命令字符串里出现用户输入就是漏洞</strong>。第 89 课的安全检查专门复盘这一点。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "本教程自身的执行引擎也是这么写的"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import subprocess\nimport sys\n\ncode = 'print(\"你好\")'\nresult = subprocess.run(\n    [sys.executable, \"-s\", \"-B\", \"-u\", \"-c\", code],\n    capture_output=True,\n    text=True,\n    timeout=5,\n)\nprint(result.stdout.strip())",
+      "runnable": true,
+      "editable": true,
+      "expect": "你好"
+    },
+    {
+      "type": "p",
+      "html": "你现在点「运行」看到的每一段输出，都是教程后端用 <code>subprocess.run</code> 起子进程抓回来的——同一个接口，同一套约束。"
+    },
+    {
+      "type": "quiz",
+      "question": "下面哪种写法有命令注入风险（filename 来自用户输入）？",
+      "options": [
+        "subprocess.run(['git', 'log', filename])",
+        "subprocess.run(f'git log {filename}', shell=True)",
+        "subprocess.run(['git', 'log', '--', filename])",
+        "subprocess.run(args_list)"
+      ],
+      "answer": 1,
+      "explain": "shell=True 时整条字符串交给 shell 解释，分号、反引号都是攻击面。列表形式不经 shell，filename 永远只是第二个参数。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>subprocess.run</code> + <strong>列表参数</strong>，不用 <code>os.system</code>，默认不开 shell。",
+        "<code>capture_output=True</code> + <code>text=True</code> 拿字符串；<code>check=True</code> 让失败抛异常。",
+        "长任务必须带 <code>timeout</code>。",
+        "<code>shell=True</code> + 用户输入 = 命令注入，没有例外。"
+      ]
+    }
+  ],
+  "prev": "s3-55-cli",
+  "next": "s3-57-testing-advanced"
+}

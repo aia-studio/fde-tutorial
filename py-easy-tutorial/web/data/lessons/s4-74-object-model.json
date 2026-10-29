@@ -1,0 +1,235 @@
+{
+  "id": "s4-74-object-model",
+  "order": 74,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "对象模型：属性到底从哪来",
+  "concepts": [
+    "type",
+    "object",
+    "__dict__",
+    "attribute lookup",
+    "method binding"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "a.x 背后发生的事"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "实例字典与类字典是两本账"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "类也是对象，类型是 type"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "方法为什么不用手动传 self"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "找不到时才轮到 __getattr__"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "完整查找顺序"
+    },
+    {
+      "anchor": "sec-7",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference §3.2：标准类型层级",
+      "url": "https://docs.python.org/3/reference/datamodel.html#the-standard-type-hierarchy"
+    },
+    {
+      "title": "Language Reference §3.3.2：自定义属性访问",
+      "url": "https://docs.python.org/3/reference/datamodel.html#customizing-attribute-access"
+    }
+  ],
+  "prereq": [
+    34
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>a.x</code> 背后发生的事"
+    },
+    {
+      "type": "p",
+      "html": "<code>a.x</code> 看起来是“取一个字段”，实际上是<strong>一次协议调用</strong>：解释器按固定顺序在实例字典、类字典、以及类的继承链上查找，途中还可能撞上描述符。理解这条链，你才能解释清楚为什么类属性会被实例属性遮蔽、为什么方法调用不用手动传 <code>self</code>、为什么 <code>__slots__</code> 能省内存。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "实例字典与类字典是两本账"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class A:\n    x = \"class\"\n\na = A()\nprint(\"实例字典:\", a.__dict__)\nprint(\"读 a.x :\", a.x)\na.x = \"instance\"\nprint(\"写入后 :\", a.__dict__)\nprint(\"读 a.x :\", a.x)\nprint(\"读 A.x :\", A.x)",
+      "runnable": true,
+      "editable": true,
+      "expect": "实例字典: {}\n读 a.x : class\n写入后 : {'x': 'instance'}\n读 a.x : instance\n读 A.x : class"
+    },
+    {
+      "type": "p",
+      "html": "关键在第三行：<strong>读操作不写实例字典</strong>。<code>a.x</code> 在实例里找不到，就去类里找，找到就返回，不会顺手把值复制到实例上。只有赋值才会在实例字典里建条目，从此遮蔽类属性。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "类也是对象，类型是 <code>type</code>"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "print(type(int))\nprint(type(type))\nprint(isinstance(int, type))\nprint(int.__mro__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "<class 'type'>\n<class 'type'>\nTrue\n(<class 'int'>, <class 'object'>)"
+    },
+    {
+      "type": "p",
+      "html": "<code>type(type)</code> 还是 <code>type</code>——这条自指链到此为止。<code>object</code> 是所有类的基类，<code>type</code> 是所有类的类型，两者互相支撑，构成 Python 对象模型的地基。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "方法为什么不用手动传 self"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class C:\n    def hello(self):\n        return \"hi\"\n\n\nprint(type(C.hello).__name__)\nprint(type(C().hello).__name__)\nprint(C().hello())",
+      "runnable": true,
+      "editable": true,
+      "expect": "function\nmethod\nhi"
+    },
+    {
+      "type": "p",
+      "html": "同一个 <code>hello</code>，从类上取是普通函数，从实例上取变成绑定方法（bound method）。差别在于后者已经把实例“记住”了。"
+    },
+    {
+      "type": "p",
+      "html": "这背后是<strong>描述符协议</strong>：函数本身实现了 <code>__get__</code>，当它作为类属性被访问时，<code>__get__</code> 返回一个把实例绑定进去的可调用对象。所以 <code>C().hello()</code> 等价于 <code>C.hello(C())</code>。"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "为什么这很重要",
+      "html": "你不用记“方法会自动传 self”，只要知道“函数是描述符”。下一课《描述符协议》会把这条机制完整拆开——<code>property</code>、<code>classmethod</code>、<code>staticmethod</code>、<code>__slots__</code> 全都是它的应用。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "找不到时才轮到 <code>__getattr__</code>"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "class D:\n    def __getattr__(self, name):\n        return f\"{name} 不存在，但我不想报错\"\n\n\nd = D()\nprint(d.whatever)\nprint(hasattr(d, \"typo\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "whatever 不存在，但我不想报错\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>__getattr__</code> 只在<strong>常规查找失败之后</strong>才被调用。上面这段代码看着“友好”，实际上很危险：任何拼写错误都会被吞掉，<code>hasattr</code> 对任何名字都返回 <code>True</code>。"
+    },
+    {
+      "type": "callout",
+      "kind": "danger",
+      "title": "不要用它掩盖错误",
+      "html": "需要“可选属性”时，应该抛出 <code>AttributeError</code> 而不是返回字符串。代理对象（proxy）是少数正当场景，记得同时实现 <code>__dir__</code>，否则 <code>dir()</code> 和自动补全会失效。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "完整查找顺序"
+    },
+    {
+      "type": "table",
+      "head": [
+        "顺序",
+        "查什么",
+        "备注"
+      ],
+      "rows": [
+        [
+          "1",
+          "数据描述符（类里实现了 <code>__set__</code>）",
+          "优先级最高，能压过实例字典"
+        ],
+        [
+          "2",
+          "实例 <code>__dict__</code>",
+          "普通属性存这里"
+        ],
+        [
+          "3",
+          "非数据描述符或类属性",
+          "函数、<code>classmethod</code> 在这一层"
+        ],
+        [
+          "4",
+          "<code>__getattr__</code>",
+          "前三步都失败才调用"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<code>__slots__</code> 的作用也能由此解释：它把实例字典换成固定偏移的槽位，省掉 <code>__dict__</code> 的开销，代价是不能动态加属性。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>C().hello()</code> 能正常执行，最根本的原因是？",
+      "options": [
+        "解释器在调用时自动把实例塞进第一个参数",
+        "函数实现了 <code>__get__</code>，从实例访问时返回绑定方法",
+        "<code>self</code> 是 Python 的关键字，由编译器注入",
+        "类会把实例保存为全局变量供方法读取"
+      ],
+      "answer": 1,
+      "explain": "方法是「函数作为类属性被访问」的结果。函数是描述符，<code>__get__</code> 返回把实例绑定进去的 method 对象，调用时再展开成 <code>C.hello(c)</code>。<code>self</code> 不是关键字，只是约定俗成的参数名。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "读属性不写实例字典，只有赋值才写；实例属性遮蔽类属性。",
+        "<code>type</code> 与 <code>object</code> 互为地基，<code>type(type) is type</code>。",
+        "方法是描述符的产物，<code>self</code> 是 <code>__get__</code> 绑定出来的，不是语法魔法。",
+        "<code>__getattr__</code> 是兜底通道，滥用会把拼写错误变成静默 bug。"
+      ]
+    }
+  ],
+  "prev": "s3-73-capstone-cli",
+  "next": "s4-75-descriptors"
+}

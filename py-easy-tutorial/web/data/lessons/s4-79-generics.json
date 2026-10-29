@@ -1,0 +1,161 @@
+{
+  "id": "s4-79-generics",
+  "order": 79,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "泛型与型变",
+  "concepts": [
+    "generic class",
+    "covariance",
+    "contravariance",
+    "Self",
+    "bounds"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "容器的类型怎么\"传下去\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "泛型类：PEP 695 语法"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "约束与有界类型"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "型变：容器之间的关系"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "PEP 695：泛型语法",
+      "url": "https://peps.python.org/pep-0695/"
+    },
+    {
+      "title": "Library Reference：typing",
+      "url": "https://docs.python.org/3/library/typing.html"
+    }
+  ],
+  "prereq": [
+    78
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "容器的类型怎么\"传下去\""
+    },
+    {
+      "type": "p",
+      "html": "<code>list[int]</code> 里的 <code>int</code> 是怎么生效的？泛型类自己声明类型参数，静态检查器据此追踪\"放进去了什么、拿出来是什么\"。这一课讲泛型类与<strong>型变</strong>——注解体系里最理论、也最容易写错的一段。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "泛型类：PEP 695 语法"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Stack[T]:\n    def __init__(self) -> None:\n        self._items: list[T] = []\n\n    def push(self, item: T) -> None:\n        self._items.append(item)\n\n    def pop(self) -> T:\n        return self._items.pop()\n\n\ns = Stack[int]()\ns.push(1)\ns.push(\"不是整数\")\nprint(s.pop(), type(s.pop()).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "不是整数 int"
+    },
+    {
+      "type": "p",
+      "html": "注意：运行时照常执行（\"不是整数\"也被塞进去），类型错误只被静态检查器报告。<code>Stack[int]()</code> 在运行时做的事是\"标记\"，真正的价值在 mypy/pyright 的输出里。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "约束与有界类型"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Comparable[T]:\n    def __lt__(self, other: \"Comparable[T]\") -> bool: ...\n    def __gt__(self, other: \"Comparable[T]\") -> bool: ...\n\n\ndef largest[T: Comparable](items: list[T]) -> T:\n    return max(items)\n\n\nprint(largest([3, 1, 2]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "3"
+    },
+    {
+      "type": "p",
+      "html": "<code>T: Comparable</code> 是<strong>有界类型变量</strong>：要求 T 支持比较运算，<code>max</code> 才合法。没有界的话，检查器无法保证 <code>max</code> 能工作。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "型变：容器之间的关系"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "text",
+      "code": "协变（covariant）  ：产出方。list[Dog] 可以当作 list[Animal] 用吗？→ 不可变序列可以。\n逆变（contravariant）：消费方。接收 Animal 的函数，能接收 Dog 吗？→ 可以。\n不变（invariant）  ：可读可写。list 是不变的——写入会破坏类型安全。",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "class Animal: ...\nclass Dog(Animal): ...\n\n\ndef feed(animals: list[Animal]) -> None: ...\ndogs: list[Dog] = [Dog()]\n\n# mypy 会报错：list 是不变的，list[Dog] 不能当 list[Animal] 传\n# 修正：把参数声明为「只读序列」\nfrom collections.abc import Sequence\n\ndef feed_2(animals: Sequence[Animal]) -> None: ...\nfeed_2(dogs)\nprint(\"Sequence 是协变的，传 list[Dog] 合法\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "Sequence 是协变的，传 list[Dog] 合法"
+    },
+    {
+      "type": "p",
+      "html": "规则一句话：<strong>只读的容器可以协变（用 <code>Sequence</code>），可写的容器是不变的（<code>list</code>），函数参数是逆变的。</strong> 声明接口时选对容器，类型系统才不会逼你到处 cast。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>def feed(animals: list[Animal])</code> 不能接收 <code>list[Dog]</code> 的根本原因是？",
+      "options": [
+        "Dog 和 Animal 不兼容",
+        "list 可写：函数里可能 append 一只 Cat，破坏调用方的 list[Dog] 约定",
+        "list 的实现不支持继承",
+        "这是 mypy 的保守设计，与类型安全无关"
+      ],
+      "answer": 1,
+      "explain": "如果允许，函数内 animals.append(Cat()) 是合法的（Cat 也是 Animal），但调用方手里的 list[Dog] 里从此混入了 Cat。所以可写容器必须是「不变」的；只读场景用 Sequence（协变）即可。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>class Stack[T]</code> 声明类型参数；静态检查追踪元素类型，运行时不拦截。",
+        "<code>T: Bound</code> 要求类型变量具备某种能力（如可比较）。",
+        "只读容器协变（<code>Sequence</code>）、可写容器不变（<code>list</code>）、参数逆变。",
+        "容器选型（list vs Sequence）本身就是类型设计的一部分。"
+      ]
+    }
+  ],
+  "prev": "s4-78-mro",
+  "next": "s4-80-generators-advanced"
+}

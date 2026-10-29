@@ -1,0 +1,184 @@
+{
+  "id": "s2-45-sorting",
+  "order": 45,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "排序与比较",
+  "concepts": [
+    "sorted",
+    "key",
+    "itemgetter",
+    "stability",
+    "total_ordering"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "sorted 一招，key 是全部"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "多级排序：key 返回元组"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "稳定性：同 key 保持原顺序"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "itemgetter：比 lambda 快一点、短一点"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "total_ordering：只写两个比较"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "HOWTO：排序",
+      "url": "https://docs.python.org/3/howto/sorting.html"
+    },
+    {
+      "title": "Library Reference：operator",
+      "url": "https://docs.python.org/3/library/operator.html"
+    }
+  ],
+  "prereq": [
+    43
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "sorted 一招，key 是全部"
+    },
+    {
+      "type": "p",
+      "html": "<code>sorted(seq, key=f)</code> 里 <code>key</code> 决定\"用什么比\"。绝大多数排序难题，答案都是换一个更好的 key，而不是手写比较循环。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "多级排序：key 返回元组"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "rows = [(\"b\", 2), (\"a\", 3), (\"a\", 1), (\"b\", 1)]\n\nprint(sorted(rows))\nprint(sorted(rows, key=lambda r: (r[0], r[1])))\nprint(sorted(rows, key=lambda r: r[1], reverse=True))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[('a', 1), ('a', 3), ('b', 1), ('b', 2)]\n[('a', 1), ('a', 3), ('b', 1), ('b', 2)]\n[('a', 3), ('b', 2), ('a', 1), ('b', 1)]"
+    },
+    {
+      "type": "p",
+      "html": "元组按位置逐个比较，天然支持\"先按姓名、再按分数\"。<strong>降序与升序混用</strong>时（比如按分数降序、同分按名字升序），<code>reverse=True</code> 会把整个 key 反转——这时用\"数值取负\"技巧："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "rows = [(\"a\", 3), (\"b\", 2), (\"a\", 1)]\nprint(sorted(rows, key=lambda r: (-r[1], r[0])))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[('a', 3), ('b', 2), ('a', 1)]"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "稳定性：同 key 保持原顺序"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "data = [(\"a\", 2), (\"b\", 1), (\"a\", 1)]\nprint(sorted(data, key=lambda r: r[1]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[('b', 1), ('a', 1), ('a', 2)]"
+    },
+    {
+      "type": "p",
+      "html": "Python 的排序是<strong>稳定</strong>的：key 相同的元素保持原有相对顺序。两条 \"a,2\" 与 \"a,1\" 按分数排后，\"a,2\" 仍在前（它原本就在前）。稳定排序意味着<strong>可以多次排序叠加</strong>：先按次键排，再按主键排。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>itemgetter</code>：比 lambda 快一点、短一点"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from operator import itemgetter, attrgetter, mul\nfrom functools import reduce\n\nrows = [(\"a\", 3), (\"b\", 1)]\nprint(sorted(rows, key=itemgetter(1)))\nprint(reduce(mul, [1, 2, 3, 4]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[('b', 1), ('a', 3)]\n24"
+    },
+    {
+      "type": "p",
+      "html": "<code>itemgetter(1)</code> 等价于 <code>lambda r: r[1]</code>，支持多键 <code>itemgetter(0, 1)</code>；处理对象属性用 <code>attrgetter(\"x\", \"y\")</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>total_ordering</code>：只写两个比较"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "from functools import total_ordering\n\n\n@total_ordering\nclass Version:\n    def __init__(self, n):\n        self.n = n\n\n    def __eq__(self, other):\n        return self.n == other.n\n\n    def __lt__(self, other):\n        return self.n < other.n\n\n\nprint(sorted([Version(3), Version(1), Version(2)], key=lambda v: v.n)[0].n)\nprint(Version(1) <= Version(2))",
+      "runnable": true,
+      "editable": true,
+      "expect": "1\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "只实现 <code>__eq__</code> 和 <code>__lt__</code>，装饰器推导出 <code>&lt;=</code>、<code>&gt;</code>、<code>&gt;=</code>。自己写全六个方法容易漏且不一致，<code>total_ordering</code> 是数据模型课（第 25 课 <code>__eq__</code>/<code>__hash__</code>）的延伸。"
+    },
+    {
+      "type": "quiz",
+      "question": "想「按分数降序，同分按姓名升序」，正确的 key 是？",
+      "options": [
+        "lambda r: (r[1], r[0]), reverse=True",
+        "lambda r: (-r[1], r[0])",
+        "sorted 两次，先姓名后分数",
+        "lambda r: r[1] * -1"
+      ],
+      "answer": 1,
+      "explain": "reverse=True 会把整个 key 反转，姓名也会倒序。分数取负后用升序，姓名保持自然升序——这是混合方向排序的标准写法。也可以排两次并依赖稳定性。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>key</code> 返回元组实现多级排序；混用升降序时用\"取负\"技巧。",
+        "排序是稳定的：同 key 保持原顺序，多次排序可叠加。",
+        "<code>itemgetter</code> / <code>attrgetter</code> 替代简单 lambda。",
+        "数据类需要完整比较时用 <code>total_ordering</code>，别手写六个方法。"
+      ]
+    }
+  ],
+  "prev": "s2-44-collections",
+  "next": "s2-46-typing-basics"
+}

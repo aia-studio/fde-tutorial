@@ -1,0 +1,100 @@
++++
+id = "s5-102-version-features"
+order = 102
+stage = "s5"
+official_group = "general"
+title = "新版本特性 3.10–3.15"
+concepts = ["3.10 match", "3.11 except*", "3.12 generics", "3.14 t-string", "3.15"]
+prereq = [83]
+requires_python = "3.15"
+allow_network = false
+xp = 20
+
+[[doc_refs]]
+title = "What's New in Python 3.15"
+url = "https://docs.python.org/3/whatsnew/3.15.html"
+
+[[doc_refs]]
+title = "What's New 索引（全部版本）"
+url = "https://docs.python.org/3/whatsnew/index.html"
++++
+
+# 近六个版本，六张面孔
+
+维护旧代码要认识旧语法，写新代码要用新武器。这一课把 3.10–3.15 的核心特性串成时间线——全部在本教程正文里出现过，这里做一次集中复验。
+
+## 特性时间线
+
+| 版本 | 特性 | 详见课程 |
+|---|---|---|
+| 3.10 | `match` 结构化模式匹配 | 第 11 课 |
+| 3.11 | `ExceptionGroup` / `except*` | 第 85 课 |
+| 3.11 | 自适应解释器（性能大跃进） | 第 83 课 |
+| 3.12 | PEP 695 泛型语法 | 第 79 课 |
+| 3.14 | t-string（PEP 750）、延迟注解求值 | 第 20、90 课 |
+| 3.15 | 错误消息持续友好化 | 全程可见 |
+
+## 现场复验：你已经在用它们
+
+```python
+import sys
+
+print(sys.version_info[:2] >= (3, 15))
+```
+
+```expect
+True
+```
+
+```python
+# 3.12：泛型函数不再需要 TypeVar 样板
+def first[T](items: list[T]) -> T | None:
+    return items[0] if items else None
+
+
+print(first([1, 2]), first([]))
+```
+
+```expect
+1 None
+```
+
+```python
+# 3.14：t-string 返回 Template 对象，而不是拼好的字符串
+name = "Ada"
+template = t"用户 {name}"
+print(type(template).__name__)
+print(getattr(template, "strings", None))
+```
+
+```expect
+Template
+('用户 ', '')
+```
+
+t-string 与 f-string 的差别：f-string **立刻求值**返回 str；t-string 返回一个**模板对象**（静态部分与插值分开），由下游决定怎么渲染——HTML 转义、SQL 参数化从此有了语言级工具。
+
+## 读 What's New 的方法
+
+每版 What's New 分三段：**What's New（用户可见变化）**、**Improved Modules（逐模块列表）**、**Deprecated（将移除清单）**。升级前必读第三段——你的代码可能正好用了将被移除的 API。
+
+> [!tip] 升级策略
+> 生产环境跟随「最新次版本」（如 3.15.2 = 3.15.0 + 两个补丁），而不是首版。次版本只含修复，风险最小。教程正文演示的输出也全部基于 3.15 次版本实测。
+
+```quiz
+question = "`t\"用户 {name}\"` 与 `f\"用户 {name}\"` 的本质区别是？"
+options = [
+  "没有区别，t 是 f 的别名",
+  "t-string 返回模板对象（静态串与插值分离），f-string 直接返回拼接结果",
+  "t-string 只能用于 HTML",
+  "t-string 会自动翻译文本"
+]
+answer = 1
+explain = "f-string 在求值时拼接成 str；t-string（PEP 750）返回 Template 对象，插值与字面量分开保存，由渲染方决定是否转义——模板引擎与 SQL 拼接因此有了统一的安全出口。"
+```
+
+## 小结
+
+- 3.10 `match` → 3.11 异常组 → 3.12 泛型语法 → 3.14 t-string 与延迟注解 → 3.15 持续友好化。
+- 本教程正文已全部使用这些新语法，无需兼容旧版本。
+- 升级前读 What's New 的 Deprecated 段；生产跟随最新次版本。

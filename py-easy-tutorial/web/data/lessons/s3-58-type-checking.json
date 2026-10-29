@@ -1,0 +1,210 @@
+{
+  "id": "s3-58-type-checking",
+  "order": 58,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "类型检查实战",
+  "concepts": [
+    "mypy",
+    "pyright",
+    "strict",
+    "type guard",
+    "cast"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "检查器是另一个\"读者\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "检查器抓什么"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "Optional 的纪律"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "cast：告诉检查器\"我比你懂\""
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "strict 模式与渐进策略"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：typing",
+      "url": "https://docs.python.org/3/library/typing.html"
+    },
+    {
+      "title": "mypy 文档",
+      "url": "https://mypy.readthedocs.io/"
+    }
+  ],
+  "prereq": [
+    57
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "检查器是另一个\"读者\""
+    },
+    {
+      "type": "p",
+      "html": "注解本身不检查（第 46 课），检查是 mypy / pyright 的工作。这一课不装工具、不跑命令——用<strong>眼力</strong>读检查器的报错，把静态检查的思维方式建立起来。真实项目里只要加一条 CI 命令，这些眼力就会自动变成防线。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "检查器抓什么"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def total(nums: list[int]) -> int:\n    return sum(nums)\n\n\nprint(total([1, 2, 3]))\ntry:\n    total(\"123\")\nexcept TypeError as exc:\n    print(\"运行时：\", exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "6\n运行时： unsupported operand type(s) for +: 'int' and 'str'"
+    },
+    {
+      "type": "p",
+      "html": "mypy 会报 incompatible type；而且这一次<strong>运行时也真的炸了</strong>——静态检查的价值是让你在运行之前就看到问题，而不是靠用户当测试员。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "Optional 的纪律"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def find(uid: int) -> str | None:\n    return {1: \"Ada\"}.get(uid)\n\n\nname = find(2)\ntry:\n    print(name.upper())\nexcept AttributeError as exc:\n    print(\"运行时：\", type(exc).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "运行时： AttributeError"
+    },
+    {
+      "type": "p",
+      "html": "修法是把 None 分支写出来："
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def find(uid: int) -> str | None:\n    return {1: \"Ada\"}.get(uid)\n\n\nname = find(2)\nif name is not None:\n    print(name.upper())\nelse:\n    print(\"查无此人\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "查无此人"
+    },
+    {
+      "type": "p",
+      "html": "这个模式叫 <strong>type narrowing（类型收窄）</strong>：<code>is None</code> 判断之后，检查器知道分支里 <code>name</code> 一定是 <code>str</code>。第 10 课的\"用 is 判断 None\"在这里兑现了全部价值。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "cast：告诉检查器\"我比你懂\""
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from typing import cast\n\n\ndef load(raw: dict[str, object]) -> int:\n    return cast(int, raw[\"count\"]) + 1\n\n\nprint(load({\"count\": 0}))",
+      "runnable": true,
+      "editable": true,
+      "expect": "1"
+    },
+    {
+      "type": "p",
+      "html": "<code>raw[\"count\"]</code> 的静态类型是 <code>object</code>，直接加 1 会被拦。<code>cast(int, ...)</code> 是给检查器的<strong>断言</strong>，运行时就是一次普通表达式，零开销。它和 <code>assert isinstance(...)</code> 不同：后者是运行时验证，前者是纯声明。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "cast 是签字画押",
+      "html": "cast 不会检查任何东西——类型错了检查器也信你。规则：cast 只能出现在\"类型系统表达不了但你确知正确\"的位置，每处 cast 都该有一行注释说明为什么安全。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "strict 模式与渐进策略"
+    },
+    {
+      "type": "table",
+      "head": [
+        "策略",
+        "做法",
+        "适合"
+      ],
+      "rows": [
+        [
+          "宽松起步",
+          "默认模式，只查函数签名内的问题",
+          "存量代码"
+        ],
+        [
+          "逐步收紧",
+          "对新文件开 strict（per-module 配置）",
+          "团队渐进迁移"
+        ],
+        [
+          "全面严格",
+          "<code>strict = true</code>，未标注的函数也算错",
+          "新项目"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "新项目直接 <code>strict = true</code> 是最省事的路线：第一天就不欠债。"
+    },
+    {
+      "type": "quiz",
+      "question": "下面哪一处运行时会抛异常？",
+      "options": [
+        "total(\"123\")，total 声明接收 list[int]",
+        "find(2).upper()，find 返回 str | None 且实际返回 None",
+        "cast(int, raw['count']) 但 raw['count'] 是字符串",
+        "以上都不会，除非运行时逻辑本身出错"
+      ],
+      "answer": 1,
+      "explain": "A 能跑（sum 可接收字符串），C 的 cast 是零开销声明，都只在静态检查时报错。B 中 None 上调 .upper() 是真正的 AttributeError——静态检查能提前抓到它。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "mypy/pyright 抓\"参数类型与声明不符\"和\"None 上调属性\"两类高价值问题。",
+        "<code>is None</code> 收窄类型；<code>X | None</code> 返回值必须处理 None 分支。",
+        "<code>cast</code> 是零开销断言，每处都要有理由。",
+        "新项目直接开 strict；存量项目按文件渐进。"
+      ]
+    }
+  ],
+  "prev": "s3-57-testing-advanced",
+  "next": "s3-59-security"
+}

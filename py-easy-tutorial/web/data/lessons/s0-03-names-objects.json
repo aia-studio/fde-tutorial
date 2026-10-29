@@ -1,0 +1,212 @@
+{
+  "id": "s0-03-names-objects",
+  "order": 3,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "名字与对象：变量到底是什么",
+  "concepts": [
+    "variable",
+    "binding",
+    "reference",
+    "id",
+    "mutability"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "变量不是盒子，是标签"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "两个名字，一个对象"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "重新赋值 ≠ 修改对象"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "为什么这件事值得单独一课"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference §3.1：对象、值与类型",
+      "url": "https://docs.python.org/3/reference/datamodel.html#objects-values-and-types"
+    },
+    {
+      "title": "Tutorial 3.2：初探 Python",
+      "url": "https://docs.python.org/3/tutorial/introduction.html"
+    }
+  ],
+  "prereq": [
+    2
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "变量不是盒子，是标签"
+    },
+    {
+      "type": "p",
+      "html": "如果你从 C 或 Java 过来，\"变量\"这个词会带来一个错误的心理模型：盒子，里面装着值。Python 不是这样。<strong>名字只是贴在对象上的标签</strong>，赋值就是把标签揭下来贴到另一个对象上。这一课把这个模型钉死，后面讲可变对象、函数传参、默认参数陷阱时才不会反复摔跤。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "两个名字，一个对象"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "a = [1, 2]\nb = a\n\nb.append(3)\nprint(a)\nprint(a is b)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 2, 3]\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "修改 <code>b</code> 却让 <code>a</code> 也变了，因为<strong>根本没有两个列表</strong>。<code>a</code> 和 <code>b</code> 是同一个对象的两个名字。<code>is</code> 判断的正是\"是不是同一个对象\"，而不是\"长得一样不一样\"。"
+    },
+    {
+      "type": "p",
+      "html": "想复制一份，得明确说要复制："
+    },
+    {
+      "type": "step",
+      "title": "单步看：b = a 之后发生了什么",
+      "code": "a = [1, 2]\nb = a\nb.append(3)\nprint(a)\n"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "a = [1, 2]\nc = a.copy()\n\nprint(a == c)\nprint(a is c)\n\nc.append(3)\nprint(a)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse\n[1, 2]"
+    },
+    {
+      "type": "p",
+      "html": "<code>==</code> 比较内容，<code>is</code> 比较身份。复制出来的列表内容相同、身份不同，所以改 <code>c</code> 不会影响 <code>a</code>。这两个符号混用是新手最常见的 bug 来源，第 10 课会专门拆开讲。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "重新赋值 ≠ 修改对象"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "x = 1\ny = x\nx = x + 1\n\nprint(x, y)",
+      "runnable": true,
+      "editable": true,
+      "expect": "2 1"
+    },
+    {
+      "type": "p",
+      "html": "这里 <code>y</code> 没跟着变，因为 <code>x = x + 1</code> 做的是\"算出一个新整数 2，把 x 这个标签贴过去\"。整数不可变，所以<strong>不可能</strong>出现\"改了 x 顺便改了 y\"的情况。"
+    },
+    {
+      "type": "p",
+      "html": "对比上面两个列表的例子："
+    },
+    {
+      "type": "table",
+      "head": [
+        "操作",
+        "发生了什么",
+        "其他名字受影响吗"
+      ],
+      "rows": [
+        [
+          "<code>b.append(3)</code>",
+          "原地修改那个列表",
+          "会，因为共用同一个对象"
+        ],
+        [
+          "<code>x = x + 1</code>",
+          "创建新对象并重新绑定",
+          "不会"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "一句话：<strong>可变对象能原地改，不可变对象只能换新的。</strong>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "为什么这件事值得单独一课"
+    },
+    {
+      "type": "p",
+      "html": "因为函数传参就是这个模型："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "def add_item(items):\n    items.append(\"新元素\")\n\n\nbox = [\"原有\"]\nadd_item(box)\nprint(box)",
+      "runnable": true,
+      "editable": true,
+      "expect": "['原有', '新元素']"
+    },
+    {
+      "type": "p",
+      "html": "参数 <code>items</code> 拿到的是同一个列表的另一个标签，不是副本。所以函数里的 <code>append</code> 会改到外面的 <code>box</code>。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "这是特性，不是缺陷",
+      "html": "\"函数改了我的数据\" 的抱怨，几乎都源于没意识到这一点。要么在函数里 <code>.copy()</code> 再改，要么干脆返回一个新对象——别指望 Python 替你复制。"
+    },
+    {
+      "type": "quiz",
+      "question": "执行 <code>a = [1, 2]</code> 后 <code>b = a</code>，再执行 <code>b += [3]</code>，此时 <code>a</code> 是什么？",
+      "options": [
+        "[1, 2]，因为 b 是新列表",
+        "[1, 2, 3]，因为 a 和 b 指向同一个列表",
+        "[3]，因为 += 会覆盖",
+        "报错：列表不支持 +="
+      ],
+      "answer": 1,
+      "explain": "<code>b = a</code> 让两个名字指向同一个列表对象。<code>+=</code> 对列表是原地扩展（等价于 extend），所以 a 看到的也是 [1, 2, 3]。注意：<code>b = b + [3]</code> 才是创建新列表。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "赋值是<strong>绑定名字</strong>，不是复制值。",
+        "<code>is</code> 看身份，<code>==</code> 看内容；混用会出隐蔽 bug。",
+        "可变对象（list/dict/set）能原地改，不可变对象（int/str/tuple）只能换新的。",
+        "函数参数传的是对象引用，改不改得到外面，取决于对象可不可变。"
+      ]
+    }
+  ],
+  "prev": "s0-02-docs-map",
+  "next": "s0-04-numbers"
+}

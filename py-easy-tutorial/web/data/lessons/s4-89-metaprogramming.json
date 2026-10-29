@@ -1,0 +1,134 @@
+{
+  "id": "s4-89-metaprogramming",
+  "order": 89,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "元编程实战",
+  "concepts": [
+    "dynamic class",
+    "registry",
+    "plugin system",
+    "__init_subclass__"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "写代码的代码"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "type 动态建类"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "插件系统：钩子 + 注册表 + 统一入口"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：type 动态创建类",
+      "url": "https://docs.python.org/3/library/functions.html#type"
+    },
+    {
+      "title": "Tutorial 9.10：元类",
+      "url": "https://docs.python.org/3/tutorial/classes.html#metaclasses"
+    }
+  ],
+  "prereq": [
+    88
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "写代码的代码"
+    },
+    {
+      "type": "p",
+      "html": "元编程 = <strong>用代码生成/注册/改造代码</strong>。前几课的钩子（<code>__init_subclass__</code>、描述符）都是它的零件，这一课把零件装配成真实的插件系统。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>type</code> 动态建类"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def make_model(name: str, fields: list[str]):\n    def __init__(self, **kwargs):\n        for field in fields:\n            setattr(self, field, kwargs.get(field))\n\n    return type(name, (), {\"__init__\": __init__})\n\n\nUser = make_model(\"User\", [\"name\", \"age\"])\nu = User(name=\"Ada\", age=36)\nprint(u.name, u.age)",
+      "runnable": true,
+      "editable": true,
+      "expect": "Ada 36"
+    },
+    {
+      "type": "p",
+      "html": "<code>type(名字, 基类元组, 属性字典)</code> 与 <code>class</code> 语句完全等价。字段来自运行时数据（用户输入、数据库 schema）时，动态建类是唯一选择。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "插件系统：钩子 + 注册表 + 统一入口"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Plugin:\n    \"\"\"基类：定义接口 + 自动注册。\"\"\"\n    registry: dict[str, type[\"Plugin\"]] = {}\n    name = \"plugin\"\n\n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        Plugin.registry[cls.name] = cls\n\n    def run(self, data: dict) -> str:\n        raise NotImplementedError\n\n\nclass Upper(Plugin):\n    name = \"upper\"\n\n    def run(self, data):\n        return data[\"text\"].upper()\n\n\nclass Reverse(Plugin):\n    name = \"reverse\"\n\n    def run(self, data):\n        return data[\"text\"][::-1]\n\n\ndef process(kind: str, text: str) -> str:\n    plugin = Plugin.registry[kind]()\n    return plugin.run({\"text\": text})\n\n\nprint(process(\"upper\", \"hello\"))\nprint(process(\"reverse\", \"hello\"))\nprint(sorted(Plugin.registry))",
+      "runnable": true,
+      "editable": true,
+      "expect": "HELLO\nolleh\n['reverse', 'upper']"
+    },
+    {
+      "type": "p",
+      "html": "三层分工：<strong>基类</strong>定义接口与注册表（<code>__init_subclass__</code> 自动登记）；<strong>子类</strong>只声明 <code>name</code> 与 <code>run</code>；<strong>入口函数</strong>按名字取插件。新增一种处理方式 = 增加一个子类，<code>process</code> 一行不改。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "元编程的可读性代价",
+      "html": "插件系统让\"谁会被调用\"变成运行时才能回答的问题——IDE 跳转、静态检查都变弱。规则：<strong>注册入口必须唯一且显式</strong>（这里是 <code>Plugin.registry</code>），并在注册表旁边写清有哪些插件。魔法可以被理解，但不可以被隐藏。"
+    },
+    {
+      "type": "quiz",
+      "question": "插件系统里 <code>__init_subclass__</code> 替代了传统写法中的哪一步？",
+      "options": [
+        "替代了每个插件手写 @register 装饰器",
+        "替代了 run 方法的实现",
+        "替代了插件的单元测试",
+        "替代了 import 语句"
+      ],
+      "answer": 0,
+      "explain": "__init_subclass__ 在子类定义时自动执行注册，等于把「装饰器登记」这一步内置到基类。子类只需继承，忘写装饰器这种事故不再可能。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>type(name, bases, ns)</code> 动态建类，字段可来自运行时数据。",
+        "插件系统 = 接口基类 + <code>__init_subclass__</code> 自动注册 + 统一入口。",
+        "注册入口必须唯一显式，否则魔法失控。",
+        "元编程的收益是消灭重复代码，代价是静态可见性。"
+      ]
+    }
+  ],
+  "prev": "s4-88-serialization",
+  "next": "s4-90-annotations-runtime"
+}

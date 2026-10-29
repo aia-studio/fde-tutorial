@@ -1,0 +1,157 @@
+{
+  "id": "s3-62-build-wheel",
+  "order": 62,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "构建、wheel 与入口点",
+  "concepts": [
+    "sdist",
+    "wheel",
+    "entry points",
+    "versioning"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "两种产物：源码包和轮子"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "wheel 里装的是什么"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "入口点：装完就能敲命令"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "版本号：语义化 + 上限"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python Packaging User Guide：构建分发包",
+      "url": "https://packaging.python.org/en/latest/tutorials/packaging-projects/"
+    },
+    {
+      "title": "Library Reference：importlib.metadata",
+      "url": "https://docs.python.org/3/library/importlib.metadata.html"
+    }
+  ],
+  "prereq": [
+    61
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "两种产物：源码包和轮子"
+    },
+    {
+      "type": "p",
+      "html": "<code>python -m build</code> 会产出两样东西：<code>*.tar.gz</code>（<strong>sdist</strong>，源码包）和 <code>*.whl</code>（<strong>wheel</strong>，预构建包）。pip 优先装 wheel——不用在用户机器上跑构建，快且不易出错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "wheel 里装的是什么"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "text",
+      "code": "mytool-0.1.0-py3-none-any.whl     ← zip 压缩包\n├── mytool/\n│   ├── __init__.py\n│   └── cli.py\n├── mytool-0.1.0.dist-info/\n│   ├── METADATA                  ← 项目元信息\n│   ├── entry_points.txt          ← 命令行入口\n│   └── RECORD                    ← 文件清单与哈希",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "<code>py3-none-any</code> 的意思是：纯 Python（py3）、不挑平台（none-any）。含 C 扩展的包会是 <code>cp315-cp315-win_amd64</code>——按解释器版本和平台各出一个 wheel。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "入口点：装完就能敲命令"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from importlib.metadata import entry_points\n\neps = list(entry_points(group=\"console_scripts\"))\nprint(len(eps) > 0)\n\nnames = sorted(ep.name for ep in eps)\nprint(\"pip\" in names)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "本机已安装的包全都暴露在 <code>entry_points</code> 里——<code>pip</code>、<code>pytest</code> 这些命令就是这么来的。你自己在 <code>project.scripts</code> 里声明的入口，装完之后也会出现在这里，<code>importlib.metadata</code> 还能在运行时反查。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "版本号：语义化 + 上限"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class V:\n    def __init__(self, s):\n        self.parts = tuple(int(x) for x in s.split(\".\"))\n\n    def __lt__(self, other):\n        return self.parts < other.parts\n\n\nprint(V(\"0.10.0\") > V(\"0.9.0\"))\nprint(\"0.10.0\" > \"0.9.0\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse"
+    },
+    {
+      "type": "p",
+      "html": "版本号要<strong>数字比较</strong>而不是字符串比较——字符串比较里 <code>\"0.10.0\" &lt; \"0.9.0\"</code>，这就是为什么不手写版本比较、也不把版本号当字符串排序。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "构建产物不进仓库",
+      "html": "<code>dist/</code>、<code>*.egg-info/</code>、<code>build/</code> 都写进 <code>.gitignore</code>。仓库里只有源码与 <code>pyproject.toml</code>，产物每次从源码重新构建——二进制与源码不同步是发布事故的经典来源。"
+    },
+    {
+      "type": "quiz",
+      "question": "pip 优先安装 wheel 而不是 sdist 的主要原因是？",
+      "options": [
+        "wheel 体积更小",
+        "wheel 是预构建的，不需要在用户机器上执行构建过程",
+        "sdist 不包含代码",
+        "wheel 支持 Python 2"
+      ],
+      "answer": 1,
+      "explain": "装 sdist 要在用户环境执行构建（可能需要编译器、网络下载构建依赖），失败面大；wheel 解压即用。这也是「发布时 wheel 缺失，用户构建失败」问题的根源。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>python -m build</code> 产出 sdist 与 wheel；pip 优先 wheel。",
+        "wheel 内含 <code>dist-info</code>：元数据、入口点、文件清单。",
+        "<code>importlib.metadata</code> 运行时可查已安装包与入口点。",
+        "版本号按数字比较；构建产物不进仓库。"
+      ]
+    }
+  ],
+  "prev": "s3-61-packaging-basics",
+  "next": "s3-63-publish-pypi"
+}

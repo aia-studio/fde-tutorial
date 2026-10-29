@@ -1,0 +1,185 @@
+{
+  "id": "s1-27-iteration",
+  "order": 27,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "moderate",
+  "title": "迭代协议",
+  "concepts": [
+    "iter",
+    "next",
+    "StopIteration",
+    "__iter__",
+    "__next__",
+    "iterator"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "for 到底做了什么"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "手写一个迭代器"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "可迭代对象 ≠ 迭代器"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 9.8：迭代器",
+      "url": "https://docs.python.org/3/tutorial/classes.html#iterators"
+    },
+    {
+      "title": "Language Reference：迭代器类型",
+      "url": "https://docs.python.org/3/library/stdtypes.html#iterator-types"
+    }
+  ],
+  "prereq": [
+    26
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>for</code> 到底做了什么"
+    },
+    {
+      "type": "p",
+      "html": "<code>for x in obj</code> 背后只有两步：先 <code>iter(obj)</code> 拿迭代器，再反复 <code>next()</code> 直到 <code>StopIteration</code>。理解这两步，你就能让自己的类支持 <code>for</code>、<code>in</code>、<code>list()</code>、<code>sum()</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "手写一个迭代器"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Countdown:\n    def __init__(self, start):\n        self.current = start\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current <= 0:\n            raise StopIteration\n        value = self.current\n        self.current -= 1\n        return value\n\n\nprint(list(Countdown(3)))\nprint(sum(Countdown(4)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[3, 2, 1]\n10"
+    },
+    {
+      "type": "p",
+      "html": "要点：<code>__iter__</code> 返回<strong>迭代器对象</strong>（这里是自己），<code>__next__</code> 每次返回一个值，取完了必须 <code>raise StopIteration</code>——<code>for</code> 靠这个异常知道该停了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "可迭代对象 ≠ 迭代器"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "data = [1, 2, 3]\nit = iter(data)\n\nprint(iter(it) is it)\nprint(iter(data) is data)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<strong>可迭代对象</strong>（list、str、dict）有 <code>__iter__</code>，每次调用产生一个<strong>新的</strong>迭代器。",
+        "<strong>迭代器</strong>（<code>iter(list)</code> 的结果）同时有 <code>__iter__</code> 和 <code>__next__</code>，且 <code>__iter__</code> 返回自己。"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "所以列表能被反复遍历，而迭代器只能走一遍："
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "nums = iter([1, 2])\nprint(next(nums), next(nums))\n\ntry:\n    next(nums)\nexcept StopIteration:\n    print(\"耗尽\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 2\n耗尽"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "迭代器用完就没了",
+      "html": "传迭代器给函数要小心：函数内部消耗掉之后，外面再遍历就是空的。需要多次遍历时传列表，或者在函数里先 <code>list()</code> 物化——但要权衡内存。"
+    },
+    {
+      "type": "quiz",
+      "question": "一个类要实现 <code>for x in obj</code>，最少需要哪两个方法？",
+      "options": [
+        "__len__ 和 __getitem__",
+        "__iter__ 和 __next__",
+        "__enter__ 和 __exit__",
+        "__init__ 和 __call__"
+      ],
+      "answer": 1,
+      "explain": "for 先调用 iter(obj) 得到迭代器（__iter__），再反复调用 __next__ 直到 StopIteration。只实现 __getitem__ 的老式协议也还能用，但已不推荐。"
+    },
+    {
+      "type": "exercise",
+      "id": "s1-27-ex1",
+      "title": "实现偶数迭代器",
+      "prompt": "实现 <code>evens(limit)</code>：返回一个可迭代对象，依次产出 <code>0, 2, 4, ...</code> 直到小于 <code>limit</code>。",
+      "starter": "def evens(limit):\n    # 返回一个可迭代对象\n    pass\n",
+      "solution": "def evens(limit):\n    return (n for n in range(0, limit, 2))\n",
+      "tests": [
+        {
+          "name": "测试 1",
+          "code": "assert list(evens(6)) == [0, 2, 4], '0 到 5 之间的偶数'"
+        },
+        {
+          "name": "测试 2",
+          "code": "assert list(evens(1)) == [0], '0 小于 1，所以有一个元素'"
+        },
+        {
+          "name": "测试 3",
+          "code": "assert sum(evens(10)) == 20, '0+2+4+6+8'"
+        },
+        {
+          "name": "测试 4",
+          "code": "assert list(evens(2)) == [0], '不含上限本身'"
+        }
+      ],
+      "hints": [
+        "range 支持步长：range(0, limit, 2)。",
+        "返回生成器表达式即可满足「可迭代对象」的要求。",
+        "也可以写一个带 yield 的函数。"
+      ],
+      "xp": 10
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>for</code> = <code>iter()</code> + 反复 <code>next()</code> + 捕获 <code>StopIteration</code>。",
+        "可迭代对象的 <code>__iter__</code> 每次返回新迭代器；迭代器的 <code>__iter__</code> 返回自己。",
+        "迭代器只能遍历一次，耗尽后再取就是 <code>StopIteration</code>。",
+        "自定义迭代器要实现 <code>__iter__</code> 和 <code>__next__</code>。"
+      ]
+    }
+  ],
+  "prev": "s1-26-debugging",
+  "next": "s1-28-generators"
+}

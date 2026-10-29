@@ -1,0 +1,159 @@
+{
+  "id": "s4-85-exceptions-advanced",
+  "order": 85,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "异常进阶",
+  "concepts": [
+    "ExceptionGroup",
+    "except*",
+    "__notes__",
+    "cancellation"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "一次失败，多个原因"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "ExceptionGroup 与 except*"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "__notes__：给异常加备注"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "异常链的两种方式"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：ExceptionGroup",
+      "url": "https://docs.python.org/3/library/exceptions.html#exception-groups"
+    },
+    {
+      "title": "PEP 654：异常组与 except*",
+      "url": "https://peps.python.org/pep-0654/"
+    }
+  ],
+  "prereq": [
+    84
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "一次失败，多个原因"
+    },
+    {
+      "type": "p",
+      "html": "<code>TaskGroup</code> 抛出的异常可能包含<strong>多个</strong>失败原因。传统 <code>except</code> 只能接一个，于是有了 <code>ExceptionGroup</code> 与 <code>except*</code>——3.11 引入，为并发而生。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "ExceptionGroup 与 except*"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "try:\n    raise ExceptionGroup(\n        \"多个问题\",\n        [ValueError(\"值不对\"), TypeError(\"类型不对\")],\n    )\nexcept* ValueError as eg:\n    print(\"值错误：\", eg.exceptions[0])\nexcept* TypeError as eg:\n    print(\"类型错误：\", eg.exceptions[0])",
+      "runnable": true,
+      "editable": true,
+      "expect": "值错误： 值不对\n类型错误： 类型不对"
+    },
+    {
+      "type": "p",
+      "html": "<code>except*</code> 与普通 <code>except</code> 的区别：<strong>每个分支独立检查</strong>，命中的都执行（上面两个分支都跑了）。普通 <code>except</code> 命中第一个就停止。注意 <code>except*</code> 只能配 ExceptionGroup，普通异常不适用。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__notes__</code>：给异常加备注"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "try:\n    try:\n        raise ValueError(\"原始错误\")\n    except ValueError as exc:\n        exc.add_note(\"发生在解析配置时\")\n        raise\nexcept ValueError as exc:\n    print(exc)\n    print(exc.__notes__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "原始错误\n['发生在解析配置时']"
+    },
+    {
+      "type": "p",
+      "html": "<code>add_note</code> 在异常向上传递的路上补充上下文——中间层知道的细节（哪个文件、哪个配置项）就这么\"贴\"在异常上，最外层统一打印。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "异常链的两种方式"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "try:\n    try:\n        raise ValueError(\"根因\")\n    except ValueError as exc:\n        raise RuntimeError(\"包装\") from exc\nexcept RuntimeError as exc:\n    print(exc.__cause__ is not None)\n    print(exc.__context__ is not None)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>raise X from exc</code>：<strong>显式</strong>链（<code>__cause__</code>），语义是\"这是根因导致的\"。",
+        "在 except 块里直接 <code>raise X</code>：<strong>隐式</strong>链（<code>__context__</code>），语义是\"顺带发生的\"。"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "traceback 对两者都显示，但 <code>from</code> 更明确表达意图。<strong>包装异常时永远用 <code>from</code></strong>——这是第 25 课异常链的完整版。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>except* ValueError</code> 与普通 <code>except ValueError</code> 的区别是？",
+      "options": [
+        "except* 能捕获所有异常类型",
+        "except* 针对异常组，多个分支可以各自命中并都执行",
+        "except* 性能更好",
+        "except* 不需要写异常类型"
+      ],
+      "answer": 1,
+      "explain": "except* 逐个分支检查 ExceptionGroup 里的异常，命中的分支都执行（每个分支收到一个「只含匹配异常」的子组）。普通 except 命中第一个分支后其余不再检查。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>ExceptionGroup</code> 装多个异常，<code>except*</code> 分类型独立处理。",
+        "<code>exc.add_note()</code> 沿途补充上下文，<code>__notes__</code> 随异常传播。",
+        "<code>raise ... from exc</code> 显式链（cause）优于隐式链（context）。",
+        "TaskGroup 的失败就是 ExceptionGroup——asyncio 的异常处理离不开它。"
+      ]
+    }
+  ],
+  "prev": "s4-84-import-system",
+  "next": "s4-86-contextlib"
+}

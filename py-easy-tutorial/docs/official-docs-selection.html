@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>官方文档条目选择器 · 交互式 Python 教程</title>
+<style>
+  :root{
+    --bg:#0c1016; --bg2:#121822; --bg3:#18202c; --line:#243044;
+    --fg:#e6edf6; --fg2:#9fb0c6; --fg3:#6d7f96;
+    --blue:#4b8bf5; --blue-d:#1d3a66;
+    --purple:#a06bf0; --purple-d:#33235c;
+    --amber:#e2a13a; --amber-d:#4a3512;
+    --teal:#35b9a6; --teal-d:#123c38;
+    --gray:#7b8ba1; --gray-d:#28313f;
+    --ok:#3fbf7f;
+    --radius:12px;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #16233a 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, #1a2030 0%, transparent 45%),
+      var(--bg);
+    color:var(--fg);
+    font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",sans-serif;
+    padding-bottom:96px;
+  }
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  header{padding:44px 0 8px}
+  .kicker{color:var(--blue);font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+  h1{font-size:30px;line-height:1.3;margin:10px 0 12px;letter-spacing:-.01em}
+  .lede{color:var(--fg2);max-width:820px;margin:0 0 6px}
+  .lede strong{color:var(--fg);font-weight:600}
+  .note{
+    margin-top:18px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
+    background:linear-gradient(180deg,#141c28,#111823);color:var(--fg2);font-size:13px
+  }
+  .note b{color:var(--amber)}
+
+  .toolbar{
+    position:sticky;top:0;z-index:20;margin-top:22px;padding:10px 0;
+    background:rgba(12,16,22,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)
+  }
+  .toolbar .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{
+    appearance:none;border:1px solid var(--line);background:var(--bg3);color:var(--fg);
+    padding:7px 13px;border-radius:9px;font-size:13px;cursor:pointer;transition:.15s;
+    font-family:inherit
+  }
+  .btn:hover{background:#1e2837;border-color:#31425c}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#06101f;font-weight:600}
+  .btn.primary:hover{background:#5f9bff}
+  .btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+  .spacer{flex:1}
+  .counter{color:var(--fg2);font-size:13px;font-variant-numeric:tabular-nums}
+  .counter b{color:var(--fg);font-size:15px}
+
+  section.group{margin:34px 0 0}
+  .ghead{display:flex;align-items:baseline;gap:12px;margin:0 0 4px}
+  .ghead h2{font-size:17px;margin:0;letter-spacing:.01em}
+  .ghead .tag{
+    font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);
+    color:var(--fg3);letter-spacing:.04em
+  }
+  .gdesc{color:var(--fg3);font-size:12.5px;margin:0 0 14px}
+
+  .item{
+    display:grid;grid-template-columns:26px 1fr auto;gap:12px;
+    padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(24,32,44,.72),rgba(18,24,34,.72));
+    margin-bottom:9px;transition:.15s;cursor:pointer
+  }
+  .item:hover{border-color:#31425c;background:linear-gradient(180deg,#1c2534,#151d29)}
+  .item.on{border-color:#2f5f9e;background:linear-gradient(180deg,#16243a,#121a28);box-shadow:inset 3px 0 0 var(--blue)}
+  .item input{
+    appearance:none;width:19px;height:19px;margin:3px 0 0;border:1.5px solid #3a4a61;border-radius:5px;
+    background:#0e141d;cursor:pointer;position:relative;flex:none
+  }
+  .item input:checked{background:var(--blue);border-color:var(--blue)}
+  .item input:checked::after{
+    content:"";position:absolute;left:5.5px;top:2px;width:5px;height:9px;
+    border:solid #06101f;border-width:0 2px 2px 0;transform:rotate(45deg)
+  }
+  .item input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+  .title{font-size:14.5px;font-weight:600;margin:0 0 3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge{font-size:10.5px;font-weight:600;padding:1.5px 7px;border-radius:99px;letter-spacing:.03em;white-space:nowrap}
+  .b-course{background:var(--blue-d);color:#9cc2ff;border:1px solid #2a4f8a}
+  .b-index{background:var(--purple-d);color:#c9a6ff;border:1px solid #4a3480}
+  .b-ext{background:var(--amber-d);color:#f0c47a;border:1px solid #6b4d18}
+  .b-res{background:var(--gray-d);color:#9fb0c6;border:1px solid #38445a}
+  .b-merge{background:var(--teal-d);color:#7fe0d1;border:1px solid #1b5a53}
+  .rec{font-size:10.5px;color:var(--ok);letter-spacing:.03em}
+  .desc{color:var(--fg2);font-size:13px;margin:2px 0 6px}
+  .desc em{color:var(--fg);font-style:normal;font-weight:600}
+  .src{font-size:11.5px;color:var(--fg3);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
+  .src a{color:#5f7796}
+  .src a:hover{color:var(--blue)}
+  .meta{text-align:right;white-space:nowrap;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+  .count{font-size:12px;color:var(--fg2);font-variant-numeric:tabular-nums}
+  .count b{color:var(--fg);font-size:15px}
+
+  footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);color:var(--fg3);font-size:12.5px}
+
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;border-top:1px solid #2a3a52;
+    background:rgba(13,18,26,.94);backdrop-filter:blur(12px)
+  }
+  .dock .inner{max-width:1080px;margin:0 auto;padding:12px 24px;display:flex;gap:14px;align-items:center}
+  .dock .stat{color:var(--fg2);font-size:13px}
+  .dock .stat b{color:var(--fg);font-size:16px;font-variant-numeric:tabular-nums}
+
+  .sheet{
+    position:fixed;inset:0;z-index:60;background:rgba(4,7,11,.72);display:none;
+    align-items:center;justify-content:center;padding:24px
+  }
+  .sheet.open{display:flex}
+  .panel{
+    width:min(860px,100%);max-height:82vh;display:flex;flex-direction:column;
+    background:#101722;border:1px solid #2a3a52;border-radius:16px;overflow:hidden;
+    box-shadow:0 24px 80px rgba(0,0,0,.6)
+  }
+  .panel .ph{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line)}
+  .panel .ph h3{margin:0;font-size:15px}
+  .panel .ph .spacer{flex:1}
+  textarea{
+    flex:1;width:100%;min-height:340px;border:0;background:#0b1119;color:#cfe0f5;
+    font:12.5px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;padding:16px 18px;resize:none;outline:none
+  }
+  .panel .pf{padding:11px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;color:var(--fg3);font-size:12px}
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:80;
+    background:#1d2b3f;border:1px solid #35507a;color:#cfe0f5;padding:9px 16px;border-radius:10px;
+    font-size:13px;opacity:0;pointer-events:none;transition:.2s
+  }
+  .toast.show{opacity:1}
+  @media (max-width:720px){
+    h1{font-size:23px}
+    .item{grid-template-columns:24px 1fr}
+    .meta{grid-column:2;align-items:flex-start;text-align:left;flex-direction:row;gap:10px}
+    .dock .stat.hide{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Step 1 / 范围确认</div>
+    <h1>官方文档条目选择</h1>
+    <p class="lede">
+      下面是 <code>python.org/doc/</code> 当前页面上的全部条目，按原页面的五组归位。勾选你要包含进教程的部分，
+      底部会生成一份可直接回贴的清单。
+    </p>
+    <p class="lede">
+      <strong>关键区别：</strong>这五组里，<em>Beginner / Moderate / Advanced / General</em> 是<strong>精选链接目录</strong>（多数指向 wiki、书单、视频站、PEP 索引），
+      而 <em>Python 3.x Resources</em> 才是<strong>可教学的文档栈</strong>。资源型条目做成外链卡片，文档型条目才展开成课程。
+    </p>
+    <div class="note">
+      <b>关于"涵盖全部特性"：</b>勾选 <em>Tutorial + Library Reference + Language Reference + HOWTOs</em> 即构成完整覆盖骨架；
+      单独加 <em>C API / Extending</em> 只会增加"只读延伸课"，不会增加可运行实验。
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="wrap row">
+      <button class="btn" id="all">全选</button>
+      <button class="btn" id="none">清空</button>
+      <button class="btn" id="reconly">仅选推荐</button>
+      <div class="spacer"></div>
+      <span class="counter" id="counter">已选 <b>0</b> 项</span>
+    </div>
+  </div>
+
+  <main id="list"></main>
+
+  <footer>
+    条目与链接抓取自 <a href="https://www.python.org/doc/" target="_blank" rel="noopener">python.org/doc</a>（2026-10-29，页面标注文档版本 3.15.2）。
+    勾选状态会存在本机，刷新不丢。
+  </footer>
+</div>
+
+<div class="dock">
+  <div class="inner">
+    <div class="stat">已选 <b id="d-count">0</b> / <span id="d-total">25</span> 项</div>
+    <div class="stat hide">条目课时合计 <b id="d-lessons">0</b> 课<span style="color:#6d7f96">（含重叠）</span></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="gen">生成选择清单</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="panel">
+    <div class="ph">
+      <h3>选择清单</h3>
+      <div class="spacer"></div>
+      <button class="btn" id="copy">复制</button>
+      <button class="btn" id="close">关闭</button>
+    </div>
+    <textarea id="out" spellcheck="false" readonly></textarea>
+    <div class="pf">把这段内容回贴给我即可，我会据此重排课程大纲。</div>
+  </div>
+</div>
+
+<div class="toast" id="toast">已复制</div>
+
+<script>
+const DATA = [
+  {
+    g: "Beginner", tag: "原页面分组 1",
+    desc: "官方给零基础读者的入口，内容多在 wiki 上，属于资源型而非教程型。",
+    items: [
+      { id:"beginners-guide", title:"Beginner's Guide", kind:"course", lessons:24, rec:true,
+        desc:"官方零基础入门路径（安装、基础语法、练习、下一步）。映射为<em>入门主线 24 课</em>，是本教程的地基。",
+        url:"https://wiki.python.org/python/getting-started/BeginnersGuide.html" },
+      { id:"python-faq", title:"Python FAQs", kind:"course", lessons:1, rec:true,
+        desc:"官方 FAQ 全集（General / Programming / Design / Library / Extending / Windows / GUI）。映射为 General 的<em>FAQ 课 + 常见报错对照表</em>。",
+        url:"https://docs.python.org/3/faq/" }
+    ]
+  },
+  {
+    g: "Moderate", tag: "原页面分组 2",
+    desc: "官方在这一组放的是读物与期刊，不是教学材料。",
+    items: [
+      { id:"periodicals", title:"Python Periodicals", kind:"res", lessons:0, rec:false,
+        desc:"Python 相关期刊与通讯列表。映射为资源页里的<em>外链卡片</em>，不写课。",
+        url:"https://wiki.python.org/moin/PythonPeriodicals" },
+      { id:"books", title:"Python Books", kind:"res", lessons:0, rec:false,
+        desc:"官方维护的书单。映射为资源页里的<em>外链卡片</em>，不写课。",
+        url:"https://wiki.python.org/moin/PythonBooks" }
+    ]
+  },
+  {
+    g: "Advanced", tag: "原页面分组 3",
+    desc: "进阶向的权威指南与设计文献，其中打包指南是可落地的技术内容。",
+    items: [
+      { id:"packaging", title:"Python Packaging User Guide", kind:"course", lessons:3, rec:true,
+        desc:"打包与分发的权威指南。映射为<em>打包三课</em>（pyproject / wheel / 发布流程），并与 Advanced 的发布课合并。",
+        url:"https://packaging.python.org/" },
+      { id:"dev-docs", title:"In-development Docs", kind:"ext", lessons:1, rec:false,
+        desc:"开发版（3.16 dev）文档。映射为<em>版本前瞻课</em>：怎么提前跟进尚未发布的新特性。",
+        url:"https://docs.python.org/dev/" },
+      { id:"guido-essays", title:"Guido's Essays", kind:"course", lessons:1, rec:false,
+        desc:"Guido 本人的设计文章。映射为<em>设计哲学课</em>：为什么 Python 长这样（与 Zen of Python 合并）。",
+        url:"https://www.python.org/doc/essays/" }
+    ]
+  },
+  {
+    g: "General", tag: "原页面分组 4",
+    desc: "通用参考与社区资源，PEP 索引和开发者指南有教学价值。",
+    items: [
+      { id:"pep-index", title:"PEP Index", kind:"index", lessons:1, rec:true,
+        desc:"全部 PEP 索引。映射为<em>PEP 导读课 + 可检索的 PEP 索引页</em>（PEP 8 / 20 / 484 / 695 等精讲）。",
+        url:"https://peps.python.org/" },
+      { id:"videos", title:"Python Videos", kind:"res", lessons:0, rec:false,
+        desc:"PyVideo 会议演讲库。映射为资源页<em>外链卡片</em>，不写课。",
+        url:"https://pyvideo.org/" },
+      { id:"devguide", title:"Developer's Guide", kind:"course", lessons:1, rec:false,
+        desc:"CPython 开发指南。映射为 Advanced 的<em>读源码与参与 CPython</em> 课（讲清源码结构、编译、提 PR 流程）。",
+        url:"https://devguide.python.org/" }
+    ]
+  },
+  {
+    g: "Python 3.x Resources", tag: "原页面分组 5 · 文档栈",
+    desc: "这一组才是真正可教学的内容，也是本教程课程主干的实际来源。",
+    items: [
+      { id:"browse-docs", title:"Browse Python 3.15.2 Documentation", kind:"merge", lessons:0, rec:true,
+        desc:"文档总入口（含 Module Index 入口）。并入 General 的<em>文档地图课</em>：Tutorial / Library / Reference 各自解决什么问题。",
+        url:"https://docs.python.org/3/" },
+      { id:"module-index", title:"Module Index", kind:"index", lessons:0, rec:true,
+        desc:"全部标准库模块索引（200+）。做成<em>可搜索的模块索引页</em>：名称 + 一句话定位 + 官方链接，保证“找得到”。",
+        url:"https://docs.python.org/3/py-modindex.html" },
+      { id:"whatsnew", title:"What's new in Python 3.15", kind:"course", lessons:1, rec:true,
+        desc:"版本变更说明。映射为<em>3.10–3.15 新特性课</em>，每课都标 requires_python，旧版本环境自动降级提示。",
+        url:"https://docs.python.org/3/whatsnew/3.15.html" },
+      { id:"tutorial", title:"Tutorial", kind:"course", lessons:54, rec:true,
+        desc:"官方教程 16 章（解释器、类型、控制流、数据结构、模块、IO、异常、类、标准库巡礼、venv…）。<em>Beginner + Moderate 的主干骨架</em>。",
+        url:"https://docs.python.org/3/tutorial/index.html" },
+      { id:"library-ref", title:"Library Reference", kind:"course", lessons:20, rec:true,
+        desc:"标准库参考。<em>50 个高频模块精讲</em>（20 课覆盖）+ 其余模块进索引页；含 collections / itertools / asyncio / logging / pathlib 等。",
+        url:"https://docs.python.org/3/library/index.html" },
+      { id:"language-ref", title:"Language Reference", kind:"course", lessons:30, rec:true,
+        desc:"语言参考（词法、数据模型、执行模型、表达式、语句、复合语句）。<em>Advanced 主干</em>：描述符、元类、MRO、生成器、异常组都源于此。",
+        url:"https://docs.python.org/3/reference/index.html" },
+      { id:"extending", title:"Extending and Embedding", kind:"ext", lessons:2, rec:true,
+        desc:"扩展与嵌入教程。映射为<em>2 课只读延伸</em>：C 扩展怎么写、解释器怎么嵌进别的程序。不判题。",
+        url:"https://docs.python.org/3/extending/index.html" },
+      { id:"c-api", title:"Python/C API", kind:"ext", lessons:1, rec:true,
+        desc:"C API 参考。并入延伸课，只讲<em>对象协议与引用计数</em>的核心概念，不逐函数罗列。",
+        url:"https://docs.python.org/3/c-api/index.html" },
+      { id:"using-python", title:"Using Python", kind:"course", lessons:1, rec:true,
+        desc:"安装、命令行与环境配置（含 Windows/macOS 差异、PYTHONPATH、-m）。映射为<em>环境课</em>，是第 1 课的实际内容来源。",
+        url:"https://docs.python.org/3/using/index.html" },
+      { id:"howtos", title:"Python HOWTOs", kind:"course", lessons:8, rec:true,
+        desc:"专题 HOWTO（正则、排序、Unicode、日志、venv、argparse、描述符、注解、函数式）。映射为<em>8 节专题课</em>，性价比最高的一块。",
+        url:"https://docs.python.org/3/howto/index.html" },
+      { id:"glossary", title:"Glossary", kind:"index", lessons:1, rec:true,
+        desc:"官方术语表。做成<em>交互式术语表课</em>：60+ 术语可搜索，每条跳到对应课程。",
+        url:"https://docs.python.org/3/glossary.html" },
+      { id:"search-docs", title:"Search the online docs", kind:"merge", lessons:0, rec:true,
+        desc:"官方站内搜索。并入文档地图课，教<em>怎么查文档</em>（关键词、看源码、读版本标注）。",
+        url:"https://docs.python.org/3/search.html" },
+      { id:"download-docs", title:"Download Current Documentation", kind:"res", lessons:0, rec:false,
+        desc:"离线文档包（HTML/PDF/EPUB）。映射为资源页<em>外链卡片</em> + 一句“断网怎么查”。",
+        url:"https://docs.python.org/3/download.html" }
+    ]
+  },
+  {
+    g: "页面其他条目", tag: "不在五组内，但同页",
+    desc: "同页还有两组内容，是否纳入由你决定。",
+    items: [
+      { id:"porting", title:"Porting from Python 2 to Python 3", kind:"course", lessons:1, rec:false,
+        desc:"2→3 迁移指南。映射为<em>读旧代码课</em>：识别 print 语句、dict.keys()、str/bytes 混用等历史包袱。",
+        url:"https://docs.python.org/3/howto/pyporting.html" },
+      { id:"releases", title:"Documentation Releases by Version", kind:"res", lessons:0, rec:false,
+        desc:"按版本归档的文档。映射为资源页<em>外链卡片</em>：查旧版本行为差异时用。",
+        url:"https://www.python.org/doc/versions/" }
+    ]
+  }
+];
+
+const KIND = {
+  course:{cls:"b-course", label:"展开为课程"},
+  index:{cls:"b-index", label:"索引页"},
+  ext:{cls:"b-ext", label:"延伸阅读"},
+  merge:{cls:"b-merge", label:"并入他课"},
+  res:{cls:"b-res", label:"外链资源"}
+};
+const STORE = "py-tutorial-scope-v1";
+const all = DATA.flatMap(g=>g.items);
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE);
+    if(raw){ const s = new Set(JSON.parse(raw)); return s; }
+  }catch(e){}
+  return new Set(all.filter(i=>i.rec).map(i=>i.id));
+}
+let picked = load();
+
+const list = document.getElementById("list");
+DATA.forEach(group=>{
+  const sec = document.createElement("section");
+  sec.className = "group";
+  const head = document.createElement("div");
+  head.className = "ghead";
+  head.innerHTML = `<h2>${group.g}</h2><span class="tag">${group.tag}</span>`;
+  const d = document.createElement("p");
+  d.className = "gdesc";
+  d.textContent = group.desc;
+  sec.append(head, d);
+
+  group.items.forEach(it=>{
+    const el = document.createElement("label");
+    el.className = "item" + (picked.has(it.id) ? " on" : "");
+    el.dataset.id = it.id;
+    const k = KIND[it.kind];
+    el.innerHTML = `
+      <input type="checkbox" ${picked.has(it.id) ? "checked" : ""} aria-label="${it.title}">
+      <div>
+        <p class="title">${it.title}
+          <span class="badge ${k.cls}">${k.label}</span>
+          ${it.rec ? '<span class="rec">◆ 推荐</span>' : ''}
+        </p>
+        <p class="desc">${it.desc}</p>
+        <p class="src"><a href="${it.url}" target="_blank" rel="noopener">${it.url.replace(/^https?:\/\//,'')}</a></p>
+      </div>
+      <div class="meta">
+        ${it.lessons ? `<span class="count"><b>${it.lessons}</b> 课</span>` : `<span class="count" style="color:#6d7f96">不占课时</span>`}
+      </div>`;
+    el.querySelector("input").addEventListener("change", e=>{
+      if(e.target.checked) picked.add(it.id); else picked.delete(it.id);
+      el.classList.toggle("on", e.target.checked);
+      save(); render();
+    });
+    el.querySelector("a").addEventListener("click", e=>e.stopPropagation());
+    sec.appendChild(el);
+  });
+  list.appendChild(sec);
+});
+
+function save(){
+  try{ localStorage.setItem(STORE, JSON.stringify([...picked])); }catch(e){}
+}
+function render(){
+  const n = picked.size;
+  const lessons = all.filter(i=>picked.has(i.id)).reduce((a,b)=>a+b.lessons,0);
+  document.getElementById("counter").innerHTML = `已选 <b>${n}</b> 项`;
+  document.getElementById("d-count").textContent = n;
+  document.getElementById("d-total").textContent = all.length;
+  document.getElementById("d-lessons").textContent = lessons;
+}
+
+document.getElementById("all").onclick = ()=>{ picked = new Set(all.map(i=>i.id)); sync(); };
+document.getElementById("none").onclick = ()=>{ picked = new Set(); sync(); };
+document.getElementById("reconly").onclick = ()=>{ picked = new Set(all.filter(i=>i.rec).map(i=>i.id)); sync(); };
+function sync(){
+  document.querySelectorAll(".item").forEach(el=>{
+    const on = picked.has(el.dataset.id);
+    el.classList.toggle("on", on);
+    el.querySelector("input").checked = on;
+  });
+  save(); render();
+}
+
+function build(){
+  const lines = [];
+  lines.push("# 官方文档条目选择结果");
+  lines.push(`# 来源：python.org/doc（2026-10-29，文档版本 3.15.2）`);
+  lines.push("");
+  const on = all.filter(i=>picked.has(i.id));
+  const off = all.filter(i=>!picked.has(i.id));
+  lines.push(`已选 ${on.length} / ${all.length} 项；条目课时合计 ${on.reduce((a,b)=>a+b.lessons,0)} 课（条目间有重叠，不等同最终课程数）。`);
+  lines.push("");
+  lines.push("## 包含");
+  DATA.forEach(g=>{
+    const sel = g.items.filter(i=>picked.has(i.id));
+    if(!sel.length) return;
+    lines.push(`### ${g.g}`);
+    sel.forEach(i=>lines.push(`- [x] ${i.title}（${KIND[i.kind].label}${i.lessons?`，${i.lessons} 课`:""}）${i.url}`));
+    lines.push("");
+  });
+  if(off.length){
+    lines.push("## 不包含");
+    off.forEach(i=>lines.push(`- [ ] ${i.title}（${KIND[i.kind].label}）`));
+    lines.push("");
+  }
+  lines.push("## 机器可读");
+  lines.push("```json");
+  lines.push(JSON.stringify({source:"https://www.python.org/doc/", captured:"2026-10-29", selected:on.map(i=>i.id)}, null, 2));
+  lines.push("```");
+  return lines.join("\n");
+}
+
+const sheet = document.getElementById("sheet");
+document.getElementById("gen").onclick = ()=>{
+  document.getElementById("out").value = build();
+  sheet.classList.add("open");
+  document.getElementById("out").focus();
+};
+document.getElementById("close").onclick = ()=>sheet.classList.remove("open");
+sheet.addEventListener("click", e=>{ if(e.target === sheet) sheet.classList.remove("open"); });
+document.addEventListener("keydown", e=>{ if(e.key === "Escape") sheet.classList.remove("open"); });
+
+document.getElementById("copy").onclick = async ()=>{
+  const ta = document.getElementById("out");
+  try{
+    await navigator.clipboard.writeText(ta.value);
+    toast("已复制到剪贴板");
+  }catch(e){
+    ta.select();
+    document.execCommand("copy");
+    toast("已复制");
+  }
+};
+let tid;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(tid);
+  tid = setTimeout(()=>t.classList.remove("show"), 1600);
+}
+
+render();
+</script>
+</body>
+</html>

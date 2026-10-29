@@ -1,0 +1,182 @@
+{
+  "id": "s1-30-venv",
+  "order": 30,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "moderate",
+  "title": "虚拟环境与依赖",
+  "concepts": [
+    "venv",
+    "pip",
+    "requirements",
+    "sys.prefix",
+    "isolation"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "每个项目一个干净的房间"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "判断自己在不在隔离环境里"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "常用命令"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "依赖声明的两种风格"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 12：虚拟环境与包",
+      "url": "https://docs.python.org/3/tutorial/venv.html"
+    },
+    {
+      "title": "Python Packaging User Guide：管理依赖",
+      "url": "https://packaging.python.org/en/latest/tutorials/managing-dependencies/"
+    }
+  ],
+  "prereq": [
+    29
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "每个项目一个干净的房间"
+    },
+    {
+      "type": "p",
+      "html": "A 项目要 <code>requests==2.28</code>，B 项目要 <code>requests==2.31</code>——装在同一套环境里必然打架。虚拟环境的作用就是给每个项目一套独立的 <code>site-packages</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "判断自己在不在隔离环境里"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import os\nimport sys\n\nis_venv = sys.prefix != sys.base_prefix\nis_conda = \"CONDA_PREFIX\" in os.environ\n\nprint(\"venv 环境：\", is_venv)\nprint(\"conda 环境：\", is_conda)\nprint(\"隔离环境：\", is_venv or is_conda)\nprint(\"解释器：\", sys.executable)",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "这块<strong>故意不写预期输出</strong>：结果取决于你在哪种环境里跑。要看的是最后一行——那段路径就是\"当前到底用了哪个 Python\"的答案。遇到 <code>ModuleNotFoundError</code>，第一件事是看这个路径。"
+    },
+    {
+      "type": "p",
+      "html": "<code>sys.prefix</code> 是当前环境的根目录，<code>sys.base_prefix</code> 是安装 Python 时的原始根目录。<strong>用 <code>venv</code> 创建的环境</strong>两者不同（因为存在 <code>pyvenv.cfg</code>）；而 <strong>conda 环境没有 <code>pyvenv.cfg</code></strong>，两个值相同，所以要靠 <code>CONDA_PREFIX</code> 环境变量判断。这是个常见的误判点。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "常用命令"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "bash",
+      "code": "python -m venv .venv              # 创建环境（在项目目录下）\n.venv\\Scripts\\activate            # Windows 激活\nsource .venv/bin/activate         # macOS / Linux 激活\n\npython -m pip install requests    # 装到当前环境的 site-packages\npython -m pip freeze > requirements.txt\npython -m pip install -r requirements.txt",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "几个习惯值得从一开始就养成："
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<strong>用 <code>python -m pip</code> 而不是直接 <code>pip</code></strong>，避免\"pip 指向了另一个解释器\"的经典事故。",
+        "环境目录叫 <code>.venv</code>，并写进 <code>.gitignore</code>。",
+        "<code>requirements.txt</code> 用 <code>pip freeze</code> 生成时带精确版本，保证别人装到一样的东西。"
+      ]
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "别把虚拟环境提交进仓库",
+      "html": "<code>.venv</code> 里有几万个文件，而且和平台绑定。仓库里只放 <code>requirements.txt</code> 或 <code>pyproject.toml</code>，环境靠命令重建。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "依赖声明的两种风格"
+    },
+    {
+      "type": "table",
+      "head": [
+        "文件",
+        "特点",
+        "适合"
+      ],
+      "rows": [
+        [
+          "<code>requirements.txt</code>",
+          "精确版本列表，<code>pip freeze</code> 生成",
+          "应用部署、快速复现"
+        ],
+        [
+          "<code>pyproject.toml</code>",
+          "声明直接依赖与版本范围",
+          "库、要发布的项目"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "前者的缺点是分不清\"我直接用的\"和\"依赖的依赖\"；后者能表达 <code>requests&gt;=2.31,&lt;3</code> 这种范围。"
+    },
+    {
+      "type": "quiz",
+      "question": "在项目里执行 <code>pip install requests</code> 后，代码里 <code>import requests</code> 仍然失败，最可能的原因是？",
+      "options": [
+        "requests 不支持当前 Python 版本",
+        "pip 指向的是另一个解释器，装到了别处",
+        "需要重启操作系统",
+        "requests 只能通过 conda 安装"
+      ],
+      "answer": 1,
+      "explain": "机器上常有多个 Python，pip 和 python 可能不是一套。用 python -m pip install 能保证装进当前解释器；排查时看 sys.executable 确认在跑哪个 Python。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "虚拟环境 = 独立的 <code>site-packages</code>，避免项目间版本冲突。",
+        "<code>sys.prefix != sys.base_prefix</code> 可以判断当前是否在隔离环境。",
+        "始终用 <code>python -m pip</code> 安装，避免 pip 与解释器不匹配。",
+        "仓库只提交依赖声明，不提交环境目录。"
+      ]
+    }
+  ],
+  "prev": "s1-29-project-todo",
+  "next": "s1-31-testing"
+}

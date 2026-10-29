@@ -1,0 +1,151 @@
+{
+  "id": "s4-90-annotations-runtime",
+  "order": 90,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "注解的运行时",
+  "concepts": [
+    "__annotations__",
+    "get_type_hints",
+    "PEP 649",
+    "annotationlib"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "注解存哪里、何时求值"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "直接读取"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "前向引用：从字符串到自然书写"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "get_type_hints 与框架"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "PEP 649：延迟注解求值",
+      "url": "https://peps.python.org/pep-0649/"
+    },
+    {
+      "title": "Library Reference：annotationlib",
+      "url": "https://docs.python.org/3/library/annotationlib.html"
+    }
+  ],
+  "prereq": [
+    89
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "注解存哪里、何时求值"
+    },
+    {
+      "type": "p",
+      "html": "第 46 课说过注解是\"元数据\"。这一课打开引擎盖：它们存在 <code>__annotations__</code>，<strong>何时求值</strong>经历了三代变化——而 3.14 的延迟求值改变了所有依赖注解的框架。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "直接读取"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def scale(value: float, factor: float = 2.0) -> float:\n    return value * factor\n\n\nprint(scale.__annotations__[\"value\"])\nprint(scale.__annotations__[\"return\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "<class 'float'>\n<class 'float'>"
+    },
+    {
+      "type": "p",
+      "html": "3.14 起，注解默认<strong>延迟求值</strong>（PEP 649）：<code>__annotations__</code> 里存的是\"求值能力\"，首次访问才算。所以这里能拿到真实的类型对象，且定义时不存在的前向引用也不再报错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "前向引用：从字符串到自然书写"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Node:\n    def connect(self, other: \"Node\") -> \"Node\":\n        return other\n\n\nprint(Node.connect.__annotations__[\"other\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "Node"
+    },
+    {
+      "type": "p",
+      "html": "过去 <code>Node</code> 还没定义完，注解里必须写字符串 <code>\"Node\"</code> 或 <code>from __future__ import annotations</code>。延迟求值后直接写类名即可——旧代码里的字符串形式依然合法（字符串原样保留），读旧代码要认识它。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>get_type_hints</code> 与框架"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import inspect\nimport typing\n\n\ndef create_user(name: str, age: int, tags: list[str] | None = None) -> dict:\n    return {\"name\": name, \"age\": age}\n\n\nhints = typing.get_type_hints(create_user)\nprint(hints[\"name\"], hints[\"return\"])\nprint(list(inspect.signature(create_user).parameters))",
+      "runnable": true,
+      "editable": true,
+      "expect": "<class 'str'> <class 'dict'>\n['name', 'age', 'tags']"
+    },
+    {
+      "type": "p",
+      "html": "框架（FastAPI、pydantic、dataclass）正是靠 <code>get_type_hints</code> + <code>inspect.signature</code> 读出\"参数名、类型、默认值\"，然后自动做校验与文档。<strong>你看不见的代码在消费你的注解</strong>——这就是注解生态的运转方式。"
+    },
+    {
+      "type": "quiz",
+      "question": "PEP 649（延迟注解求值）解决的最主要痛点是？",
+      "options": [
+        "注解占用了太多磁盘空间",
+        "前向引用必须写字符串或用 future 导入，否则 NameError",
+        "注解无法被运行时读取",
+        "类型检查器速度慢"
+      ],
+      "answer": 1,
+      "explain": "过去注解在定义时立即求值，引用尚未定义的类（链表、树、互相引用）必须写字符串。延迟求值把求值推迟到首次访问，前向引用自然成立。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "注解存在 <code>__annotations__</code>，3.14 起延迟求值，前向引用免写字符串。",
+        "<code>get_type_hints</code> 是框架读取注解的标准入口。",
+        "字符串形式的旧注解（<code>\"Node\"</code>）依然常见，读代码要认识。",
+        "pydantic / dataclass / FastAPI 都是注解的消费者。"
+      ]
+    }
+  ],
+  "prev": "s4-89-metaprogramming",
+  "next": "s4-91-inspect-signature"
+}

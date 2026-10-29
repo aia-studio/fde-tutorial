@@ -1,0 +1,163 @@
+{
+  "id": "s3-68-process-pool",
+  "order": 68,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "advanced",
+  "title": "多进程与线程池",
+  "concepts": [
+    "ProcessPoolExecutor",
+    "ThreadPoolExecutor",
+    "pickling",
+    "map"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "高层接口：提交任务，拿结果"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "ThreadPoolExecutor：线程池"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "ProcessPoolExecutor：绕开 GIL"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "逐个完成：as_completed"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：concurrent.futures",
+      "url": "https://docs.python.org/3/library/concurrent.futures.html"
+    },
+    {
+      "title": "Library Reference：multiprocessing",
+      "url": "https://docs.python.org/3/library/multiprocessing.html"
+    }
+  ],
+  "prereq": [
+    67
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "高层接口：提交任务，拿结果"
+    },
+    {
+      "type": "p",
+      "html": "<code>concurrent.futures</code> 把线程池和进程池统一成同一个接口：<code>Executor.submit</code> / <code>map</code> / <code>as_completed</code>。切换线程与进程只需换一个类名——这是它最大的价值。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "ThreadPoolExecutor：线程池"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from concurrent.futures import ThreadPoolExecutor\n\n\ndef fetch(n):\n    return n * n\n\n\nwith ThreadPoolExecutor(max_workers=3) as pool:\n    results = list(pool.map(fetch, [1, 2, 3, 4]))\n\nprint(results)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 4, 9, 16]"
+    },
+    {
+      "type": "p",
+      "html": "<code>pool.map</code> 保持输入顺序返回结果；<code>with</code> 结束时等待全部任务完成。IO 密集任务（并发请求、批量下载）用线程池。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "ProcessPoolExecutor：绕开 GIL"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from concurrent.futures import ProcessPoolExecutor\n\n\ndef square(n):\n    return n * n\n\n\nif __name__ == \"__main__\":\n    with ProcessPoolExecutor(max_workers=2) as pool:\n        print(list(pool.map(square, [1, 2, 3])))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 4, 9]"
+    },
+    {
+      "type": "p",
+      "html": "进程池里每个 worker 是独立解释器，没有 GIL 限制，CPU 密集任务真正并行。注意 <code>if __name__ == \"__main__\"</code>：Windows 上子进程用 spawn 方式启动，<strong>会重新导入主模块</strong>——没有这个守卫会无限递归。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "进程池的隐藏成本：序列化",
+      "html": "参数与返回值都要 pickle（第 74 课）：传大对象慢、返回不可 pickle 的对象（如打开的文件句柄）直接报错。所以进程池的任务应该是\"传小参数、返回小结果\"，重数据放进程内准备。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "逐个完成：as_completed"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from concurrent.futures import ThreadPoolExecutor, as_completed\nimport time\n\n\ndef fetch(n):\n    time.sleep(0.1 * (5 - n))\n    return n\n\n\nwith ThreadPoolExecutor(max_workers=3) as pool:\n    futures = [pool.submit(fetch, n) for n in range(5)]\n    done_order = [f.result() for f in as_completed(futures)]\n\nprint(\"完成顺序与提交顺序不同：\", done_order != [0, 1, 2, 3, 4])\nprint(sorted(done_order))",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "callout",
+      "kind": "quote",
+      "title": "",
+      "html": "这块没有预期输出：完成顺序取决于每个任务的耗时与池大小，每次运行可能不同。 能确定的只有两件事——五个任务<strong>全部完成</strong>，且完成顺序<strong>不等于</strong>提交顺序。"
+    },
+    {
+      "type": "p",
+      "html": "<code>as_completed</code> 按<strong>完成顺序</strong>（不是提交顺序）给出结果。本例 <code>max_workers=3</code>：先启动的 0、1、2 各需 0.5/0.4/0.3 秒，最先完成的是 2；它们腾出工人后 3、4 才上场——所以顺序是 2,1,0,4,3。「谁先好先用谁」配合 <code>submit</code> 使用。"
+    },
+    {
+      "type": "quiz",
+      "question": "用 ProcessPoolExecutor 时，为什么任务函数必须能被 pickle？",
+      "options": [
+        "pickle 让函数运行更快",
+        "参数与返回值要通过序列化在父子进程间传递",
+        "pickle 提供内存共享",
+        "不 pickle 会被杀进程"
+      ],
+      "answer": 1,
+      "explain": "每个 worker 是独立进程，调用参数要发过去、返回值要发回来，通道就是 pickle。不可序列化的对象（打开的文件、socket）会直接报错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>Executor.map</code> 保持顺序，<code>submit + as_completed</code> 按完成顺序。",
+        "线程池管 IO 并行，进程池管 CPU 并行（绕开 GIL）。",
+        "进程池的代价是 pickle：传小参数、返回小结果。",
+        "Windows 下进程池入口必须有 <code>if __name__ == \"__main__\"</code> 守卫。"
+      ]
+    }
+  ],
+  "prev": "s3-67-threading",
+  "next": "s3-69-concurrency-choice"
+}

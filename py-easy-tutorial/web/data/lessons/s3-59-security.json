@@ -1,0 +1,187 @@
+{
+  "id": "s3-59-security",
+  "order": 59,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "安全编程",
+  "concepts": [
+    "eval",
+    "pickle",
+    "shell injection",
+    "path traversal"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "四种把服务器送走的写法"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "eval：等于把键盘交给用户"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "pickle：反序列化即代码执行"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "路径穿越：../ 就是钥匙"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "shell=True：第 56 课的坑，这里复盘"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：security considerations",
+      "url": "https://docs.python.org/3/library/security.html"
+    },
+    {
+      "title": "Tutorial：常见安全问题",
+      "url": "https://docs.python.org/3/library/security.html"
+    }
+  ],
+  "prereq": [
+    58
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "四种把服务器送走的写法"
+    },
+    {
+      "type": "p",
+      "html": "这一课没有新语法，只有四个\"看起来无害的 API + 一点用户输入 = 事故\"的组合。每个都在沙箱里复现给你看——看清楚危害长什么样，戒掉它们才不是口号。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>eval</code>：等于把键盘交给用户"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "expression = \"__import__('os').getcwd()\"\n\nresult = eval(expression)\nprint(\"eval 真的执行了：\", isinstance(result, str) and \"pytut-build\" in result)",
+      "runnable": true,
+      "editable": true,
+      "expect": "eval 真的执行了： True"
+    },
+    {
+      "type": "p",
+      "html": "<code>eval(\"2 + 3\")</code> 用于计算器演示没问题；一旦表达式来自用户，<code>__import__</code> 就能执行任意代码。上面的输出在实际环境里就是<strong>当前工作目录</strong>——本教程的沙箱把它拦住了，真实服务器上没人拦。"
+    },
+    {
+      "type": "p",
+      "html": "需要计算表达式用 <code>ast.literal_eval</code>（只允许字面量）："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import ast\n\nprint(ast.literal_eval(\"[1, 2, 3]\"))\n\ntry:\n    ast.literal_eval(\"__import__('os')\")\nexcept ValueError as exc:\n    print(\"拒绝：\", type(exc).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 2, 3]\n拒绝： ValueError"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>pickle</code>：反序列化即代码执行"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import pickle\n\ndata = {\"user\": \"Ada\"}\nblob = pickle.dumps(data)\nprint(pickle.loads(blob))",
+      "runnable": true,
+      "editable": true,
+      "expect": "{'user': 'Ada'}"
+    },
+    {
+      "type": "p",
+      "html": "自己 <code>dumps</code> 再 <code>loads</code> 没问题；<strong>加载来路不明的 pickle 文件</strong>等于执行任意构造的代码。pickle 的文档第一句就写着\"从不信任来源\"。跨进程传数据用 JSON，持久化自己的对象用 <code>dataclass</code> + JSON。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "路径穿越：<code>../</code> 就是钥匙"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from pathlib import Path\n\nBASE = Path(\"/tmp/pytut-demo\") / \"uploads\"\nfilename = \"../../etc/hostname\"\n\ntarget = (BASE / filename).resolve()\nprint(str(target).startswith(str(BASE)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "False"
+    },
+    {
+      "type": "p",
+      "html": "用户上传名叫 <code>../../etc/hostname</code> 的文件，<code>BASE / filename</code> 直接逃出上传目录。修复：resolve 之后<strong>校验仍在 BASE 下</strong>，不满足就拒绝——这个模式背下来。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>shell=True</code>：第 56 课的坑，这里复盘"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "import shlex\n\nfilename = \"notes.txt; rm -rf ~\"\nprint(shlex.split(f\"git log {filename}\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['git', 'log', 'notes.txt;', 'rm', '-rf', '~']"
+    },
+    {
+      "type": "p",
+      "html": "<code>shlex</code> 不会执行命令，但它展示了 shell 会怎么拆这条字符串：分号把\"看日志\"和\"删库\"接成两条命令。列表参数（不经 shell）从一开始就没有这个问题。"
+    },
+    {
+      "type": "quiz",
+      "question": "需要把用户上传的文件存到 <code>/srv/uploads</code> 下，正确的做法是？",
+      "options": [
+        "target = f'/srv/uploads/{filename}'",
+        "target = Path('/srv/uploads') / filename，然后校验 resolve() 结果在 uploads 下",
+        "把文件内容 base64 后当文件名",
+        "用 os.system(f'mv {filename} /srv/uploads/')"
+      ],
+      "answer": 1,
+      "explain": "resolve() 展开所有 ../ 与符号链接，之后断言路径在白名单目录内，不满足即拒绝。字符串拼接和 shell 移动都把攻击面完全交给用户输入。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "表达式来自用户 → <code>ast.literal_eval</code>，永远不用 <code>eval</code>。",
+        "pickle 只加载自己写的文件；跨系统交换用 JSON。",
+        "外部路径先 <code>resolve()</code> 再校验前缀，拒绝越界。",
+        "子进程一律列表参数；<code>shell=True</code> 遇用户输入即注入。"
+      ]
+    }
+  ],
+  "prev": "s3-58-type-checking",
+  "next": "s3-60-design-patterns"
+}

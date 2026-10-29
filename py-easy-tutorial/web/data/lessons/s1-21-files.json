@@ -1,0 +1,206 @@
+{
+  "id": "s1-21-files",
+  "order": 21,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "文件读写",
+  "concepts": [
+    "open",
+    "with",
+    "encoding",
+    "readlines",
+    "json"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "打开的，一定要关"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "写与读"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "逐行读，不要一次全读进来"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "用 json 存结构化数据"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "二进制与文本要分清"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 7.2：读写文件",
+      "url": "https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files"
+    },
+    {
+      "title": "Library Reference：open()",
+      "url": "https://docs.python.org/3/library/functions.html#open"
+    }
+  ],
+  "prereq": [
+    20
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "打开的，一定要关"
+    },
+    {
+      "type": "p",
+      "html": "文件句柄是操作系统资源，用完不还会泄漏。Python 的 <code>with</code> 语句保证即使中途抛异常也会关闭——所以<strong>只要是 <code>open</code>，就配 <code>with</code></strong>，几乎没有例外。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "写与读"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "with open(\"notes.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"第一行\\n第二行\\n\")\n\nwith open(\"notes.txt\", encoding=\"utf-8\") as f:\n    print(f.read())",
+      "runnable": true,
+      "editable": true,
+      "expect": "第一行\n第二行"
+    },
+    {
+      "type": "p",
+      "html": "<code>\"w\"</code> 会清空原文件再写，<code>\"a\"</code> 是追加。读写都要显式指定 <code>encoding=\"utf-8\"</code>——虽然 3.15 默认就是 UTF-8，但写出来是给读代码的人看的，也让跨平台行为确定。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "逐行读，不要一次全读进来"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "with open(\"data.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"a\\nb\\nc\\n\")\n\nwith open(\"data.txt\", encoding=\"utf-8\") as f:\n    lines = [line.strip() for line in f]\n\nprint(lines)\nprint(len(lines))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['a', 'b', 'c']\n3"
+    },
+    {
+      "type": "p",
+      "html": "文件对象本身可迭代，逐行读内存占用是常数。<code>f.readlines()</code> 会把整个文件载入列表，大文件会爆内存；<code>f.read()</code> 更是把全文变成一个字符串。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "为什么要 strip",
+      "html": "每行末尾都带 <code>\\n</code>。不处理的话 <code>[\"a\\n\", \"b\\n\"]</code> 在比较、显示时都会有意外。<code>strip()</code> 去掉首尾空白，<code>rstrip(\"\\n\")</code> 只去换行、保留行首缩进——处理代码文件时后者更合适。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "用 json 存结构化数据"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import json\n\ndata = {\"name\": \"Ada\", \"langs\": [\"Python\", \"C\"]}\nwith open(\"user.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(data, f, ensure_ascii=False)\n\nwith open(\"user.json\", encoding=\"utf-8\") as f:\n    loaded = json.load(f)\n\nprint(loaded)\nprint(loaded[\"langs\"][0])",
+      "runnable": true,
+      "editable": true,
+      "expect": "{'name': 'Ada', 'langs': ['Python', 'C']}\nPython"
+    },
+    {
+      "type": "p",
+      "html": "<code>ensure_ascii=False</code> 让中文原样写入而不是转成 <code>\\uXXXX</code>——文件给人看时可读性差很多。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "二进制与文本要分清"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "with open(\"blob.bin\", \"wb\") as f:\n    f.write(b\"\\x00\\x01\\x02\")\n\nwith open(\"blob.bin\", \"rb\") as f:\n    raw = f.read()\n\nprint(len(raw), raw[0])",
+      "runnable": true,
+      "editable": true,
+      "expect": "3 0"
+    },
+    {
+      "type": "p",
+      "html": "<code>\"rb\"</code> / <code>\"wb\"</code> 读写 <code>bytes</code>，不做编码转换。图片、压缩包、<code>pickle</code> 都要走这条路。"
+    },
+    {
+      "type": "quiz",
+      "question": "用 <code>open(path)</code> 打开文件但不关闭，最直接的后果是什么？",
+      "options": [
+        "文件内容会丢失",
+        "文件句柄泄漏，进程可能耗尽可打开文件数",
+        "下次打开会报编码错误",
+        "没有任何影响，GC 会自动处理"
+      ],
+      "answer": 1,
+      "explain": "CPython 的引用计数通常会在对象销毁时关闭文件，但这是实现细节，不能依赖：异常路径、循环引用、其他解释器都可能让句柄迟迟不释放。用 with 才是确定的。"
+    },
+    {
+      "type": "exercise",
+      "id": "s1-21-ex1",
+      "title": "统计非空行",
+      "prompt": "文件 <code>words.txt</code> 已经创建好。统计<strong>非空行</strong>的数量，存到变量 <code>count</code>。",
+      "starter": "with open(\"words.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"alpha\\n\\nbeta\\ngamma\\n\")\n\ncount = 0\n# 在这里统计非空行数\n",
+      "solution": "with open(\"words.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"alpha\\n\\nbeta\\ngamma\\n\")\n\ncount = 0\nwith open(\"words.txt\", encoding=\"utf-8\") as f:\n    for line in f:\n        if line.strip():\n            count += 1\n",
+      "tests": [
+        {
+          "name": "测试 1",
+          "code": "assert count == 3, '应该有 3 个非空行'"
+        },
+        {
+          "name": "测试 2",
+          "code": "assert isinstance(count, int), 'count 应该是整数'"
+        }
+      ],
+      "hints": [
+        "逐行读文件，判断 <code>line.strip()</code> 是否为空。",
+        "空行 strip 之后是空字符串，布尔值为假。",
+        "循环里写 <code>if line.strip(): count += 1</code>。"
+      ],
+      "xp": 10
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "永远用 <code>with open(...)</code>，异常时也会关闭。",
+        "显式写 <code>encoding=\"utf-8\"</code>，省得换平台出问题。",
+        "逐行迭代文件比 <code>read()</code> / <code>readlines()</code> 省内存。",
+        "<code>json.dump/load</code> 处理结构化数据，<code>ensure_ascii=False</code> 保留中文。",
+        "<code>\"rb\"</code> / <code>\"wb\"</code> 是二进制，不涉及编码。"
+      ]
+    }
+  ],
+  "prev": "s1-20-io-format",
+  "next": "s1-22-stdlib-tour"
+}

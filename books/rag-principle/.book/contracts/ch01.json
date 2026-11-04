@@ -1,0 +1,29 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料，再让模型基于资料回答",
+      "aliases": ["RAG"]
+    },
+    {
+      "id": "C009",
+      "zh": "检索缺失",
+      "en": "Retrieval Miss",
+      "def": "正确证据没有进入候选集",
+      "aliases": []
+    },
+    {
+      "id": "C010",
+      "zh": "生成越界",
+      "en": "Generation Overreach",
+      "def": "证据在场，模型仍超出证据回答",
+      "aliases": ["越界"]
+    }
+  ],
+  "provides": [],
+  "assumes": [],
+  "hook": "责任划分清楚了，下一步要问检索本身为什么会失败"
+}

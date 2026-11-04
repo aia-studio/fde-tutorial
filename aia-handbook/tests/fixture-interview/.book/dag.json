@@ -1,0 +1,43 @@
+{
+  "book": "D:\\Code\\fde-tutorial\\aia-handbook\\tests\\fixture-interview",
+  "genre": "interview",
+  "nodes": {
+    "ch01": {
+      "requires": [],
+      "references": [
+        "02"
+      ],
+      "target_words": 320,
+      "difficulty": 2
+    },
+    "ch02": {
+      "requires": [
+        "ch01"
+      ],
+      "references": [],
+      "target_words": 320,
+      "difficulty": 3
+    }
+  },
+  "waves": [
+    [
+      "ch01"
+    ],
+    [
+      "ch02"
+    ]
+  ],
+  "metrics": {
+    "chapters": 2,
+    "edges": 1,
+    "waves": 2,
+    "max_wave_width": 1,
+    "max_fanout": {
+      "chapter": "ch01",
+      "count": 1
+    },
+    "isolated": []
+  },
+  "problems": [],
+  "warnings": []
+}

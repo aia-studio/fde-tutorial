@@ -1,0 +1,14 @@
+{"id": "F-001", "ts": "2026-09-02", "session": "S-2041", "question": "屏幕一片黑但灯还亮", "expect": "T-1004", "feedback": "差", "note": "系统说不在范围，客户描述其实很清楚"}
+{"id": "F-002", "ts": "2026-09-02", "session": "S-2042", "question": "屏幕一片黑但灯还亮", "expect": "T-1004", "feedback": "差", "note": "同一句话又来一条"}
+{"id": "F-003", "ts": "2026-09-03", "session": "S-2044", "question": "纸总卡在出纸口", "expect": "T-1003", "feedback": "差", "note": "还是拒答，客户改了个说法"}
+{"id": "F-004", "ts": "2026-09-05", "session": "S-2051", "question": "键盘洒了水", "expect": "T-1021", "feedback": "差", "note": "拒答，客户用的是口语"}
+{"id": "F-005", "ts": "2026-09-08", "session": "S-2060", "question": "机器上的灯闪三下", "expect": "T-1043", "feedback": "差", "note": "拒答，客户没说型号"}
+{"id": "F-006", "ts": "2026-09-10", "session": "S-2066", "question": "联不上 wifi", "expect": "T-1013", "feedback": "差", "note": "中英混写，拒答"}
+{"id": "F-007", "ts": "2026-09-12", "session": "S-2071", "question": "扫描件灰蒙蒙的", "expect": "T-1015", "feedback": "差", "note": "拒答"}
+{"id": "F-008", "ts": "2026-09-15", "session": "S-2077", "question": "电源一插就跳闸", "expect": "T-1017", "feedback": "差", "note": "答成了完全不通电那条"}
+{"id": "F-009", "ts": "2026-09-18", "session": "S-2083", "question": "换新的要等几天", "expect": "T-1034", "feedback": "差", "note": "答成了键帽卡住那条"}
+{"id": "F-010", "ts": "2026-09-20", "session": "S-2090", "question": "可以做定制吗", "expect": null, "feedback": "差", "note": "不在范围内却答了保修凭证"}
+{"id": "F-011", "ts": "2026-09-22", "session": "S-2095", "question": "HY-100 保修几年", "expect": "T-1024", "feedback": "差", "note": "证据在却按批次冲突拒了"}
+{"id": "F-012", "ts": "2026-09-25", "session": "S-2101", "question": "能开专票吗", "expect": "T-1040", "feedback": "好", "note": ""}
+{"id": "F-013", "ts": "2026-09-27", "session": "S-2105", "question": "换货要原包装吗", "expect": "T-1035", "feedback": "好", "note": ""}
+{"id": "F-014", "ts": "2026-09-29", "session": "S-2110", "question": "显示器保修几年", "expect": null, "feedback": "好", "note": "要求补型号，符合预期"}

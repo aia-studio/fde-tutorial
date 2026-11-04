@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 312">
+  <rect width="680" height="312" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B6252" text-anchor="middle">四条路线都在换代价，没有一条是默认项</text>
+  <rect x="24" y="128" width="116" height="58" rx="6" fill="#FFFFFF" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="82" y="152" font-size="11" fill="#3A3428" text-anchor="middle">知识型需求</text>
+  <text x="82" y="170" font-size="10" fill="#6B6252" text-anchor="middle">先看答案的形态</text>
+  <rect x="200" y="40" width="168" height="52" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="284" y="60" font-size="11" fill="#0C447C" text-anchor="middle">检索</text>
+  <text x="284" y="77" font-size="10" fill="#185FA5" text-anchor="middle">证据可追溯、可更新</text>
+  <rect x="200" y="102" width="168" height="52" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="284" y="122" font-size="11" fill="#0C447C" text-anchor="middle">长上下文</text>
+  <text x="284" y="139" font-size="10" fill="#185FA5" text-anchor="middle">不用挑段落</text>
+  <rect x="200" y="164" width="168" height="52" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="284" y="184" font-size="11" fill="#245024" text-anchor="middle">微调</text>
+  <text x="284" y="201" font-size="10" fill="#3B7A3B" text-anchor="middle">输出结构与语气稳定</text>
+  <rect x="200" y="226" width="168" height="52" rx="6" fill="#FBEFE6" stroke="#A5611B" stroke-width="0.8"/>
+  <text x="284" y="246" font-size="11" fill="#7A3E0A" text-anchor="middle">查询接口</text>
+  <text x="284" y="263" font-size="10" fill="#A5611B" text-anchor="middle">唯一正确值，可复算</text>
+  <line x1="142" y1="146" x2="196" y2="70" stroke="#6B6252" stroke-width="1" marker-end="url(#c)"/>
+  <line x1="142" y1="152" x2="196" y2="128" stroke="#6B6252" stroke-width="1" marker-end="url(#c)"/>
+  <line x1="142" y1="160" x2="196" y2="188" stroke="#6B6252" stroke-width="1" marker-end="url(#c)"/>
+  <line x1="142" y1="168" x2="196" y2="248" stroke="#6B6252" stroke-width="1" marker-end="url(#c)"/>
+  <defs><marker id="c" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6B6252"/></marker></defs>
+  <text x="386" y="72" font-size="10" fill="#A33A3A">代价：切分与索引时效要长期维护</text>
+  <text x="386" y="134" font-size="10" fill="#A33A3A">代价：每次重读全文，输入随语料变长</text>
+  <text x="386" y="196" font-size="10" fill="#A33A3A">代价：事实变了，模型不知道</text>
+  <text x="386" y="258" font-size="10" fill="#A33A3A">代价：要建模、要对接、要权限</text>
+  <text x="340" y="300" font-size="11" fill="#6B6252" text-anchor="middle">选择不是选能力最强的，是选你愿意长期承担哪一份代价</text>
+</svg>

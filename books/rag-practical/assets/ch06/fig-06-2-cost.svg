@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 280">
+  <rect width="680" height="280" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="30" font-size="15" fill="#0C447C" text-anchor="middle">单次问答的成本构成：三段各自可控</text>
+  <rect x="30" y="60" width="180" height="90" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="120" y="86" font-size="13" fill="#0C447C" text-anchor="middle">输入 token</text>
+  <text x="120" y="108" font-size="11" fill="#3C4C5C" text-anchor="middle">问题 + Top-K 块全文</text>
+  <text x="120" y="128" font-size="11" fill="#3C4C5C" text-anchor="middle">K 越大越贵</text>
+  <rect x="250" y="60" width="180" height="90" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="340" y="86" font-size="13" fill="#0C447C" text-anchor="middle">输出 token</text>
+  <text x="340" y="108" font-size="11" fill="#3C4C5C" text-anchor="middle">答案或引文长度</text>
+  <text x="340" y="128" font-size="11" fill="#3C4C5C" text-anchor="middle">单价通常是输入的数倍</text>
+  <rect x="470" y="60" width="180" height="90" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="560" y="86" font-size="13" fill="#245024" text-anchor="middle">检索算力</text>
+  <text x="560" y="108" font-size="11" fill="#2C4C2C" text-anchor="middle">本地 CPU，不按 token 计费</text>
+  <text x="560" y="128" font-size="11" fill="#2C4C2C" text-anchor="middle">换成外部服务才进账单</text>
+  <text x="340" y="190" font-size="12" fill="#5B6B7B" text-anchor="middle">成本可算，延迟不一定线性：p95 往往来自某一次检索变慢或模型排队</text>
+  <text x="340" y="218" font-size="12" fill="#5B6B7B" text-anchor="middle">算完记得把单价换成本项目的采购价，占位值只用于跑通口径</text>
+  <text x="340" y="248" font-size="12" fill="#5B6B7B" text-anchor="middle">单位：元 / 千 token</text>
+</svg>

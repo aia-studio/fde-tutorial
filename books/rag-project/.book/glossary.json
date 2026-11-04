@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "terms": [
+    {
+      "id": "C001",
+      "zh": "验收标准",
+      "en": "Acceptance Criteria",
+      "def": "客户能指着屏幕确认的通过条件",
+      "first_chapter": "ch01",
+      "aliases": []
+    },
+    {
+      "id": "C002",
+      "zh": "决策人",
+      "en": "Decision Maker",
+      "def": "能对验收结果签字的人",
+      "first_chapter": "ch01",
+      "aliases": []
+    },
+    {
+      "id": "C003",
+      "zh": "只读从库",
+      "en": "Read Replica",
+      "def": "只允许读的数据库副本",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C004",
+      "zh": "字段映射",
+      "en": "Field Mapping",
+      "def": "源字段与目标字段的对应表",
+      "first_chapter": "ch02",
+      "aliases": []
+    },
+    {
+      "id": "C005",
+      "zh": "切分",
+      "en": "Chunking",
+      "def": "把长文档切成可检索的小块",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C006",
+      "zh": "召回",
+      "en": "Recall",
+      "def": "正确内容是否出现在候选集里",
+      "first_chapter": "ch03",
+      "aliases": []
+    },
+    {
+      "id": "C007",
+      "zh": "引用",
+      "en": "Citation",
+      "def": "答案里指向原文片段的标注",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C008",
+      "zh": "拒答",
+      "en": "Abstention",
+      "def": "证据不足时明确说答不了",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C009",
+      "zh": "返工",
+      "en": "Rework",
+      "def": "因决策或数据问题推翻重做",
+      "first_chapter": "ch04",
+      "aliases": []
+    },
+    {
+      "id": "C010",
+      "zh": "P95 延迟",
+      "en": "P95 Latency",
+      "def": "95% 请求都能在此时间内返回",
+      "first_chapter": "ch05",
+      "aliases": []
+    },
+    {
+      "id": "C011",
+      "zh": "灰度发布",
+      "en": "Canary Release",
+      "def": "先放一小部分流量验证",
+      "first_chapter": "ch06",
+      "aliases": []
+    },
+    {
+      "id": "C012",
+      "zh": "交接文档",
+      "en": "Handover Doc",
+      "def": "让接手的人能独立运行的说明",
+      "first_chapter": "ch06",
+      "aliases": []
+    },
+    {
+      "id": "C013",
+      "zh": "多租户",
+      "en": "Multi-Tenancy",
+      "def": "一套检索同时服务多个部门或公司，数据互不可见",
+      "first_chapter": "ch07",
+      "aliases": []
+    },
+    {
+      "id": "C014",
+      "zh": "影子索引",
+      "en": "Shadow Index",
+      "def": "与线上并行的新索引，只用于比对，不接流量",
+      "first_chapter": "ch07",
+      "aliases": []
+    },
+    {
+      "id": "C015",
+      "zh": "最终验收",
+      "en": "Final Acceptance",
+      "def": "逐项看可复测证据、零阻断后才发起的签字",
+      "first_chapter": "ch08",
+      "aliases": []
+    },
+    {
+      "id": "C016",
+      "zh": "需求边界",
+      "en": "Scope Boundary",
+      "def": "把收尾期需求分成产品能力、配置项、待评估、不接四类",
+      "first_chapter": "ch08",
+      "aliases": []
+    }
+  ]
+}

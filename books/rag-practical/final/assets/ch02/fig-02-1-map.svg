@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="34" font-size="16" fill="#0C447C" text-anchor="middle">Ch02 切分与向量化：从文档到可检索的块</text>
+  <rect x="40" y="60" width="280" height="110" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="86" font-size="14" fill="#0C447C">2.1 切分粒度</text>
+  <text x="60" y="110" font-size="12" fill="#3C4C5C">按「一个答案要多少上下文」定块长</text>
+  <text x="60" y="132" font-size="12" fill="#3C4C5C">块太大检索不准，太小答案被切断</text>
+  <text x="60" y="154" font-size="12" fill="#3C4C5C">产物：chunk_text() / build_chunks()</text>
+  <rect x="360" y="60" width="280" height="110" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="380" y="86" font-size="14" fill="#0C447C">2.2 重叠与元数据</text>
+  <text x="380" y="110" font-size="12" fill="#3C4C5C">重叠治「答案被切开」</text>
+  <text x="380" y="132" font-size="12" fill="#3C4C5C">元数据治「不该出现的块」</text>
+  <text x="380" y="154" font-size="12" fill="#3C4C5C">产品、类别、日期、序号</text>
+  <rect x="40" y="190" width="280" height="110" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="216" font-size="14" fill="#0C447C">2.3 选嵌入模型</text>
+  <text x="60" y="240" font-size="12" fill="#3C4C5C">先选能离线、结果确定的</text>
+  <text x="60" y="262" font-size="12" fill="#3C4C5C">接口留成 embed_texts()</text>
+  <text x="60" y="284" font-size="12" fill="#3C4C5C">换模型只改一个函数</text>
+  <rect x="360" y="190" width="280" height="110" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="380" y="216" font-size="14" fill="#245024">2.4 建索引与增量更新</text>
+  <text x="380" y="240" font-size="12" fill="#2C4C2C">SQLite 存块、元数据、向量</text>
+  <text x="380" y="262" font-size="12" fill="#2C4C2C">按工单整条替换，块数不涨</text>
+  <text x="380" y="284" font-size="12" fill="#2C4C2C">产物：data/index.db</text>
+  <text x="340" y="325" font-size="12" fill="#5B6B7B" text-anchor="middle">前两节决定切什么，后两节决定怎么存、怎么算相似</text>
+</svg>

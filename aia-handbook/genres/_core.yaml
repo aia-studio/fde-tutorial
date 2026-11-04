@@ -1,0 +1,81 @@
+# 写作宪法 · 核心层（机器可读）
+# _core.md 是本文件的人读版本：散文解释「为什么」，这里定义「是什么值」。
+# 两者矛盾时以本文件为准；改规则必须同时改两份。
+
+lang: zh-CN
+extends: null
+
+# ── 排版阈值 ──
+typography:
+  max_sentence_chars: 40      # 单句上限
+  max_paragraph_chars: 100    # 单段上限（约 4 行）
+  hard_max_paragraph_chars: 160   # 技术密集段放宽上限
+  consecutive_over_limit: 2   # 连续超限段数容忍，超过即报错
+
+# ── 人称 ──
+person:
+  required: [你]              # 必须出现
+  discouraged: [我们]         # 允许，但占比见 fingerprint.person_ratio
+  forbidden: [大家, 各位同学, 筒子们, 笔者, 本文, 本教程, 本书作者]
+
+# ── 标注 ──
+annotation:
+  format: "【{name}】"        # 全角方括号 + 名称
+  max_per_section: 2
+  max_per_chapter: 8
+  must_be_inline: true        # 必须紧跟所修饰段落，不得堆在章末
+  # 具体名称白名单由 genre 的 stackable.annotations 定义
+
+# ── 统计口径 ──
+count:
+  include: [paragraph, table]           # 计入字数
+  exclude: [code_block, figure_caption, blockquote, heading]
+  sentence_delimiters: ["。", "！", "？", "；"]
+  paragraph_split: blank_line
+
+# ── 术语 ──
+glossary:
+  first_mention_format: "{zh}（{en}，{abbr}）"
+  max_aliases: 2              # 一个概念最多几个别名，多了说明读者记不住
+  forbid_synonym_swap: true   # 同一概念不得换名
+
+# ── 禁用表达 ──
+banned_words:               # 空词：出现时通常说明作者没想清楚
+  - 综上所述
+  - 由此可见
+  - 众所周知
+  - 不言而喻
+  - 赋能
+  - 闭环
+  - 抓手
+  - 底层逻辑
+  - 颗粒度
+  - 打通
+  - 拉齐
+  - 非常重要
+  - 极其关键
+
+banned_phrases:             # 打击读者自信的表述
+  - 很简单
+  - 显而易见
+  - 只要……就
+  - 无非是
+  - 稍微一想
+
+# ── 事实纪律 ──
+facts:
+  require_source: true        # 断言数字必须有出处
+  stale_data_suffix: 以阅读时最新公开数据为准
+  legal_scope: 只讲要做什么、找谁确认，不提供法律意见
+  dispute_policy: 主流说法 + 待确认并列，不站队
+  forbid_fabricated_stats: true
+
+# ── 通用反模式（关键词触发，用于扫描） ──
+anti_pattern_keywords:
+  - 此处省略
+  - 如图所见
+  - 不再赘述
+  - 详见后文
+  - TODO
+  - 待补充
+  - 略

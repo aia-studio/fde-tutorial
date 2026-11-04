@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "created": "2026-10-30",
+  "phase": "0-intake",
+  "frozen": {
+    "positioning": false,
+    "toc": false,
+    "constitution": false
+  },
+  "writers": {},
+  "chapters": {
+    "ch01": {
+      "status": "ready",
+      "attempts": 0,
+      "owner": null,
+      "rev": 1,
+      "updated_at": "2026-10-30T00:04:25+08:00"
+    },
+    "ch02": {
+      "status": "pending",
+      "attempts": 0,
+      "owner": null,
+      "rev": 0
+    }
+  }
+}

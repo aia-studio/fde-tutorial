@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 290" font-family="Source Han Sans SC, Noto Sans SC, sans-serif">
+  <rect width="680" height="290" rx="8" fill="#F7F4EF" stroke="#D9CFC0" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B5B45" text-anchor="middle">引用要能回切：偏移与长度对得上原文才算过</text>
+
+  <rect x="30" y="52" width="270" height="112" rx="6" fill="#FFFFFF" stroke="#C9BDA9" stroke-width="1"/>
+  <text x="44" y="72" font-size="11" fill="#8A7C68">回答</text>
+  <text x="44" y="96" font-size="11" fill="#4A4137">主轴异响多为轴承缺油，</text>
+  <text x="44" y="114" font-size="11" fill="#4A4137">补脂后可以消除。</text>
+  <text x="44" y="140" font-size="11" fill="#185FA5">[HY-1002 · 处理]</text>
+  <text x="44" y="157" font-size="10" fill="#8A7C68">引用只挂关键句，不挂整段</text>
+
+  <rect x="380" y="52" width="270" height="112" rx="6" fill="#FFFFFF" stroke="#C9BDA9" stroke-width="1"/>
+  <text x="394" y="72" font-size="11" fill="#8A7C68">原文（工单 HY-1002）</text>
+  <rect x="390" y="82" width="250" height="22" rx="3" fill="#F1F1F1"/>
+  <text x="396" y="97" font-size="10" fill="#777777">现象：周期性异响，转速越高越明显。</text>
+  <rect x="390" y="108" width="250" height="22" rx="3" fill="#DCEBF9" stroke="#185FA5" stroke-width="1"/>
+  <text x="396" y="123" font-size="10" fill="#0C447C">处理：停机检查轴承润滑，补加润滑脂。</text>
+  <rect x="390" y="134" width="250" height="22" rx="3" fill="#F1F1F1"/>
+  <text x="396" y="149" font-size="10" fill="#777777">结论：轴承缺油，补脂后异响消失。</text>
+
+  <path d="M300 120 C 336 120, 344 118, 380 118" stroke="#185FA5" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#185FA5"/>
+    </marker>
+  </defs>
+  <text x="340" y="110" font-size="10" fill="#185FA5" text-anchor="middle">锚点 #p2</text>
+
+  <rect x="30" y="186" width="620" height="70" rx="6" fill="#FBF3EC" stroke="#C9A227" stroke-width="1"/>
+  <text x="44" y="208" font-size="11" fill="#8A3D06">回切校验（cite.py 的 verify）</text>
+  <text x="44" y="228" font-size="11" fill="#5A4A32">原文[28 : 28+20] 取出来，必须与引用逐字相同；差一个字就判失败。</text>
+  <text x="44" y="246" font-size="11" fill="#5A4A32">模型改写过的句子过不了这一关，所以引用只能来自原文切片。</text>
+
+  <text x="340" y="278" font-size="10" fill="#8A7C68" text-anchor="middle">偏移量是给机器看的，工单号与段落号是给人看的，两者都要有</text>
+</svg>

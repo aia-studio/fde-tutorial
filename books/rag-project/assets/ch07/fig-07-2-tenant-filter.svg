@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230" font-family="Source Han Sans SC, Noto Sans SC, sans-serif">
+  <rect width="680" height="230" rx="8" fill="#F7F4EF" stroke="#D9CFC0" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B5B45" text-anchor="middle">权限过滤放在检索之前与之后</text>
+  <text x="20" y="50" font-size="10" fill="#6B5B45">前置过滤</text>
+  <rect x="20" y="58" width="104" height="40" rx="6" fill="#185FA5" stroke="#185FA5" stroke-width="1.1"/>
+  <text x="72.0" y="83" font-size="11" fill="#FFFFFF" text-anchor="middle">查询</text>
+  <line x1="127" y1="78" x2="151" y2="78" stroke="#185FA5" stroke-width="1.1"/>
+  <path d="M151 78 l-5 -3 v6 z" fill="#185FA5"/>
+  <rect x="154" y="58" width="104" height="40" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.1"/>
+  <text x="206.0" y="75" font-size="11" fill="#0C447C" text-anchor="middle">收窄</text>
+  <text x="206.0" y="90" font-size="11" fill="#0C447C" text-anchor="middle">可见范围</text>
+  <line x1="261" y1="78" x2="285" y2="78" stroke="#185FA5" stroke-width="1.1"/>
+  <path d="M285 78 l-5 -3 v6 z" fill="#185FA5"/>
+  <rect x="288" y="58" width="104" height="40" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.1"/>
+  <text x="340.0" y="75" font-size="11" fill="#0C447C" text-anchor="middle">检索</text>
+  <text x="340.0" y="90" font-size="11" fill="#0C447C" text-anchor="middle">前 k</text>
+  <line x1="395" y1="78" x2="419" y2="78" stroke="#185FA5" stroke-width="1.1"/>
+  <path d="M419 78 l-5 -3 v6 z" fill="#185FA5"/>
+  <rect x="422" y="58" width="104" height="40" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.1"/>
+  <text x="474.0" y="83" font-size="11" fill="#0C447C" text-anchor="middle">模型</text>
+  <line x1="529" y1="78" x2="553" y2="78" stroke="#185FA5" stroke-width="1.1"/>
+  <path d="M553 78 l-5 -3 v6 z" fill="#185FA5"/>
+  <rect x="556" y="58" width="104" height="40" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.1"/>
+  <text x="608.0" y="83" font-size="11" fill="#0C447C" text-anchor="middle">答案</text>
+  <text x="20" y="116" font-size="10" fill="#185FA5">模型只看到本租户、本组的块，答案里不会出现越权内容。</text>
+  <text x="20" y="140" font-size="10" fill="#6B5B45">后置过滤</text>
+  <rect x="20" y="148" width="104" height="40" rx="6" fill="#185FA5" stroke="#B4453A" stroke-width="1.1"/>
+  <text x="72.0" y="173" font-size="11" fill="#FFFFFF" text-anchor="middle">查询</text>
+  <line x1="127" y1="168" x2="151" y2="168" stroke="#B4453A" stroke-width="1.1"/>
+  <path d="M151 168 l-5 -3 v6 z" fill="#B4453A"/>
+  <rect x="154" y="148" width="104" height="40" rx="6" fill="#FBEAE7" stroke="#B4453A" stroke-width="1.1"/>
+  <text x="206.0" y="165" font-size="11" fill="#8C2F26" text-anchor="middle">检索</text>
+  <text x="206.0" y="180" font-size="11" fill="#8C2F26" text-anchor="middle">前 k</text>
+  <line x1="261" y1="168" x2="285" y2="168" stroke="#B4453A" stroke-width="1.1"/>
+  <path d="M285 168 l-5 -3 v6 z" fill="#B4453A"/>
+  <rect x="288" y="148" width="104" height="40" rx="6" fill="#FBEAE7" stroke="#B4453A" stroke-width="1.1"/>
+  <text x="340.0" y="173" font-size="11" fill="#8C2F26" text-anchor="middle">模型</text>
+  <line x1="395" y1="168" x2="419" y2="168" stroke="#B4453A" stroke-width="1.1"/>
+  <path d="M419 168 l-5 -3 v6 z" fill="#B4453A"/>
+  <rect x="422" y="148" width="104" height="40" rx="6" fill="#FBEAE7" stroke="#B4453A" stroke-width="1.1"/>
+  <text x="474.0" y="173" font-size="11" fill="#8C2F26" text-anchor="middle">答案</text>
+  <line x1="529" y1="168" x2="553" y2="168" stroke="#B4453A" stroke-width="1.1"/>
+  <path d="M553 168 l-5 -3 v6 z" fill="#B4453A"/>
+  <rect x="556" y="148" width="104" height="40" rx="6" fill="#FBEAE7" stroke="#B4453A" stroke-width="1.1"/>
+  <text x="608.0" y="165" font-size="11" fill="#8C2F26" text-anchor="middle">展示层</text>
+  <text x="608.0" y="180" font-size="11" fill="#8C2F26" text-anchor="middle">过滤</text>
+  <text x="20" y="206" font-size="10" fill="#B4453A">卡片可以隐藏，已经写进答案的那句话收不回来；名额也被占掉。</text>
+  <text x="20" y="222" font-size="10" fill="#8A8A8A">判定：越权内容一旦进入上下文，就算展示层拦住了，也算泄露。</text>
+</svg>

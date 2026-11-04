@@ -1,0 +1,117 @@
+{
+  "book": "D:\\Code\\fde-tutorial\\aia-handbook\\tests\\fixture-smoke8",
+  "genre": "practical",
+  "nodes": {
+    "ch01": {
+      "requires": [],
+      "references": [
+        "02"
+      ],
+      "target_words": 350,
+      "difficulty": 1
+    },
+    "ch02": {
+      "requires": [
+        "ch01"
+      ],
+      "references": [
+        "03"
+      ],
+      "target_words": 350,
+      "difficulty": 2
+    },
+    "ch03": {
+      "requires": [
+        "ch01"
+      ],
+      "references": [
+        "04"
+      ],
+      "target_words": 350,
+      "difficulty": 2
+    },
+    "ch04": {
+      "requires": [
+        "ch02"
+      ],
+      "references": [
+        "05"
+      ],
+      "target_words": 350,
+      "difficulty": 3
+    },
+    "ch05": {
+      "requires": [
+        "ch02"
+      ],
+      "references": [
+        "06"
+      ],
+      "target_words": 350,
+      "difficulty": 3
+    },
+    "ch06": {
+      "requires": [
+        "ch03",
+        "ch04"
+      ],
+      "references": [
+        "07"
+      ],
+      "target_words": 350,
+      "difficulty": 3
+    },
+    "ch07": {
+      "requires": [
+        "ch05"
+      ],
+      "references": [
+        "08"
+      ],
+      "target_words": 350,
+      "difficulty": 3
+    },
+    "ch08": {
+      "requires": [
+        "ch06",
+        "ch07"
+      ],
+      "references": [],
+      "target_words": 350,
+      "difficulty": 4
+    }
+  },
+  "waves": [
+    [
+      "ch01"
+    ],
+    [
+      "ch02",
+      "ch03"
+    ],
+    [
+      "ch04",
+      "ch05"
+    ],
+    [
+      "ch06",
+      "ch07"
+    ],
+    [
+      "ch08"
+    ]
+  ],
+  "metrics": {
+    "chapters": 8,
+    "edges": 9,
+    "waves": 5,
+    "max_wave_width": 2,
+    "max_fanout": {
+      "chapter": "ch01",
+      "count": 2
+    },
+    "isolated": []
+  },
+  "problems": [],
+  "warnings": []
+}

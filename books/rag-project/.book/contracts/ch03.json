@@ -1,0 +1,38 @@
+{
+  "chapter": "ch03",
+  "defines": [
+    {
+      "id": "C005",
+      "zh": "切分",
+      "en": "Chunking",
+      "def": "把长文档切成可检索的小块",
+      "aliases": []
+    },
+    {
+      "id": "C006",
+      "zh": "召回",
+      "en": "Recall",
+      "def": "正确内容是否出现在候选集里",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch03/chunk.py",
+      "api": "chunk_docs(docs) -> list[Chunk]"
+    },
+    {
+      "module": "src/ch03/index.py",
+      "api": "Index.search(query: str, k: int) -> list[tuple[float, Chunk]]"
+    },
+    {
+      "module": "src/ch03/eval.py",
+      "api": "CASES: list[tuple[str, str]]"
+    }
+  ],
+  "assumes": [
+    "清洗后的正文保留「现象 / 处理 / 结论」段名",
+    "块 id 采用「工单号#序号」，可在原文定位"
+  ],
+  "hook": "候选块可按 Top-5 检出，块 id 可回指原文，引用可直接复用"
+}

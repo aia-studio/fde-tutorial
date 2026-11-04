@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aia-handbook.local/schemas/contract.schema.json",
+  "title": "chapter contract",
+  "description": "跨波传递的唯一载体（SPEC §5）。下游只读合同，不读上游全文。",
+  "type": "object",
+  "required": ["chapter", "defines", "provides", "assumes", "hook"],
+  "additionalProperties": false,
+  "properties": {
+    "chapter": { "type": "string", "pattern": "^ch\\d{2}$" },
+    "defines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "zh", "en", "def"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^C\\d{3}$" },
+          "zh": { "type": "string", "minLength": 1 },
+          "en": { "type": "string", "minLength": 1 },
+          "def": { "type": "string", "minLength": 1 },
+          "aliases": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "provides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["module", "api"],
+        "additionalProperties": false,
+        "properties": {
+          "module": { "type": "string", "minLength": 1 },
+          "api": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "assumes": { "type": "array", "items": { "type": "string" } },
+    "hook": { "type": "string", "minLength": 1 }
+  }
+}

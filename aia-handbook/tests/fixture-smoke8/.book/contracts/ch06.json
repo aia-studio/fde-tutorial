@@ -1,0 +1,20 @@
+{
+  "chapter": "ch06",
+  "defines": [
+    {
+      "id": "C006",
+      "zh": "合并两路数据",
+      "en": "Capability 6",
+      "def": "第 6 章的可交付能力",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch06/main.py",
+      "api": "run(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "两路数据怎么合？"
+}

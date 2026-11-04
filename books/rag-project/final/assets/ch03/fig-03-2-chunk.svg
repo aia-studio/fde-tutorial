@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 310" font-family="Source Han Sans SC, Noto Sans SC, sans-serif">
+  <rect width="680" height="310" rx="8" fill="#F7F4EF" stroke="#D9CFC0" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B5B45" text-anchor="middle">切点跟着业务结构走，不跟着字数走</text>
+
+  <text x="30" y="54" font-size="11" fill="#8A3D06">按固定长度切</text>
+  <rect x="30" y="62" width="620" height="38" rx="4" fill="#FBF3EC" stroke="#C9A227" stroke-width="1"/>
+  <text x="42" y="86" font-size="11" fill="#5A4A32">运行半小时后出现周期性异响，转速越高越明显。停机检查轴承润滑，补加润滑脂并空跑十分钟。</text>
+  <line x1="236" y1="58" x2="236" y2="104" stroke="#B45309" stroke-width="1.4" stroke-dasharray="3 3"/>
+  <line x1="452" y1="58" x2="452" y2="104" stroke="#B45309" stroke-width="1.4" stroke-dasharray="3 3"/>
+  <text x="236" y="118" font-size="10" fill="#B45309" text-anchor="middle">切点</text>
+  <text x="452" y="118" font-size="10" fill="#B45309" text-anchor="middle">切点</text>
+  <text x="500" y="118" font-size="10" fill="#8A3D06">切在句子里，块里只剩半句话</text>
+
+  <text x="30" y="152" font-size="11" fill="#0C447C">按业务结构切</text>
+  <rect x="30" y="160" width="196" height="66" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.2"/>
+  <text x="128" y="180" font-size="11" fill="#0C447C" text-anchor="middle">现象</text>
+  <text x="128" y="198" font-size="10" fill="#4A6B8A" text-anchor="middle">周期性异响，转速越高</text>
+  <text x="128" y="213" font-size="10" fill="#4A6B8A" text-anchor="middle">越明显。</text>
+
+  <rect x="242" y="160" width="196" height="66" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.2"/>
+  <text x="340" y="180" font-size="11" fill="#0C447C" text-anchor="middle">处理</text>
+  <text x="340" y="198" font-size="10" fill="#4A6B8A" text-anchor="middle">停机检查轴承润滑，补</text>
+  <text x="340" y="213" font-size="10" fill="#4A6B8A" text-anchor="middle">加润滑脂并空跑十分钟。</text>
+
+  <rect x="454" y="160" width="196" height="66" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.2"/>
+  <text x="552" y="180" font-size="11" fill="#0C447C" text-anchor="middle">结论</text>
+  <text x="552" y="198" font-size="10" fill="#4A6B8A" text-anchor="middle">轴承缺油，补脂后异响</text>
+  <text x="552" y="213" font-size="10" fill="#4A6B8A" text-anchor="middle">消失。</text>
+
+  <text x="128" y="240" font-size="10" fill="#185FA5" text-anchor="middle">HY-1002#1</text>
+  <text x="340" y="240" font-size="10" fill="#185FA5" text-anchor="middle">HY-1002#2</text>
+  <text x="552" y="240" font-size="10" fill="#185FA5" text-anchor="middle">HY-1002#3</text>
+
+  <text x="340" y="272" font-size="11" fill="#4A4137" text-anchor="middle">块 id 写成「工单号#序号」，回答时才能指回具体一段</text>
+  <text x="340" y="292" font-size="10" fill="#8A7C68" text-anchor="middle">超长段落按句号再切一层，保证单块不跨两件事</text>
+</svg>

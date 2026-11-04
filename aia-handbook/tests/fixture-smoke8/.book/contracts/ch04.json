@@ -1,0 +1,20 @@
+{
+  "chapter": "ch04",
+  "defines": [
+    {
+      "id": "C004",
+      "zh": "接上真实库",
+      "en": "Capability 4",
+      "def": "第 4 章的可交付能力",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch04/main.py",
+      "api": "run(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "怎么接生产库而不闯祸？"
+}

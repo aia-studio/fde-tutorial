@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 190">
+  <rect width="680" height="190" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="28" font-size="13" fill="#6B6252" text-anchor="middle">RAG 在系统中的位置：检索负责证据，生成负责表达</text>
+  <rect x="30" y="60" width="150" height="60" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="105" y="86" font-size="13" fill="#245024" text-anchor="middle">语料</text>
+  <text x="105" y="105" font-size="11" fill="#3B7A3B" text-anchor="middle">文档 / 工单</text>
+  <rect x="230" y="60" width="150" height="60" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="305" y="86" font-size="13" fill="#0C447C" text-anchor="middle">检索</text>
+  <text x="305" y="105" font-size="11" fill="#185FA5" text-anchor="middle">证据在不在</text>
+  <rect x="430" y="60" width="150" height="60" rx="6" fill="#FBEFE6" stroke="#A5611B" stroke-width="0.8"/>
+  <text x="505" y="86" font-size="13" fill="#7A3E0A" text-anchor="middle">生成</text>
+  <text x="505" y="105" font-size="11" fill="#A5611B" text-anchor="middle">表达准不准</text>
+  <line x1="180" y1="90" x2="226" y2="90" stroke="#6B6252" stroke-width="1.2" marker-end="url(#b)"/>
+  <line x1="380" y1="90" x2="426" y2="90" stroke="#6B6252" stroke-width="1.2" marker-end="url(#b)"/>
+  <defs><marker id="b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6B6252"/></marker></defs>
+  <text x="340" y="160" font-size="11" fill="#6B6252" text-anchor="middle">答案错了，先问证据在不在；证据在，再问模型是否越界</text>
+</svg>

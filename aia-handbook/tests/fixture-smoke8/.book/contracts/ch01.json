@@ -1,0 +1,20 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "从零跑通一条链路",
+      "en": "Capability 1",
+      "def": "第 1 章的可交付能力",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch01/main.py",
+      "api": "run(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "怎么在半小时内跑通一次问答？"
+}

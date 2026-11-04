@@ -1,0 +1,34 @@
+{
+  "chapter": "ch04",
+  "defines": [
+    {
+      "id": "C006",
+      "zh": "混合检索",
+      "en": "Hybrid Retrieval",
+      "def": "同时用向量与关键词两路检索",
+      "aliases": []
+    },
+    {
+      "id": "C007",
+      "zh": "倒数排名融合",
+      "en": "Reciprocal Rank Fusion",
+      "def": "只按排名融合多路检索结果",
+      "aliases": [
+        "RRF"
+      ]
+    },
+    {
+      "id": "C008",
+      "zh": "重排",
+      "en": "Rerank",
+      "def": "对候选集再排一次序",
+      "aliases": []
+    }
+  ],
+  "provides": [],
+  "assumes": [
+    "三类失效的划分与验证顺序（Ch03）",
+    "字面失效需要关键词一路兜住（Ch03）"
+  ],
+  "hook": "混合与重排只改善排序，不创造候选集里没有的答案；判据是正确块在不在候选集"
+}

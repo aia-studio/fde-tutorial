@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="34" font-size="16" fill="#0C447C" text-anchor="middle">Ch04 引用与拒答：答案要能被指着核对</text>
+  <rect x="40" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="86" font-size="14" fill="#0C447C">4.1 让答案带原文</text>
+  <text x="60" y="110" font-size="12" fill="#3C4C5C">引文是原文连续片段，不是转述</text>
+  <text x="60" y="132" font-size="12" fill="#3C4C5C">只引处理结论那一句</text>
+  <text x="60" y="154" font-size="12" fill="#3C4C5C">校验函数：quote in source</text>
+  <rect x="360" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="380" y="86" font-size="14" fill="#0C447C">4.2 引用对不齐怎么修</text>
+  <text x="380" y="110" font-size="12" fill="#3C4C5C">先看引文是否跨块</text>
+  <text x="380" y="132" font-size="12" fill="#3C4C5C">再看拼接是否加了字</text>
+  <text x="380" y="154" font-size="12" fill="#3C4C5C">最后看选句规则偏向谁</text>
+  <rect x="40" y="190" width="280" height="105" rx="6" fill="#FDF3E7" stroke="#B57A2A" stroke-width="0.8"/>
+  <text x="60" y="216" font-size="14" fill="#7A4A12">4.3 什么时候必须拒答</text>
+  <text x="60" y="240" font-size="12" fill="#7A4A12">检索不到、型号不明、证据冲突</text>
+  <text x="60" y="262" font-size="12" fill="#7A4A12">拒答是结论，不是兜底异常</text>
+  <text x="60" y="284" font-size="12" fill="#7A4A12">四种原因各有一句固定话术</text>
+  <rect x="360" y="190" width="280" height="105" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="380" y="216" font-size="14" fill="#245024">4.4 拒答的三种话术</text>
+  <text x="380" y="240" font-size="12" fill="#2C4C2C">说清为什么答不了</text>
+  <text x="380" y="262" font-size="12" fill="#2C4C2C">给一个能继续的动作</text>
+  <text x="380" y="284" font-size="12" fill="#2C4C2C">不承诺自己做不到的事</text>
+  <text x="340" y="325" font-size="12" fill="#5B6B7B" text-anchor="middle">交付物：带引用与拒答的问答</text>
+</svg>

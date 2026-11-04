@@ -1,0 +1,20 @@
+{
+  "chapter": "ch07",
+  "defines": [
+    {
+      "id": "C007",
+      "zh": "稳定召回",
+      "en": "Capability 7",
+      "def": "第 7 章的可交付能力",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch07/main.py",
+      "api": "run(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "召回为什么不稳定？"
+}

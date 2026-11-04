@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 330">
+  <rect width="680" height="330" rx="8" fill="#F6F7F9" stroke="#CBD3DC" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#2B3A47" text-anchor="middle">评测按层拆，一个总分指导不了修复</text>
+
+  <rect x="60" y="46" width="180" height="30" rx="5" fill="#EDEBF7" stroke="#5B4B9E" stroke-width="0.8"/>
+  <text x="150" y="65" font-size="11" fill="#3D326E" text-anchor="middle">策略层：该拒答的拒了吗</text>
+  <rect x="60" y="82" width="180" height="30" rx="5" fill="#FBEAEA" stroke="#A63D3D" stroke-width="0.8"/>
+  <text x="150" y="101" font-size="11" fill="#7C2B2B" text-anchor="middle">生成层：每句有证据支持吗</text>
+  <rect x="60" y="118" width="180" height="30" rx="5" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="150" y="137" font-size="11" fill="#0C447C" text-anchor="middle">检索层：正确块进候选了吗</text>
+
+  <rect x="40" y="158" width="220" height="34" rx="5" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="150" y="180" font-size="11" fill="#1F4D38" text-anchor="middle">底座：分层抽样的评测集</text>
+
+  <line x1="262" y1="76" x2="330" y2="76" stroke="#7A8794" stroke-width="1"/>
+  <line x1="262" y1="97" x2="330" y2="97" stroke="#7A8794" stroke-width="1"/>
+  <line x1="262" y1="133" x2="330" y2="133" stroke="#7A8794" stroke-width="1"/>
+
+  <rect x="330" y="56" width="310" height="74" rx="6" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.9"/>
+  <text x="485" y="76" font-size="11" fill="#7A4A12" text-anchor="middle">每层一个判定动作，第二个人能复现</text>
+  <text x="485" y="96" font-size="10" fill="#7A4A12" text-anchor="middle">检索层看候选列表，生成层逐句核对，</text>
+  <text x="485" y="112" font-size="10" fill="#7A4A12" text-anchor="middle">策略层只看无答案题，不要混算</text>
+  <text x="485" y="126" font-size="10" fill="#B97A2A" text-anchor="middle">分数只是结果，动作才是可执行的部分</text>
+
+  <rect x="330" y="146" width="310" height="46" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="485" y="166" font-size="11" fill="#0C447C" text-anchor="middle">样本来源：真实日志抽样 + 失效类型分层</text>
+  <text x="485" y="182" font-size="10" fill="#185FA5" text-anchor="middle">按 Ch03 的三类补齐，另加一批库里无答案的题</text>
+
+  <rect x="40" y="210" width="600" height="52" rx="6" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="340" y="230" font-size="11" fill="#1F4D38" text-anchor="middle">成本与延迟也进同张表：候选数、上下文长度、每次请求的资源开销</text>
+  <text x="340" y="248" font-size="10" fill="#2E6B4F" text-anchor="middle">不记这三项，优化就会一路加配置，最后没人算得清代价</text>
+
+  <text x="340" y="288" font-size="11" fill="#5B6875" text-anchor="middle">上线后：定期抽样人审，盯分布漂移，新失败样本回灌评测集</text>
+  <text x="340" y="310" font-size="10" fill="#8A97A4" text-anchor="middle">评测集是活的资产，不是一次性交付物</text>
+</svg>

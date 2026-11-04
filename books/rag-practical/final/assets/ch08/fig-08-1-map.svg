@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="34" font-size="16" fill="#0C447C" text-anchor="middle">Ch08 运营与迭代：四条常规动作，按月跑一遍</text>
+  <rect x="40" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="86" font-size="14" fill="#0C447C">8.1 badcase 回流</text>
+  <text x="60" y="110" font-size="12" fill="#3C4C5C">去重、判定类型、写清期望</text>
+  <text x="60" y="132" font-size="12" fill="#3C4C5C">判定靠复跑，不靠转述</text>
+  <text x="60" y="154" font-size="12" fill="#3C4C5C">每条都要有处理动作</text>
+  <rect x="360" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="380" y="86" font-size="14" fill="#0C447C">8.2 语料更新与重建</text>
+  <text x="380" y="110" font-size="12" fill="#3C4C5C">先算变更集，再选全量或增量</text>
+  <text x="380" y="132" font-size="12" fill="#3C4C5C">副本上建，校验过再换名</text>
+  <text x="380" y="154" font-size="12" fill="#3C4C5C">换名是原子的，没有中间态</text>
+  <rect x="40" y="190" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="216" font-size="14" fill="#0C447C">8.3 版本对比与灰度</text>
+  <text x="60" y="240" font-size="12" fill="#3C4C5C">同一批会话，两套链路</text>
+  <text x="60" y="262" font-size="12" fill="#3C4C5C">先看变差的项，再看变好的</text>
+  <text x="60" y="284" font-size="12" fill="#3C4C5C">按会话号分桶，同人同一边</text>
+  <rect x="360" y="190" width="280" height="105" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="380" y="216" font-size="14" fill="#245024">8.4 运营指标与月报</text>
+  <text x="380" y="240" font-size="12" fill="#2C4C2C">错在哪、修了什么、先动哪件</text>
+  <text x="380" y="262" font-size="12" fill="#2C4C2C">分母写清，别混口径</text>
+  <text x="380" y="284" font-size="12" fill="#2C4C2C">交付物：一套运营与迭代流程</text>
+  <text x="340" y="325" font-size="12" fill="#5B6B7B" text-anchor="middle">四条动作按月跑：先收、再判、改完对比、月末说清改了值不值</text>
+</svg>

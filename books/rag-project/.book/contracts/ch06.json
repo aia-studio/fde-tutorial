@@ -1,0 +1,34 @@
+{
+  "chapter": "ch06",
+  "defines": [
+    {
+      "id": "C011",
+      "zh": "灰度发布",
+      "en": "Canary Release",
+      "def": "先放一小部分流量验证",
+      "aliases": []
+    },
+    {
+      "id": "C012",
+      "zh": "交接文档",
+      "en": "Handover Doc",
+      "def": "让接手的人能独立运行的说明",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch06/canary.py",
+      "api": "decide(s: Sample) -> tuple[str, str]"
+    },
+    {
+      "module": "src/ch06/monitor.py",
+      "api": "alerts(m: Metrics) -> list[str]"
+    }
+  ],
+  "assumes": [
+    "上线检查清单已逐项签字",
+    "客服系统已支持按档切分流量"
+  ],
+  "hook": "系统按档放量到全量，四项指标有告警，交接文档经新人跑通"
+}

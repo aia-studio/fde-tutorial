@@ -1,0 +1,20 @@
+{
+  "chapter": "ch05",
+  "defines": [
+    {
+      "id": "C005",
+      "zh": "处理字段差异",
+      "en": "Capability 5",
+      "def": "第 5 章的可交付能力",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch05/main.py",
+      "api": "run(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "字段对不上怎么办？"
+}

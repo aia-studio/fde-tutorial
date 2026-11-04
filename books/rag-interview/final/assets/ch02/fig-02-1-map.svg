@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320">
+  <rect width="680" height="320" rx="8" fill="#F6F7F9" stroke="#CBD3DC" stroke-width="0.8"/>
+  <rect x="220" y="18" width="240" height="44" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.2"/>
+  <text x="340" y="38" font-size="13" fill="#0C447C" text-anchor="middle">一个块要装下回答所需的上下文</text>
+  <text x="340" y="54" font-size="10" fill="#185FA5" text-anchor="middle">先问答案要多长，再问文档长什么样</text>
+
+  <line x1="270" y1="62" x2="130" y2="100" stroke="#7A8794" stroke-width="1.1"/>
+  <line x1="340" y1="62" x2="340" y2="100" stroke="#7A8794" stroke-width="1.1"/>
+  <line x1="410" y1="62" x2="550" y2="100" stroke="#7A8794" stroke-width="1.1"/>
+
+  <rect x="30" y="100" width="200" height="62" rx="6" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.8"/>
+  <text x="130" y="122" font-size="12" fill="#7A4A12" text-anchor="middle">有标题、条款、步骤</text>
+  <text x="130" y="140" font-size="11" fill="#7A4A12" text-anchor="middle">按结构切，块边界对齐语义</text>
+  <text x="130" y="155" font-size="10" fill="#B97A2A" text-anchor="middle">代价：结构浅时块仍过长</text>
+
+  <rect x="240" y="100" width="200" height="62" rx="6" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.8"/>
+  <text x="340" y="122" font-size="12" fill="#7A4A12" text-anchor="middle">纯叙述、无层级</text>
+  <text x="340" y="140" font-size="11" fill="#7A4A12" text-anchor="middle">按段落切，重叠补边界</text>
+  <text x="340" y="155" font-size="10" fill="#B97A2A" text-anchor="middle">代价：索引变大，重复召回</text>
+
+  <rect x="450" y="100" width="200" height="62" rx="6" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.8"/>
+  <text x="550" y="122" font-size="12" fill="#7A4A12" text-anchor="middle">表格、清单、参数表</text>
+  <text x="550" y="140" font-size="11" fill="#7A4A12" text-anchor="middle">整表成块，每行带表头</text>
+  <text x="550" y="155" font-size="10" fill="#B97A2A" text-anchor="middle">代价：块长不一，需单独索引</text>
+
+  <rect x="140" y="196" width="400" height="50" rx="6" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="340" y="216" font-size="12" fill="#1F4D38" text-anchor="middle">统一验收：抽 20 个块，逐个问三句</text>
+  <text x="340" y="234" font-size="11" fill="#2E6B4F" text-anchor="middle">单独能读懂？能回答至少一个问题？没切在句子或表格中间？</text>
+
+  <line x1="130" y1="162" x2="240" y2="194" stroke="#7A8794" stroke-width="1"/>
+  <line x1="340" y1="162" x2="340" y2="194" stroke="#7A8794" stroke-width="1"/>
+  <line x1="550" y1="162" x2="440" y2="194" stroke="#7A8794" stroke-width="1"/>
+
+  <text x="340" y="278" font-size="11" fill="#5B6875" text-anchor="middle">验收不过：块太碎就合并同一主题，块太长就按小标题再拆</text>
+  <text x="340" y="300" font-size="10" fill="#8A97A4" text-anchor="middle">切分不是一次调参，是一条要反复走回来的回路</text>
+</svg>

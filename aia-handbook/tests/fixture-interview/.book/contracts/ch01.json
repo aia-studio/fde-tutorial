@@ -1,0 +1,20 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "检索增强生成",
+      "en": "Retrieval-Augmented Generation",
+      "def": "先检索资料再让模型基于资料回答",
+      "aliases": ["RAG"]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch01/rag.py",
+      "api": "answer(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "检索质量决定答案上限"
+}

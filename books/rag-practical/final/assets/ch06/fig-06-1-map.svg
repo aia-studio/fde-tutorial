@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="34" font-size="16" fill="#0C447C" text-anchor="middle">Ch06 评测与上线：用 20 题决定能不能交</text>
+  <rect x="40" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="86" font-size="14" fill="#0C447C">6.1 20 题评测集</text>
+  <text x="60" y="110" font-size="12" fill="#3C4C5C">事实型、型号与代码、边界型</text>
+  <text x="60" y="132" font-size="12" fill="#3C4C5C">每题挂 gold 工单与 gold 句</text>
+  <text x="60" y="154" font-size="12" fill="#3C4C5C">题量小，只能看方向</text>
+  <rect x="360" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="380" y="86" font-size="14" fill="#0C447C">6.2 三个指标分开看</text>
+  <text x="380" y="110" font-size="12" fill="#3C4C5C">召回、引用、拒答各自算</text>
+  <text x="380" y="132" font-size="12" fill="#3C4C5C">不合成一个总分</text>
+  <text x="380" y="154" font-size="12" fill="#3C4C5C">按题型再拆一遍</text>
+  <rect x="40" y="190" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="216" font-size="14" fill="#0C447C">6.3 成本与延迟</text>
+  <text x="60" y="240" font-size="12" fill="#3C4C5C">输入按上下文算，输出按答案算</text>
+  <text x="60" y="262" font-size="12" fill="#3C4C5C">p50 看日常，p95 看投诉</text>
+  <text x="60" y="284" font-size="12" fill="#3C4C5C">单价是占位值，换成采购价</text>
+  <rect x="360" y="190" width="280" height="105" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="380" y="216" font-size="14" fill="#245024">6.4 上线检查清单</text>
+  <text x="380" y="240" font-size="12" fill="#2C4C2C">逐项打勾，不靠感觉</text>
+  <text x="380" y="262" font-size="12" fill="#2C4C2C">每条都要有负责人</text>
+  <text x="380" y="284" font-size="12" fill="#2C4C2C">交付物：评测报告与上线清单</text>
+  <text x="340" y="325" font-size="12" fill="#5B6B7B" text-anchor="middle">先有基线，再谈优化；没有基线，任何改动都无法验收</text>
+</svg>

@@ -1,0 +1,22 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "验收标准",
+      "en": "Acceptance Criteria",
+      "def": "客户能指着屏幕确认的通过条件",
+      "aliases": []
+    },
+    {
+      "id": "C002",
+      "zh": "决策人",
+      "en": "Decision Maker",
+      "def": "能对验收结果签字的人",
+      "aliases": []
+    }
+  ],
+  "provides": [],
+  "assumes": [],
+  "hook": "范围和验收标准定了，数据还没有接进来"
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 160">
+  <rect width="680" height="160" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <rect x="30" y="55" width="120" height="50" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="90" y="85" font-size="14" fill="#0C447C" text-anchor="middle">问题</text>
+  <rect x="200" y="55" width="120" height="50" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="260" y="85" font-size="14" fill="#0C447C" text-anchor="middle">关键词匹配</text>
+  <rect x="370" y="55" width="120" height="50" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="430" y="85" font-size="14" fill="#0C447C" text-anchor="middle">取原文</text>
+  <rect x="540" y="55" width="120" height="50" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="600" y="85" font-size="14" fill="#245024" text-anchor="middle">答案 + 工单号</text>
+  <line x1="150" y1="80" x2="196" y2="80" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="320" y1="80" x2="366" y2="80" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="490" y1="80" x2="536" y2="80" stroke="#5B6B7B" stroke-width="1.2" marker-end="url(#a)"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5B6B7B"/></marker></defs>
+  <text x="340" y="135" font-size="12" fill="#5B6B7B" text-anchor="middle">这一章只跑通这一条链路，不做向量检索与大模型</text>
+</svg>

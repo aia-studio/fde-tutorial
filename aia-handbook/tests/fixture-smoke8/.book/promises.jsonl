@@ -1,0 +1,7 @@
+{"id": "P001", "opened_in": "ch01", "text": "Ch02 讲怎么接样例数据。", "kind": "forward", "target": "ch02", "status": "kept", "closed_in": "ch02"}
+{"id": "P002", "opened_in": "ch02", "text": "Ch03 讲什么算做完。", "kind": "forward", "target": "ch03", "status": "kept", "closed_in": "ch03"}
+{"id": "P003", "opened_in": "ch03", "text": "Ch04 讲怎么接真实库。", "kind": "forward", "target": "ch04", "status": "kept", "closed_in": "ch04"}
+{"id": "P004", "opened_in": "ch04", "text": "Ch05 讲字段差异。", "kind": "forward", "target": "ch05", "status": "kept", "closed_in": "ch05"}
+{"id": "P005", "opened_in": "ch05", "text": "Ch06 讲两路数据怎么合。", "kind": "forward", "target": "ch06", "status": "kept", "closed_in": "ch06"}
+{"id": "P006", "opened_in": "ch06", "text": "Ch07 讲召回稳定性。", "kind": "forward", "target": "ch07", "status": "kept", "closed_in": "ch07"}
+{"id": "P007", "opened_in": "ch07", "text": "Ch08 讲交付与复盘。", "kind": "forward", "target": "ch08", "status": "kept", "closed_in": "ch08"}

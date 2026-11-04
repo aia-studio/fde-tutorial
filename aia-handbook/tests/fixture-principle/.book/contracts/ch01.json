@@ -1,0 +1,20 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "稠密向量",
+      "en": "Dense Vector",
+      "def": "把文本压成固定维度的语义表示",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch01/embed.py",
+      "api": "embed(text: str) -> list[float]"
+    }
+  ],
+  "assumes": [],
+  "hook": "向量丢了字面，专有名词会漏召"
+}

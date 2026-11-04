@@ -1,0 +1,36 @@
+{
+  "source": "calibrated",
+  "calibrated_at": "2026-10-30T01:40:22+08:00",
+  "based_on": [
+    "ch01",
+    "ch02",
+    "ch03",
+    "ch04",
+    "ch05",
+    "ch06",
+    "ch07",
+    "ch08"
+  ],
+  "metrics": {
+    "avg_sentence_len": {
+      "mean": 20.1,
+      "band": 4.0
+    },
+    "avg_paragraph_len": {
+      "mean": 54.8,
+      "band": 12.0
+    },
+    "annotation_per_kchar": {
+      "mean": 1.9,
+      "band": 0.4
+    },
+    "figures_per_section": {
+      "mean": 0.5,
+      "band": 0.2
+    },
+    "code_block_lines": {
+      "mean": 6.0,
+      "band": 5.0
+    }
+  }
+}

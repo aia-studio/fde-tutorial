@@ -1,0 +1,87 @@
+# genre: interview · 可量化字段
+# 人读的解释在 interview.md。标 [初值] 的由第一波校准覆盖。
+
+genre: interview
+label: 面试通关
+extends: _core
+
+exclusive:
+  skeleton: interview-8        # 独有：分层答案 + 追问链
+  # 注意：这里是字符串 "none"（强制各章独立），不是 YAML 的 null（不约束）
+  spine_constraint: "none"
+
+stackable:
+  annotations: [考点, 追问, 加分项, 减分项, 面试官视角, 陷阱, 版本, 待确认]
+  exercise_form: [限时自测]
+  code_required: false
+
+skeleton:
+  - id: header
+    detect: keys
+    keys: [考察, 出现频率, 一句话答案]      # 注意：一句话答案 <= 30 字，check.py 校验
+    required: true
+    max_chars: { 一句话答案: 30 }
+  - id: map
+    detect: heading
+    aliases: [考点地图, 考点关系, 相邻考点]
+    required: true
+  - id: question
+    detect: heading
+    aliases: [真实提问, 面试原题, 提问]
+    required: true
+    max_lines: 8
+  - id: layers
+    detect: heading
+    aliases: [分层解析, 三档答案, 答案分层]
+    required: true
+    require_levels: [及格, 良好, 优秀]
+  - id: followups
+    detect: heading
+    aliases: [追问链, 可能追问, 追问]
+    required: true
+    count_range: [3, 3]        # 固定三层
+  - id: mistakes
+    detect: heading
+    aliases: [高频错误, 常见错误, 踩坑]
+    required: true
+    count_range: [3, 5]
+  - id: selftest
+    detect: heading
+    aliases: [自测, 限时自测]
+    required: true
+    require_scoring: true      # 必须给三档评分标准
+  - id: next
+    detect: heading
+    aliases: [下一考点, 下一章]
+    required: true
+
+defaults:
+  words_per_chapter: [3000, 5000]     # 最短：一个考点讲透即可，不凑字
+  sections_per_chapter: [3, 5]
+  words_per_section: [800, 1300]
+  figures_min: 1                      # 决策树
+  tables_min: 1                       # 分层对照
+  code_blocks_per_section_min: 0
+  code_block_max_lines: 20
+  info_density_min: 0.9
+  difficulty_curve: flat              # 考点之间不设递进，按频率排
+
+fingerprint:
+  avg_sentence_len:     { mean: 24, band: 7 }     # 句子更短，口语化
+  avg_paragraph_len:    { mean: 70, band: 25 }
+  annotation_per_kchar: { mean: 1.3, band: 0.5 }
+  figures_per_section:  { mean: 0.5, band: 0.3 }
+  code_block_lines:     { mean: 12, band: 6 }
+  person_ratio:         { 你: 0.50, 我们: 0.20, 其他: 0.30 }   # 更多「面试官」「对方」
+
+assertion_words: [通过率, 频率, 占比, 年限, 薪资]
+
+anti_patterns:
+  - 只背答案不讲原理
+  - 只给一种解法
+  - 答案不分层
+  - 没有追问链
+  - 提问语气不真实
+  - 承诺背完就能过
+
+plan_required_fields: [chapter, title, requires, references, target_words, difficulty, deliverable]

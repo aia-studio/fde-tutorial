@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 252">
+  <rect width="680" height="252" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B6252" text-anchor="middle">评测是链路上的一段抽样，不是对系统的全称判断</text>
+  <rect x="20" y="48" width="130" height="48" rx="6" fill="#FFFFFF" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="85" y="68" font-size="11" fill="#3A3428" text-anchor="middle">真实问题分布</text>
+  <text x="85" y="84" font-size="10" fill="#6B6252" text-anchor="middle">没人见过全集</text>
+  <rect x="185" y="48" width="120" height="48" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="245" y="68" font-size="11" fill="#0C447C" text-anchor="middle">评测集</text>
+  <text x="245" y="84" font-size="10" fill="#185FA5" text-anchor="middle">被抽出来的那一批</text>
+  <rect x="340" y="48" width="110" height="48" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="395" y="68" font-size="11" fill="#0C447C" text-anchor="middle">指标</text>
+  <text x="395" y="84" font-size="10" fill="#185FA5" text-anchor="middle">把行为压成数</text>
+  <rect x="495" y="48" width="150" height="48" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="570" y="68" font-size="11" fill="#245024" text-anchor="middle">决策</text>
+  <text x="570" y="84" font-size="10" fill="#3B7A3B" text-anchor="middle">签字、上线、回滚</text>
+  <line x1="152" y1="72" x2="181" y2="72" stroke="#6B6252" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="307" y1="72" x2="336" y2="72" stroke="#6B6252" stroke-width="1.2" marker-end="url(#a)"/>
+  <line x1="452" y1="72" x2="491" y2="72" stroke="#6B6252" stroke-width="1.2" marker-end="url(#a)"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#6B6252"/></marker></defs>
+  <line x1="170" y1="98" x2="170" y2="128" stroke="#A33A3A" stroke-width="1" stroke-dasharray="3 2"/>
+  <line x1="325" y1="98" x2="325" y2="128" stroke="#A5611B" stroke-width="1" stroke-dasharray="3 2"/>
+  <line x1="480" y1="98" x2="480" y2="128" stroke="#A5611B" stroke-width="1" stroke-dasharray="3 2"/>
+  <rect x="60" y="132" width="200" height="52" rx="6" fill="#FBEAEA" stroke="#A33A3A" stroke-width="0.8"/>
+  <text x="160" y="152" font-size="11" fill="#7A1F1F" text-anchor="middle">抽样偏差</text>
+  <text x="160" y="169" font-size="10" fill="#A33A3A" text-anchor="middle">样本不覆盖的问题，分数看不见</text>
+  <rect x="285" y="132" width="200" height="52" rx="6" fill="#FBEFE6" stroke="#A5611B" stroke-width="0.8"/>
+  <text x="385" y="152" font-size="11" fill="#7A3E0A" text-anchor="middle">指标替代</text>
+  <text x="385" y="169" font-size="10" fill="#A5611B" text-anchor="middle">压成一个数，等于隐掉一次取舍</text>
+  <rect x="490" y="132" width="180" height="52" rx="6" fill="#FBEFE6" stroke="#A5611B" stroke-width="0.8"/>
+  <text x="580" y="152" font-size="11" fill="#7A3E0A" text-anchor="middle">离线与在线的差</text>
+  <text x="580" y="169" font-size="10" fill="#A5611B" text-anchor="middle">输入由用户与历史答案共同决定</text>
+  <text x="340" y="216" font-size="11" fill="#6B6252" text-anchor="middle">评测的产物是一条有适用范围的结论，不是一句「效果不错」</text>
+  <text x="340" y="238" font-size="10" fill="#6B6252" text-anchor="middle">分数能做的是证伪：在这批样本上没有明显错，不等于在下一批上也不会错</text>
+</svg>

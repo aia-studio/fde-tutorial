@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 260">
+  <rect width="680" height="260" rx="8" fill="#F7F5F0" stroke="#D8D2C4" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#6B6252" text-anchor="middle">重排收益随候选深度变化：先升后平</text>
+  <line x1="80" y1="210" x2="620" y2="210" stroke="#6B6252" stroke-width="1"/>
+  <line x1="80" y1="210" x2="80" y2="52" stroke="#6B6252" stroke-width="1"/>
+  <path d="M88,204 C160,152 240,102 340,90 C440,80 520,78 604,77" fill="none" stroke="#185FA5" stroke-width="1.6"/>
+  <line x1="340" y1="60" x2="340" y2="210" stroke="#A5611B" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="352" y="66" font-size="10" fill="#A5611B">饱和点</text>
+  <text x="60" y="130" font-size="11" fill="#6B6252" text-anchor="middle">收益</text>
+  <text x="580" y="228" font-size="11" fill="#6B6252" text-anchor="middle">候选深度</text>
+  <text x="200" y="232" font-size="10" fill="#3B7A3B">候选里开始出现正确答案</text>
+  <text x="452" y="232" font-size="10" fill="#A5611B">新增候选多为噪声，延迟仍上升</text>
+  <text x="340" y="252" font-size="11" fill="#6B6252" text-anchor="middle">曲线平坦之后，继续加深候选只增加延迟</text>
+</svg>

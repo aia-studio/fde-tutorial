@@ -1,0 +1,20 @@
+{
+  "chapter": "ch01",
+  "defines": [
+    {
+      "id": "C001",
+      "zh": "最小可用",
+      "en": "Minimum Viable",
+      "def": "端到端跑通一条最窄链路",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch01/answer.py",
+      "api": "answer(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "链路能跑通，但真实工单还在数据库里"
+}

@@ -1,0 +1,280 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aia-handbook.local/schemas/book.schema.json",
+  "title": "book.yaml",
+  "description": "一本书稿任务的唯一契约。genre 提供默认值，本文件只写差异。",
+  "type": "object",
+  "required": ["title", "author", "license", "genre", "lang", "audience", "spine", "scale", "deliverables"],
+  "additionalProperties": false,
+
+  "definitions": {
+    "genre": {
+      "type": "string",
+      "enum": ["practical", "principle", "project", "interview"],
+      "description": "单值或列表。列表时第一个为主类型，决定排他维度（骨架/spine），其余只贡献可叠加维度。"
+    },
+    "path": { "type": "string", "minLength": 1 }
+  },
+
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "书名。不含书名号，渲染时由脚本加。"
+    },
+
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "description": "作者署名。用于版权页与版本声明附录。"
+    },
+
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "description": "正文许可。引用他人的图必须在图源码里单独标注，不继承本书许可。"
+    },
+
+    "updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}$",
+      "description": "内容基准年月（YYYY-MM），写入版本声明附录。"
+    },
+
+    "genre": {
+      "oneOf": [
+        { "$ref": "#/definitions/genre" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/definitions/genre" },
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true
+        }
+      ],
+      "description": "混合时排他维度冲突必须报错，不做静默调和。"
+    },
+
+    "lang": {
+      "type": "string",
+      "enum": ["zh-CN", "zh-TW", "en"],
+      "default": "zh-CN"
+    },
+
+    "audience": {
+      "type": "object",
+      "required": ["who", "level", "prerequisite"],
+      "additionalProperties": false,
+      "properties": {
+        "who": { "type": "string", "minLength": 4, "description": "一句话读者画像，越具体越好" },
+        "level": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },
+        "prerequisite": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "最低前置知识。写进去的，正文不得再解释。"
+        }
+      }
+    },
+
+    "spine": {
+      "type": "string",
+      "enum": ["capstone", "running-example", "none"],
+      "description": "capstone：贯穿项目串全书，每章都要推进。running-example：例子跨章复用但不要求每章推进。none：各章独立。"
+    },
+
+    "spine_name": {
+      "type": "string",
+      "description": "贯穿项目/示例的名字。宪法冻结后不得改名。"
+    },
+
+    "scale": {
+      "type": "object",
+      "required": ["chapters", "words_per_chapter"],
+      "additionalProperties": false,
+      "properties": {
+        "chapters": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 60,
+          "description": "测试样本可为 2 章；真实书稿建议 ≥6（见 SKILL「少于 6 章不要用这套流程」）。"
+        },
+        "words_per_chapter": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 200,
+            "description": "测试样本可低至 200；真实书稿按 genre 默认（practical 5000–7000）。"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[下限, 上限]，单位汉字。混合 genre 时取交集，交集为空即配置错误。"
+        }
+      }
+    },
+
+    "deliverables": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["markdown", "code", "figures"] },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+
+    "gates": {
+      "type": "string",
+      "enum": ["hard", "soft"],
+      "default": "hard",
+      "description": "hard：任一闸门不过即 repair，最多 2 次后转人工。soft：只出报告。"
+    },
+
+    "concurrency": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8,
+      "default": 4,
+      "description": "同波次最大并行数。上调会降低交叉一致性。"
+    },
+
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target": { "type": "string", "enum": ["repo", "print", "repo-print-ready"], "default": "repo" },
+        "prepare_print": {
+          "type": "boolean",
+          "default": true,
+          "description": "true 时图许可、版本锁、索引按出版标准预留，但不出 PDF。"
+        }
+      }
+    },
+
+    "figure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "renderer": { "type": "string", "enum": ["mmdc", "browser", "kroki", "none"], "default": "mmdc" },
+        "format": { "type": "string", "enum": ["svg", "png"], "default": "svg" },
+        "htmlLabels": { "type": "boolean", "default": false },
+        "theme": { "type": "string", "enum": ["neutral", "default", "dark", "forest"], "default": "neutral" },
+        "width": { "type": "integer", "minimum": 600, "maximum": 3200, "default": 1600 }
+      }
+    },
+
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_core_terms": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 120,
+          "default": 40,
+          "description": "全书核心术语上限。超过读者记不住，也说明概念没收敛。"
+        },
+        "info_density_min": {
+          "type": "number",
+          "minimum": 0.2,
+          "maximum": 3,
+          "default": 1.2,
+          "description": "每千汉字必须含的可操作单元数（步骤组/代码块/表格/图/练习）。genre 默认：practical 1.2 / principle 0.7 / project 1.5 / interview 0.9。"
+        },
+        "snapshot_every": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 5,
+          "description": "capstone 里程碑快照间隔（章）。仅 spine=capstone 时生效。"
+        },
+        "difficulty_max_run": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 8,
+          "default": 3,
+          "description": "连续多少章 difficulty ≥4 视为读者疲劳，需插入缓冲章。"
+        },
+        "code_block_max_lines": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 80,
+          "default": 30,
+          "description": "正文代码块行数上限。超过须放 src/ 并只引用路径。"
+        }
+      }
+    },
+
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_words": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "断言词表，与内置通用表合并。同段出现这些词且有数字，才产生登记义务。"
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.05,
+          "default": 0.005,
+          "description": "数值匹配容差（相对值），用于吸收四舍五入。"
+        }
+      }
+    },
+
+    "stack": {
+      "type": "object",
+      "description": "技术栈声明，透传给写手与 README 生成，不做结构约束。",
+      "additionalProperties": true
+    },
+
+    "paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "默认目录名一般不用改，改了所有脚本按此解析。",
+      "properties": {
+        "chapters": { "$ref": "#/definitions/path", "default": "chapters" },
+        "plans": { "$ref": "#/definitions/path", "default": "04-chapter-plans" },
+        "src": { "$ref": "#/definitions/path", "default": "src" },
+        "figures": { "$ref": "#/definitions/path", "default": "figures" },
+        "assets": { "$ref": "#/definitions/path", "default": "assets" },
+        "final": { "$ref": "#/definitions/path", "default": "final" }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "description": "project 类型强制 capstone",
+      "if": {
+        "properties": { "genre": { "const": "project" } },
+        "required": ["genre"]
+      },
+      "then": {
+        "properties": { "spine": { "const": "capstone" } }
+      }
+    },
+    {
+      "description": "混合 genre 含 project 时同样强制 capstone，副类型不得降级",
+      "if": {
+        "properties": {
+          "genre": {
+            "type": "array",
+            "contains": { "const": "project" }
+          }
+        },
+        "required": ["genre"]
+      },
+      "then": {
+        "properties": { "spine": { "const": "capstone" } },
+        "required": ["spine_name"]
+      }
+    },
+    {
+      "description": "capstone 必须声明项目名",
+      "if": {
+        "properties": { "spine": { "const": "capstone" } },
+        "required": ["spine"]
+      },
+      "then": { "required": ["spine_name"] }
+    }
+  ]
+}

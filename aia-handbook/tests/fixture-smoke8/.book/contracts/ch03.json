@@ -1,0 +1,20 @@
+{
+  "chapter": "ch03",
+  "defines": [
+    {
+      "id": "C003",
+      "zh": "定义验收标准",
+      "en": "Capability 3",
+      "def": "第 3 章的可交付能力",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch03/main.py",
+      "api": "run(q: str) -> str"
+    }
+  ],
+  "assumes": [],
+  "hook": "什么算做完？"
+}

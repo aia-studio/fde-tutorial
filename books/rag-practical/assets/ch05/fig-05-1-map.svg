@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="34" font-size="16" fill="#0C447C" text-anchor="middle">Ch05 混合检索与重排：先补召回，再谈排序</text>
+  <rect x="40" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="86" font-size="14" fill="#0C447C">5.1 专有名词与数字失效</text>
+  <text x="60" y="110" font-size="12" fill="#3C4C5C">字面即信息时，向量一定会漏</text>
+  <text x="60" y="132" font-size="12" fill="#3C4C5C">型号、错误码、短查询三类高发</text>
+  <text x="60" y="154" font-size="12" fill="#3C4C5C">先复现失败，再决定加一路</text>
+  <rect x="360" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="380" y="86" font-size="14" fill="#0C447C">5.2 BM25 补什么</text>
+  <text x="380" y="110" font-size="12" fill="#3C4C5C">补字面命中，不补语义</text>
+  <text x="380" y="132" font-size="12" fill="#3C4C5C">分数与余弦不同量纲，不能相加</text>
+  <text x="380" y="154" font-size="12" fill="#3C4C5C">代价：多一份倒排，多一次全量扫</text>
+  <rect x="40" y="190" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="216" font-size="14" fill="#0C447C">5.3 RRF 融合</text>
+  <text x="60" y="240" font-size="12" fill="#3C4C5C">只按名次累加 1/(k+名次)</text>
+  <text x="60" y="262" font-size="12" fill="#3C4C5C">同一工单多块只留一个</text>
+  <text x="60" y="284" font-size="12" fill="#3C4C5C">不用调权重，先用它打底</text>
+  <rect x="360" y="190" width="280" height="105" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="380" y="216" font-size="14" fill="#245024">5.4 重排的代价</text>
+  <text x="380" y="240" font-size="12" fill="#2C4C2C">修排序，不修召回</text>
+  <text x="380" y="262" font-size="12" fill="#2C4C2C">多一层计算，多一段延迟</text>
+  <text x="380" y="284" font-size="12" fill="#2C4C2C">收益按「第一名命中」量化</text>
+  <text x="340" y="325" font-size="12" fill="#5B6B7B" text-anchor="middle">两路各记名次，融合后再排一次，三档结果都能对着数字看</text>
+</svg>

@@ -1,0 +1,8 @@
+{"id": "F001", "chapter": "ch02", "text": "同一句话换说法的余弦相似度", "value": 0.783, "unit": "ratio", "source": "src/ch02/embed.py 实测输出", "date": "2026-10-30", "scope": "256 维字符二元组哈希向量"}
+{"id": "F002", "chapter": "ch02", "text": "两句无关的话的余弦相似度", "value": -0.125, "unit": "ratio", "source": "src/ch02/embed.py 实测输出", "date": "2026-10-30", "scope": "同上"}
+{"id": "F003", "chapter": "ch02", "text": "错误码查询与语料的余弦相似度", "value": 0.177, "unit": "ratio", "source": "src/ch02/embed.py 实测输出", "date": "2026-10-30", "scope": "字面只重合一个错误码"}
+{"id": "F004", "chapter": "ch03", "text": "第一组查询第一名的余弦分数", "value": 0.371, "unit": "ratio", "source": "src/ch03/search.py 实测输出", "date": "2026-10-30", "scope": "T-1004"}
+{"id": "F005", "chapter": "ch03", "text": "第一组查询第二名的余弦分数", "value": 0.223, "unit": "ratio", "source": "src/ch03/search.py 实测输出", "date": "2026-10-30", "scope": "T-1001"}
+{"id": "F006", "chapter": "ch03", "text": "第一组查询第三名的余弦分数", "value": 0.105, "unit": "ratio", "source": "src/ch03/search.py 实测输出", "date": "2026-10-30", "scope": "T-1037"}
+{"id": "F007", "chapter": "ch04", "text": "判为「没有证据」的 Top-1 相似度下限", "value": 0.15, "unit": "ratio", "source": "src/ch04/answer.py 的 MIN_SCORE", "date": "2026-10-30", "scope": "余弦口径，换混合检索后需重标"}
+{"id": "F008", "chapter": "ch05", "text": "练习里建议试的 BM25 k1 取值", "value": 0.5, "unit": "other", "source": "Ch05 动手练习的参数建议", "date": "2026-10-30", "scope": "默认 k1=1.5，对照实验用 0.5"}

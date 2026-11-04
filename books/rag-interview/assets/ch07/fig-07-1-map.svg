@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 370">
+  <rect width="680" height="370" rx="8" fill="#F6F7F9" stroke="#CBD3DC" stroke-width="0.8"/>
+  <text x="340" y="26" font-size="13" fill="#2B3A47" text-anchor="middle">设计题先分叉：条件不同，方案不同</text>
+
+  <rect x="170" y="44" width="340" height="34" rx="5" fill="#EDEBF7" stroke="#5B4B9E" stroke-width="0.9"/>
+  <text x="340" y="66" font-size="11" fill="#3D326E" text-anchor="middle">提问：给我一个客服知识库，设计一个 RAG</text>
+
+  <line x1="340" y1="78" x2="340" y2="96" stroke="#7A8794" stroke-width="1"/>
+  <rect x="230" y="96" width="220" height="34" rx="5" fill="#FDF3E7" stroke="#B97A2A" stroke-width="0.9"/>
+  <text x="340" y="118" font-size="11" fill="#7A4A12" text-anchor="middle">第一问：用户是谁，答错赔什么</text>
+
+  <line x1="340" y1="130" x2="340" y2="140" stroke="#7A8794" stroke-width="1"/>
+  <line x1="175" y1="140" x2="505" y2="140" stroke="#7A8794" stroke-width="1"/>
+  <line x1="175" y1="140" x2="175" y2="150" stroke="#7A8794" stroke-width="1"/>
+  <line x1="505" y1="140" x2="505" y2="150" stroke="#7A8794" stroke-width="1"/>
+
+  <rect x="40" y="150" width="270" height="88" rx="6" fill="#FBEAEA" stroke="#A63D3D" stroke-width="0.9"/>
+  <text x="175" y="170" font-size="11" fill="#7C2B2B" text-anchor="middle">外部客户 · 答错代价高</text>
+  <text x="175" y="190" font-size="10" fill="#A63D3D" text-anchor="middle">严拒答，答案逐句给出处</text>
+  <text x="175" y="208" font-size="10" fill="#A63D3D" text-anchor="middle">拿不准就转人工，宁可少答</text>
+  <text x="175" y="226" font-size="10" fill="#7C2B2B" text-anchor="middle">验收偏保守：错答比不答贵</text>
+
+  <rect x="370" y="150" width="270" height="88" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.9"/>
+  <text x="505" y="170" font-size="11" fill="#0C447C" text-anchor="middle">内部坐席 · 答错代价低</text>
+  <text x="505" y="190" font-size="10" fill="#185FA5" text-anchor="middle">宽召回，一次给多条候选</text>
+  <text x="505" y="208" font-size="10" fill="#185FA5" text-anchor="middle">附原文链接，让人自己判断</text>
+  <text x="505" y="226" font-size="10" fill="#0C447C" text-anchor="middle">验收偏覆盖：漏答比错答贵</text>
+
+  <rect x="40" y="258" width="600" height="44" rx="6" fill="#EAF3EC" stroke="#2E6B4F" stroke-width="0.9"/>
+  <text x="340" y="278" font-size="11" fill="#1F4D38" text-anchor="middle">验收先定：查得到、答得对、该拒就拒，再倒推切分与检索</text>
+  <text x="340" y="296" font-size="10" fill="#2E6B4F" text-anchor="middle">顺序反过来，你会先买工具，再替工具找理由</text>
+
+  <text x="340" y="330" font-size="11" fill="#5B6875" text-anchor="middle">最后一句话留给自己：第一版砍掉什么，为什么现在可以砍</text>
+  <text x="340" y="352" font-size="10" fill="#8A97A4" text-anchor="middle">讲清代价的回答，比讲全组件的回答更像做过系统</text>
+</svg>

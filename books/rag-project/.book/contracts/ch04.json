@@ -1,0 +1,45 @@
+{
+  "chapter": "ch04",
+  "defines": [
+    {
+      "id": "C007",
+      "zh": "引用",
+      "en": "Citation",
+      "def": "答案里指向原文片段的标注",
+      "aliases": []
+    },
+    {
+      "id": "C008",
+      "zh": "拒答",
+      "en": "Abstention",
+      "def": "证据不足时明确说答不了",
+      "aliases": []
+    },
+    {
+      "id": "C009",
+      "zh": "返工",
+      "en": "Rework",
+      "def": "因决策或数据问题推翻重做",
+      "aliases": []
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch04/cite.py",
+      "api": "build(ticket_no, section, terms) -> Citation"
+    },
+    {
+      "module": "src/ch04/cite.py",
+      "api": "verify(citation: Citation, source: str) -> bool"
+    },
+    {
+      "module": "src/ch04/abstain.py",
+      "api": "decide(ev: Evidence) -> str"
+    }
+  ],
+  "assumes": [
+    "候选块带工单号与段名",
+    "客户拒答话术已按三类分别签字"
+  ],
+  "hook": "答案可带引用回指原文，三类拒答各有对客话术，可直接进入联调"
+}

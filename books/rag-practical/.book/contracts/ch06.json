@@ -1,0 +1,37 @@
+{
+  "chapter": "ch06",
+  "defines": [
+    {
+      "id": "C009",
+      "zh": "评测集",
+      "en": "Evaluation Set",
+      "def": "固定的一组问题与期望答案",
+      "aliases": [
+        "测试集"
+      ]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch06/eval.py",
+      "api": "run(items: list[dict]) -> list[dict]"
+    },
+    {
+      "module": "src/ch06/eval.py",
+      "api": "ask(q: str, k: int) -> dict"
+    },
+    {
+      "module": "src/ch06/eval.py",
+      "api": "build_retriever(k: int) -> Callable[[str], list[dict]]"
+    },
+    {
+      "module": "src/ch06/cost.py",
+      "api": "measure(items: list[dict], k: int) -> list[dict]"
+    }
+  ],
+  "assumes": [
+    "C007 混合检索",
+    "C008 重排"
+  ],
+  "hook": "前六章的交付物串成一条可评测的链路"
+}

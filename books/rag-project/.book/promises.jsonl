@@ -1,0 +1,7 @@
+{"id": "P001", "opened_in": "ch01", "text": "范围和验收标准定了，数据还没有接进来。Ch02 讲怎么盘点数据源、接只读从库，并做第一轮数据质量验收。", "kind": "forward", "target": "ch02", "status": "kept", "closed_in": "ch02"}
+{"id": "P002", "opened_in": "ch02", "text": "数据接进来了，但还是一堆整篇工单。Ch03 讲怎么按业务结构切分、建索引，并用二十条样本把召回测出来。切分做错，后面的引用再准也点不到关键句。", "kind": "forward", "target": "ch03", "status": "kept", "closed_in": "ch03"}
+{"id": "P003", "opened_in": "ch03", "text": "候选能找出来了，但答案还没有依据。Ch04 讲怎么把答案对回具体一段原文，以及证据不够时怎么拒答。", "kind": "forward", "target": "ch04", "status": "kept", "closed_in": "ch04"}
+{"id": "P004", "opened_in": "ch04", "text": "答案有依据了，但它还没在真实流量下跑过。Ch05 讲怎么和客服系统联调、怎么压出 P95，以及检索失败或模型超时时系统退到哪一步。", "kind": "forward", "target": "ch05", "status": "kept", "closed_in": "ch05"}
+{"id": "P005", "opened_in": "ch05", "text": "联调通过、拐点清楚、退路都有结论，剩下的是把它放进真实流量。Ch06 讲灰度怎么分档、监控盯哪几个指标，以及交接文档要写到什么程度。", "kind": "forward", "target": "ch06", "status": "kept", "closed_in": "ch06"}
+{"id": "P006", "opened_in": "ch06", "text": "前六个阶段走完，系统在客户环境里跑起来了。Ch07 接着讲二期扩展。这一版能答的范围、拒答的边界、扩量的上限，都写在交接文档里。往后每一次加语料、换模型，都可以按同一套判据重走一遍。", "kind": "forward", "target": "ch07", "status": "kept", "closed_in": "ch07"}
+{"id": "P007", "opened_in": "ch07", "text": "二期方案通过评审，合同进入收尾。系统要在客户手里独立跑起来，终验怎么取证、交接怎么演练、哪些需求该带进产品，是 Ch08 要处理的事。", "kind": "forward", "target": "ch08", "status": "kept", "closed_in": "ch08"}

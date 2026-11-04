@@ -1,0 +1,20 @@
+{
+  "chapter": "ch02",
+  "defines": [
+    {
+      "id": "C002",
+      "zh": "倒数排名融合",
+      "en": "Reciprocal Rank Fusion",
+      "def": "只按排名融合多路检索结果",
+      "aliases": ["RRF"]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch02/fusion.py",
+      "api": "rrf(rankings: list[list[str]], k: int) -> list[str]"
+    }
+  ],
+  "assumes": ["C001 稠密向量"],
+  "hook": "融合的增量取决于两路候选是否互补"
+}

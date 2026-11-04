@@ -1,0 +1,40 @@
+{
+  "chapter": "ch05",
+  "defines": [
+    {
+      "id": "C007",
+      "zh": "混合检索",
+      "en": "Hybrid Retrieval",
+      "def": "同时用向量与关键词两路检索",
+      "aliases": []
+    },
+    {
+      "id": "C008",
+      "zh": "重排",
+      "en": "Rerank",
+      "def": "对候选集再排一次序",
+      "aliases": [
+        "精排"
+      ]
+    }
+  ],
+  "provides": [
+    {
+      "module": "src/ch05/bm25.py",
+      "api": "search(q: str, k: int) -> list[dict]"
+    },
+    {
+      "module": "src/ch05/fuse.py",
+      "api": "hybrid_search(q: str, k: int) -> list[dict]"
+    },
+    {
+      "module": "src/ch05/rerank.py",
+      "api": "ask(q: str, k: int) -> dict"
+    }
+  ],
+  "assumes": [
+    "C005 引用",
+    "C006 拒答"
+  ],
+  "hook": "链路稳了，接下来要证明它能上线"
+}

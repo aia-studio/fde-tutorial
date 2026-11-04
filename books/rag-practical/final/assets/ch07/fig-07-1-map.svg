@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340">
+  <rect width="680" height="340" rx="8" fill="#F4F7FB" stroke="#C9D6E4" stroke-width="0.8"/>
+  <text x="340" y="34" font-size="16" fill="#0C447C" text-anchor="middle">Ch07 多轮对话：判断清、存得少、测得到</text>
+  <rect x="40" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="86" font-size="14" fill="#0C447C">7.1 三个新问题</text>
+  <text x="60" y="110" font-size="12" fill="#3C4C5C">指代：半句没有主语</text>
+  <text x="60" y="132" font-size="12" fill="#3C4C5C">膨胀：全量携带越来越长</text>
+  <text x="60" y="154" font-size="12" fill="#3C4C5C">丢失：重启与多实例串号</text>
+  <rect x="360" y="60" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="380" y="86" font-size="14" fill="#0C447C">7.2 状态怎么存</text>
+  <text x="380" y="110" font-size="12" fill="#3C4C5C">存产品、工单号、最近三轮</text>
+  <text x="380" y="132" font-size="12" fill="#3C4C5C">不存原文与答案</text>
+  <text x="380" y="154" font-size="12" fill="#3C4C5C">按会话隔离，键是会话号</text>
+  <rect x="40" y="190" width="280" height="105" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+  <text x="60" y="216" font-size="14" fill="#0C447C">7.3 指代消解与改写</text>
+  <text x="60" y="240" font-size="12" fill="#3C4C5C">有型号放行，缺型号补型号</text>
+  <text x="60" y="262" font-size="12" fill="#3C4C5C">只补槽位，不搬旧话题</text>
+  <text x="60" y="284" font-size="12" fill="#3C4C5C">范围判断要放在改写之前</text>
+  <rect x="360" y="190" width="280" height="105" rx="6" fill="#EAF3EA" stroke="#3B7A3B" stroke-width="0.8"/>
+  <text x="380" y="216" font-size="14" fill="#245024">7.4 多轮怎么评测</text>
+  <text x="380" y="240" font-size="12" fill="#2C4C2C">逐轮答对、会话通过、误拒</text>
+  <text x="380" y="262" font-size="12" fill="#2C4C2C">同一批会话跑两遍对照</text>
+  <text x="380" y="284" font-size="12" fill="#2C4C2C">交付物：支持三轮追问的服务</text>
+  <text x="340" y="325" font-size="12" fill="#5B6B7B" text-anchor="middle">每一轮都留改写前后的对照，否则说不清错在改写还是错在检索</text>
+</svg>

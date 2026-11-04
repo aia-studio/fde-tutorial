@@ -1,0 +1,28 @@
+title: 客服问答交付实录
+author: test
+license: CC0
+genre: project
+lang: zh-CN
+audience:
+  who: 用来验证 project 闸门的测试读者
+  level: intermediate
+  prerequisite:
+  - Python 基础
+spine: capstone
+spine_name: 客服问答助手
+scale:
+  chapters: 2
+  words_per_chapter:
+  - 350
+  - 500
+deliverables:
+- markdown
+- figures
+gates: hard
+concurrency: 1
+figure:
+  renderer: none
+  format: svg
+limits:
+  info_density_min: 0.9
+  snapshot_every: 5

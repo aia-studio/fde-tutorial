@@ -1,0 +1,121 @@
+{
+  "book": "D:\\Code\\fde-tutorial\\books\\rag-project",
+  "genre": "project",
+  "nodes": {
+    "ch01": {
+      "requires": [],
+      "references": [
+        "02"
+      ],
+      "target_words": 2200,
+      "difficulty": 1
+    },
+    "ch02": {
+      "requires": [
+        "ch01"
+      ],
+      "references": [
+        "03"
+      ],
+      "target_words": 2300,
+      "difficulty": 2
+    },
+    "ch03": {
+      "requires": [
+        "ch02"
+      ],
+      "references": [
+        "04"
+      ],
+      "target_words": 2300,
+      "difficulty": 3
+    },
+    "ch04": {
+      "requires": [
+        "ch03"
+      ],
+      "references": [
+        "05"
+      ],
+      "target_words": 2400,
+      "difficulty": 3
+    },
+    "ch05": {
+      "requires": [
+        "ch04"
+      ],
+      "references": [
+        "06"
+      ],
+      "target_words": 2400,
+      "difficulty": 4
+    },
+    "ch06": {
+      "requires": [
+        "ch05"
+      ],
+      "references": [
+        "07"
+      ],
+      "target_words": 2400,
+      "difficulty": 4
+    },
+    "ch07": {
+      "requires": [
+        "ch06"
+      ],
+      "references": [
+        "08"
+      ],
+      "target_words": 2400,
+      "difficulty": 4
+    },
+    "ch08": {
+      "requires": [
+        "ch07"
+      ],
+      "references": [],
+      "target_words": 2400,
+      "difficulty": 4
+    }
+  },
+  "waves": [
+    [
+      "ch01"
+    ],
+    [
+      "ch02"
+    ],
+    [
+      "ch03"
+    ],
+    [
+      "ch04"
+    ],
+    [
+      "ch05"
+    ],
+    [
+      "ch06"
+    ],
+    [
+      "ch07"
+    ],
+    [
+      "ch08"
+    ]
+  ],
+  "metrics": {
+    "chapters": 8,
+    "edges": 7,
+    "waves": 8,
+    "max_wave_width": 1,
+    "max_fanout": {
+      "chapter": "ch01",
+      "count": 1
+    },
+    "isolated": []
+  },
+  "problems": [],
+  "warnings": []
+}

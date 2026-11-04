@@ -1,0 +1,175 @@
+{
+  "id": "s2-39-context-managers",
+  "order": 39,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "上下文管理器",
+  "concepts": [
+    "with",
+    "__enter__",
+    "__exit__",
+    "contextmanager",
+    "suppress"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "不管成不成功，收尾都要做"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "实现一个上下文管理器"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "异常路径也逃不掉"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "@contextmanager：生成器的快捷写法"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "suppress：精确吞掉已知异常"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：with 语句",
+      "url": "https://docs.python.org/3/reference/compound_stmts.html#with"
+    },
+    {
+      "title": "Library Reference：contextlib",
+      "url": "https://docs.python.org/3/library/contextlib.html"
+    }
+  ],
+  "prereq": [
+    38
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "不管成不成功，收尾都要做"
+    },
+    {
+      "type": "p",
+      "html": "打开要关、锁要放、临时目录要删、事务要提交或回滚——这类\"成对操作\"散落在代码里迟早漏一半。<code>with</code> 把收尾逻辑固定在协议里，<strong>异常路径也逃不掉</strong>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "实现一个上下文管理器"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Tracer:\n    def __enter__(self):\n        print(\"进入\")\n        return self\n\n    def __exit__(self, exc_type, exc, tb):\n        print(\"退出，异常类型：\", exc_type.__name__ if exc_type else \"无\")\n        return False\n\n\nwith Tracer() as t:\n    print(\"干活中\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "进入\n干活中\n退出，异常类型： 无"
+    },
+    {
+      "type": "p",
+      "html": "<code>__enter__</code> 的返回值交给 <code>as</code> 后面的变量；<code>__exit__</code> 无论块内是否抛异常都会执行，四个收尾参数一个不落。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "异常路径也逃不掉"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Guard:\n    def __enter__(self):\n        return self\n\n    def __exit__(self, exc_type, exc, tb):\n        print(\"清理（异常也走这里）\")\n        return False\n\n\ntry:\n    with Guard():\n        raise ValueError(\"炸了\")\nexcept ValueError as exc:\n    print(\"外面捕获：\", exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "清理（异常也走这里）\n外面捕获： 炸了"
+    },
+    {
+      "type": "p",
+      "html": "<code>__exit__</code> 返回 <code>False</code>（或 None）表示\"不吞异常\"，异常继续往外抛；返回 <code>True</code> 才表示\"我处理完了\"。<strong>默认写 False 是安全姿势</strong>——不明确要抑制异常时，永远不要返回 True。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>@contextmanager</code>：生成器的快捷写法"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from contextlib import contextmanager\n\n\n@contextmanager\ndef tag(name):\n    print(f\"<{name}>\")\n    yield\n    print(f\"</{name}>\")\n\n\nwith tag(\"h1\"):\n    print(\"标题内容\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "<h1>\n标题内容\n</h1>"
+    },
+    {
+      "type": "p",
+      "html": "<code>yield</code> 之前是 <code>__enter__</code>，之后是 <code>__exit__</code>，<code>yield</code> 的值给 <code>as</code>。大多数自定义上下文管理器用这个写法就够，比手写类短一半。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>suppress</code>：精确吞掉已知异常"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from contextlib import suppress\n\nwith suppress(FileNotFoundError):\n    open(\"不存在的文件.txt\", encoding=\"utf-8\")\n\nprint(\"继续执行\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "继续执行"
+    },
+    {
+      "type": "p",
+      "html": "<code>suppress(FileNotFoundError)</code> 等价于 try/except 该异常，但<strong>声明式</strong>且范围只限这个块。比裸 <code>try: ... except FileNotFoundError: pass</code> 更能表达意图。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>__exit__</code> 返回 <code>True</code> 意味着什么？",
+      "options": [
+        "资源已成功释放",
+        "块内没有发生异常",
+        "异常已被处理，不再向外抛出",
+        "with 块会再执行一次"
+      ],
+      "answer": 2,
+      "explain": "__exit__ 的返回值只回答一个问题：这个异常是否算「已处理」。返回 True 会吞掉异常，调用方完全不知情——没有把握时返回 False/None。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>with</code> 保证 <code>__exit__</code> 一定执行，异常路径也不例外。",
+        "<code>__exit__</code> 返回 True 会吞异常，默认返回 False。",
+        "<code>@contextmanager</code> 用生成器写收尾逻辑，<code>yield</code> 前后对应进出。",
+        "<code>suppress(具体异常)</code> 表达\"我知道并接受这个失败\"，比裸 try 更清晰。"
+      ]
+    }
+  ],
+  "prev": "s2-38-enum",
+  "next": "s2-40-decorators"
+}

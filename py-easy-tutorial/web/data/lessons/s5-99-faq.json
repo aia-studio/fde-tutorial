@@ -1,0 +1,188 @@
+{
+  "id": "s5-99-faq",
+  "order": 99,
+  "stage": "s5",
+  "stage_title": "参考",
+  "official_group": "general",
+  "title": "FAQ 与报错对照",
+  "concepts": [
+    "KeyError",
+    "TypeError",
+    "ModuleNotFoundError",
+    "troubleshooting"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "报错 → 原因 → 修法"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "现场复现八种常见异常"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "对照表：报错 → 最可能的原因"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "FAQ 精编三则"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Python FAQ（官方）",
+      "url": "https://docs.python.org/3/faq/"
+    },
+    {
+      "title": "Library Reference：内置异常",
+      "url": "https://docs.python.org/3/library/exceptions.html"
+    }
+  ],
+  "prereq": [],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 10,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "报错 → 原因 → 修法"
+    },
+    {
+      "type": "p",
+      "html": "遇到报错先别改代码。这张表按出现频率排列了八个最常见异常，每个都给最小复现与修法——<strong>先对号，再入座</strong>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "现场复现八种常见异常"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "samples = {\n    \"KeyError\": lambda: {}[\"missing\"],\n    \"IndexError\": lambda: [][0],\n    \"AttributeError\": lambda: None.upper(),\n    \"TypeError\": lambda: 1 + \"a\",\n    \"ZeroDivisionError\": lambda: 1 / 0,\n    \"ValueError\": lambda: int(\"x\"),\n    \"NameError\": lambda: undefined_name,\n    \"RecursionError\": lambda: (lambda f: f(f))(lambda f: f(f)),\n}\n\nfor name, trigger in samples.items():\n    try:\n        trigger()\n    except Exception as exc:\n        print(f\"{type(exc).__name__}: {exc}\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "KeyError: 'missing'\nIndexError: list index out of range\nAttributeError: 'NoneType' object has no attribute 'upper'\nTypeError: unsupported operand type(s) for +: 'int' and 'str'\nZeroDivisionError: division by zero\nValueError: invalid literal for int() with base 10: 'x'\nNameError: name 'undefined_name' is not defined\nRecursionError: maximum recursion depth exceeded"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "对照表：报错 → 最可能的原因"
+    },
+    {
+      "type": "table",
+      "head": [
+        "报错",
+        "最常见原因",
+        "第一反应"
+      ],
+      "rows": [
+        [
+          "<code>KeyError</code>",
+          "字典里没有这个键",
+          "<code>d.get(k, default)</code> 或先 <code>in</code> 判断"
+        ],
+        [
+          "<code>IndexError</code>",
+          "序列比想象的短",
+          "打印 <code>len()</code>，检查边界"
+        ],
+        [
+          "<code>AttributeError: NoneType</code>",
+          "上游函数返回了 None 却被调用方法",
+          "检查返回类型注解（`X \\",
+          "None`）"
+        ],
+        [
+          "<code>TypeError: ... + ...</code>",
+          "混用了不兼容类型",
+          "打印两个操作数的 <code>type()</code>"
+        ],
+        [
+          "<code>ModuleNotFoundError</code>",
+          "pip 装到了另一个解释器",
+          "看 <code>sys.executable</code>，用 <code>python -m pip</code>"
+        ],
+        [
+          "<code>ImportError: partially initialized</code>",
+          "循环导入",
+          "打破依赖环（局部导入/抽共享模块）"
+        ],
+        [
+          "<code>UnboundLocalError</code>",
+          "函数内赋值让名字变局部，却先读了它",
+          "需要改全局就写 <code>global</code>"
+        ],
+        [
+          "<code>IndentationError</code>",
+          "混用 Tab 与空格",
+          "编辑器统一配置为 4 空格"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "FAQ 精编三则"
+    },
+    {
+      "type": "p",
+      "html": "<strong>为什么 0.1 + 0.2 不等于 0.3？</strong> 二进制浮点的表示误差（第 5 课），比较用 <code>math.isclose</code>，金额用 <code>Decimal</code>。"
+    },
+    {
+      "type": "p",
+      "html": "<strong>为什么列表 <code>in</code> 很慢？</strong> 逐个比较 O(n)；频繁成员判断换 <code>set</code> O(1)（第 64 课）。"
+    },
+    {
+      "type": "p",
+      "html": "<strong>为什么我的字符串是 <code>'a\\nb'</code> 而显示两行？</strong> <code>repr</code> 与 <code>str</code> 的区别（第 20 课）——调试时打印 <code>repr</code> 才能看见隐藏字符。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "排查顺序",
+      "html": "1. 读完整个 traceback（从下往上）；2. 复制最后一行到本表对号；3. 定位到行后打印相关变量的 <code>repr</code> 与 <code>type</code>。三步走完还没头绪，才进 pdb（第 26 课）。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>AttributeError: 'NoneType' object has no attribute 'append'</code> 最典型的成因是？",
+      "options": [
+        "对象是不可变类型",
+        "某个函数默认返回 None，而调用方直接链式调用了它的方法",
+        "模块没有导入",
+        "列表索引越界"
+      ],
+      "answer": 1,
+      "explain": "Python 函数不写 return 就返回 None。最常见于「调用了 append/in-place 方法（返回 None）后又链式调用」，或忘记写 return。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "八大高频异常：KeyError / IndexError / AttributeError / TypeError / ZeroDivisionError / ValueError / NameError / RecursionError。",
+        "<code>NoneType</code> 报错 = 有人返回了 None；<code>ModuleNotFoundError</code> = 解释器不对。",
+        "排查三步：读 traceback → 对号入座 → 打印 repr 与 type。",
+        "完整 FAQ 在 <code>docs.python.org/3/faq/</code>，按异常名搜索最快。"
+      ]
+    }
+  ],
+  "prev": "s5-98-pep-guide",
+  "next": "s5-100-guido-essays"
+}

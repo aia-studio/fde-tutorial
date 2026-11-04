@@ -1,0 +1,157 @@
+{
+  "id": "s1-23-paths",
+  "order": 23,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "路径与文件系统",
+  "concepts": [
+    "pathlib",
+    "glob",
+    "rglob",
+    "mkdir",
+    "tempfile"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "建、找、删"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "建目录、写文件、遍历"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "按模式筛选"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "临时目录：测试的好帮手"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：pathlib 的常用操作",
+      "url": "https://docs.python.org/3/library/pathlib.html#basic-use"
+    },
+    {
+      "title": "Library Reference：tempfile",
+      "url": "https://docs.python.org/3/library/tempfile.html"
+    }
+  ],
+  "prereq": [
+    22
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "建、找、删"
+    },
+    {
+      "type": "p",
+      "html": "<code>pathlib</code> 把文件系统操作变成方法调用：<code>mkdir</code>、<code>glob</code>、<code>read_text</code>、<code>unlink</code>。比 <code>os.path</code> 加字符串拼接清楚得多，也更难写错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "建目录、写文件、遍历"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import tempfile\nfrom pathlib import Path\n\nbase = Path(tempfile.mkdtemp())\n(base / \"sub\").mkdir()\n(base / \"sub\" / \"x.txt\").write_text(\"hi\", encoding=\"utf-8\")\n\nprint(sorted(p.name for p in base.rglob(\"*\")))\nprint((base / \"sub\" / \"x.txt\").read_text(encoding=\"utf-8\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['sub', 'x.txt']\nhi"
+    },
+    {
+      "type": "p",
+      "html": "<code>rglob(\"*\")</code> 递归遍历，<code>glob(\"*\")</code> 只看当前层。<code>mkdir()</code> 默认只能建一层，要建多层用 <code>mkdir(parents=True, exist_ok=True)</code>——这两个参数几乎总是要写。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "按模式筛选"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import tempfile\nfrom pathlib import Path\n\nbase = Path(tempfile.mkdtemp())\nfor name in [\"a.py\", \"b.py\", \"c.txt\"]:\n    (base / name).write_text(\"\", encoding=\"utf-8\")\n\nprint(sorted(p.name for p in base.glob(\"*.py\")))\nprint(len(list(base.glob(\"*.txt\"))))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['a.py', 'b.py']\n1"
+    },
+    {
+      "type": "p",
+      "html": "模式匹配只支持 <code>*</code>、<code>?</code>、<code>[seq]</code>，不是正则。要复杂匹配就先 <code>glob(\"*\")</code> 再用 <code>re</code> 筛。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "临时目录：测试的好帮手"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import tempfile\nfrom pathlib import Path\n\nwith tempfile.TemporaryDirectory() as tmp:\n    path = Path(tmp) / \"demo.txt\"\n    path.write_text(\"临时\", encoding=\"utf-8\")\n    print(path.exists(), path.stat().st_size)\n\nprint(path.exists())",
+      "runnable": true,
+      "editable": true,
+      "expect": "True 6\nFalse"
+    },
+    {
+      "type": "p",
+      "html": "<code>TemporaryDirectory</code> 是上下文管理器，离开 <code>with</code> 自动递归删除。测试里需要\"造文件\"时优先用它，不要往仓库目录里写。"
+    },
+    {
+      "type": "p",
+      "html": "<code>size</code> 是 6，因为 \"临时\" 两个汉字在 UTF-8 下各占 3 字节——<code>stat().st_size</code> 数的是字节，不是字符。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>Path('a').mkdir()</code> 在 <code>a</code> 已存在时会怎样？",
+      "options": [
+        "什么也不做",
+        "抛 FileExistsError",
+        "清空目录内容",
+        "返回 False"
+      ],
+      "answer": 1,
+      "explain": "默认 exist_ok=False，目录已存在就抛 FileExistsError。要幂等就写 mkdir(exist_ok=True)；要一次建多层再加 parents=True。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>pathlib</code> 用 <code>/</code> 拼路径，<code>mkdir(parents=True, exist_ok=True)</code> 建多层且幂等。",
+        "<code>glob(\"*\")</code> 只看当前层，<code>rglob(\"*\")</code> 递归。",
+        "<code>read_text</code> / <code>write_text</code> 记得传 <code>encoding=\"utf-8\"</code>。",
+        "<code>TemporaryDirectory</code> 自动清理，测试首选。",
+        "<code>stat().st_size</code> 是字节数，不是字符数。"
+      ]
+    }
+  ],
+  "prev": "s1-22-stdlib-tour",
+  "next": "s1-24-structured-data"
+}

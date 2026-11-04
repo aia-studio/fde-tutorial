@@ -1,0 +1,158 @@
+{
+  "id": "s2-48-abc-protocols",
+  "order": 48,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "抽象基类与协议",
+  "concepts": [
+    "ABC",
+    "abstractmethod",
+    "runtime_checkable",
+    "register",
+    "interface"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "定义\"必须实现什么\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "抽象基类：漏实现直接报错"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "抽象属性与漏实现的时机"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "register：事后补票"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：abc",
+      "url": "https://docs.python.org/3/library/abc.html"
+    },
+    {
+      "title": "Library Reference：typing.Protocol",
+      "url": "https://docs.python.org/3/library/typing.html#typing.Protocol"
+    }
+  ],
+  "prereq": [
+    47
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "定义\"必须实现什么\""
+    },
+    {
+      "type": "p",
+      "html": "上一课的 <code>Protocol</code> 是结构化检查；<code>ABC</code> 是<strong>名义上的契约</strong>——继承它就必须实现抽象方法，否则连实例化都过不去。两者服务于不同场景。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "抽象基类：漏实现直接报错"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from abc import ABC, abstractmethod\n\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self): ...\n\n    def describe(self):\n        return f\"面积为 {self.area():.2f}\"\n\n\nclass Square(Shape):\n    def __init__(self, side):\n        self.side = side\n\n    def area(self):\n        return self.side ** 2\n\n\nprint(Square(3).describe())\n\ntry:\n    Shape()\nexcept TypeError:\n    print(\"抽象类不能实例化\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "面积为 9.00\n抽象类不能实例化"
+    },
+    {
+      "type": "p",
+      "html": "<code>@abstractmethod</code> 在<strong>实例化时</strong>检查（不是导入时）：子类漏实现 <code>area</code>，<code>Square()</code> 就会抛 <code>TypeError</code>。抽象基类还能携带公共实现（<code>describe</code>），子类免费继承。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "抽象属性与漏实现的时机"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from abc import ABC, abstractmethod\n\n\nclass Store(ABC):\n    @property\n    @abstractmethod\n    def name(self): ...\n\n\nclass MemoryStore(Store):\n    name = \"内存存储\"\n\n\nprint(MemoryStore().name)",
+      "runnable": true,
+      "editable": true,
+      "expect": "内存存储"
+    },
+    {
+      "type": "p",
+      "html": "抽象属性 = <code>@property</code> + <code>@abstractmethod</code> 的组合。子类用类属性或 property 覆盖均可——<strong>检查发生在实例化那一刻</strong>，写代码时静态检查器也会同步标红。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>register</code>：事后补票"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from abc import ABC\n\n\nclass Serializer(ABC):\n    pass\n\n\nclass JSONSerializer:\n    def dumps(self, data):\n        return str(data)\n\n\nSerializer.register(JSONSerializer)\n\nprint(issubclass(JSONSerializer, Serializer))\nprint(issubclass(list, Serializer))",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse"
+    },
+    {
+      "type": "p",
+      "html": "<code>register</code> 把一个<strong>没有继承关系</strong>的类登记为子类（常用于\"第三方类\"）。注意它只是让 <code>issubclass</code> 通过，<strong>不会检查任何方法</strong>——比 <code>@abstractmethod</code> 宽松得多。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "怎么选",
+      "html": "团队协作、接口是承诺（漏实现是 bug）→ 用 ABC。适配外部类、只关心\"长得像\" → 用 <code>typing.Protocol</code>。同一个项目两者混用很正常：内部契约用 ABC，对接第三方用 Protocol。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>@abstractmethod</code> 的检查发生在什么时机？",
+      "options": [
+        "定义抽象类时",
+        "导入包含抽象类的模块时",
+        "实例化子类时",
+        "调用抽象方法时"
+      ],
+      "answer": 2,
+      "explain": "漏实现的方法集合在实例化时检查：Shape() 报 TypeError，而 Square 没实现 area 的话 Square() 也会报错。只 import 不实例化不会触发。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>ABC</code> + <code>@abstractmethod</code> 是名义契约，实例化时强制检查。",
+        "抽象基类可以有具体实现，子类免费继承。",
+        "<code>register</code> 事后认领第三方类，但不检查方法。",
+        "结构化检查（长得像就行）用 <code>Protocol</code>，强契约用 ABC。"
+      ]
+    }
+  ],
+  "prev": "s2-47-typing-advanced",
+  "next": "s2-49-regex"
+}

@@ -1,0 +1,162 @@
+{
+  "id": "s1-22-stdlib-tour",
+  "order": 22,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "标准库速览：os、pathlib、datetime",
+  "concepts": [
+    "os",
+    "sys",
+    "pathlib",
+    "datetime",
+    "timedelta"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "三个模块，覆盖大半日常活"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "os 与 sys：问清楚自己在哪"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "pathlib：路径是对象，不是字符串"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "datetime：区分\"时间点\"和\"时长\""
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 10：标准库概览",
+      "url": "https://docs.python.org/3/tutorial/stdlib.html"
+    },
+    {
+      "title": "Library Reference：pathlib",
+      "url": "https://docs.python.org/3/library/pathlib.html"
+    }
+  ],
+  "prereq": [
+    21
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "三个模块，覆盖大半日常活"
+    },
+    {
+      "type": "p",
+      "html": "写脚本时最常打交道的标准库是这三个：<code>os</code>/<code>sys</code> 处理运行时环境，<code>pathlib</code> 处理路径，<code>datetime</code> 处理时间。它们不需要额外安装，也不该用第三方库替代。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>os</code> 与 <code>sys</code>：问清楚自己在哪"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import os\nimport sys\n\nprint(os.name in (\"nt\", \"posix\"))\nprint(sys.version_info[:2] >= (3, 15))\nprint(len(sys.path) > 0)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>os.name</code> 在 Windows 上是 <code>\"nt\"</code>，在 Linux/macOS 上是 <code>\"posix\"</code>。判断平台时别写死字符串比较，用这种\"是否属于集合\"的写法更稳。"
+    },
+    {
+      "type": "p",
+      "html": "<code>sys.path</code> 是导入搜索路径，<code>sys.argv</code> 是命令行参数，<code>sys.exit()</code> 是退出。这三个是脚本的入口三件套。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>pathlib</code>：路径是对象，不是字符串"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from pathlib import Path\n\np = Path(\"data\") / \"2026\" / \"report.csv\"\n\nprint(p.as_posix())\nprint(p.name)\nprint(p.stem)\nprint(p.suffix)\nprint(p.parent.as_posix())",
+      "runnable": true,
+      "editable": true,
+      "expect": "data/2026/report.csv\nreport.csv\nreport\n.csv\ndata/2026"
+    },
+    {
+      "type": "p",
+      "html": "用 <code>/</code> 拼路径是 <code>pathlib</code> 最舒服的地方——不用管反斜杠转义，也不用 <code>os.path.join</code>。<code>name</code>/<code>stem</code>/<code>suffix</code>/<code>parent</code> 这几个属性比字符串切片可靠得多。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>datetime</code>：区分\"时间点\"和\"时长\""
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from datetime import datetime, timedelta\n\nstart = datetime(2026, 10, 29, 12, 0)\nend = start + timedelta(days=1, hours=3)\n\nprint(start.strftime(\"%Y-%m-%d %H:%M\"))\nprint(end - start)\nprint(end > start)",
+      "runnable": true,
+      "editable": true,
+      "expect": "2026-10-29 12:00\n1 day, 3:00:00\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>datetime</code> 是时间点，<code>timedelta</code> 是时长，相减得到时长、相加得到新时间点。<code>strftime</code> 负责格式化输出，<code>strptime</code> 反过来解析字符串。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "不带时区的时间是\"天真\"的",
+      "html": "<code>datetime(2026, 10, 29)</code> 没有时区信息，比较和相减只在同一假设下成立。跨时区要用 <code>datetime.now(timezone.utc)</code> 或 <code>zoneinfo</code>，第 42 课专门讲。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>Path('a/b/c.txt').stem</code> 的结果是？",
+      "options": [
+        "a/b/c",
+        "c.txt",
+        "c",
+        ".txt"
+      ],
+      "answer": 2,
+      "explain": "name 是 'c.txt'，stem 是去掉最后一个后缀的 'c'，suffix 是 '.txt'，parent 是 'a/b'。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>os.name</code> 判断平台，<code>sys.path</code> 是导入路径，<code>sys.argv</code> 是命令行参数。",
+        "<code>pathlib</code> 用 <code>/</code> 拼路径，<code>name</code>/<code>stem</code>/<code>suffix</code>/<code>parent</code> 比字符串切片可靠。",
+        "<code>datetime</code> 是时间点，<code>timedelta</code> 是时长；<code>strftime</code> 格式化，<code>strptime</code> 解析。",
+        "不带时区的 <code>datetime</code> 只在单一时区假设下成立。"
+      ]
+    }
+  ],
+  "prev": "s1-21-files",
+  "next": "s1-23-paths"
+}

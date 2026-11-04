@@ -1,0 +1,188 @@
+{
+  "id": "s1-31-testing",
+  "order": 31,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "moderate",
+  "title": "测试入门",
+  "concepts": [
+    "unittest",
+    "pytest",
+    "assertEqual",
+    "assertRaises",
+    "test naming"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "测试是给未来的自己写的"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "最小可用的测试"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "测试异常"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "unittest 与 pytest 的差别"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：unittest",
+      "url": "https://docs.python.org/3/library/unittest.html"
+    },
+    {
+      "title": "Tutorial 10.4：测试",
+      "url": "https://docs.python.org/3/tutorial/stdlib.html#quality-control"
+    }
+  ],
+  "prereq": [
+    30
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "测试是给未来的自己写的"
+    },
+    {
+      "type": "p",
+      "html": "写测试不只是\"验证现在对不对\"，更是把\"我以为它该怎样\"固化成可执行的断言。半年后改代码时，这些断言会告诉你哪里被弄坏了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "最小可用的测试"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import io\nimport unittest\n\n\ndef add(a, b):\n    return a + b\n\n\nclass TestAdd(unittest.TestCase):\n    def test_positive(self):\n        self.assertEqual(add(1, 2), 3)\n\n    def test_negative(self):\n        self.assertEqual(add(-1, -2), -3)\n\n\nsuite = unittest.defaultTestLoader.loadTestsFromTestCase(TestAdd)\nresult = unittest.TextTestRunner(stream=io.StringIO(), verbosity=0).run(suite)\n\nprint(result.wasSuccessful())\nprint(result.testsRun)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\n2"
+    },
+    {
+      "type": "p",
+      "html": "三件事：继承 <code>TestCase</code>、测试方法名以 <code>test_</code> 开头、用 <code>assertEqual</code> 而不是裸 <code>assert</code>。<code>assertEqual</code> 失败时会打出两边的值，裸 assert 只告诉你\"不相等\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "测试异常"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import io\nimport unittest\n\n\ndef parse(text):\n    return int(text)\n\n\nclass TestParse(unittest.TestCase):\n    def test_ok(self):\n        self.assertEqual(parse(\"42\"), 42)\n\n    def test_raises_on_bad_input(self):\n        with self.assertRaises(ValueError):\n            parse(\"x\")\n\n\nsuite = unittest.defaultTestLoader.loadTestsFromTestCase(TestParse)\nresult = unittest.TextTestRunner(stream=io.StringIO(), verbosity=0).run(suite)\n\nprint(result.wasSuccessful(), result.testsRun)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True 2"
+    },
+    {
+      "type": "p",
+      "html": "<code>assertRaises</code> 还能拿到异常对象，进一步检查消息："
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import unittest\n\n\ndef withdraw(balance, amount):\n    if amount > balance:\n        raise ValueError(f\"余额不足：{balance} < {amount}\")\n    return balance - amount\n\n\nclass TestWithdraw(unittest.TestCase):\n    def test_message(self):\n        with self.assertRaises(ValueError) as ctx:\n            withdraw(10, 20)\n        self.assertIn(\"余额不足\", str(ctx.exception))\n\n\nsuite = unittest.defaultTestLoader.loadTestsFromTestCase(TestWithdraw)\nresult = unittest.TextTestRunner(stream=__import__(\"io\").StringIO()).run(suite)\nprint(result.wasSuccessful())",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "unittest 与 pytest 的差别"
+    },
+    {
+      "type": "table",
+      "head": [
+        "维度",
+        "unittest",
+        "pytest"
+      ],
+      "rows": [
+        [
+          "来源",
+          "标准库，零安装",
+          "第三方，需安装"
+        ],
+        [
+          "写法",
+          "类 + 方法",
+          "普通函数 + 裸 assert"
+        ],
+        [
+          "断言信息",
+          "内置多种 assertXxx",
+          "靠 assert 重写，自动展开"
+        ],
+        [
+          "fixture",
+          "setUp/tearDown",
+          "<code>@pytest.fixture</code>，按需组合"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "小项目用 <code>unittest</code> 足够，而且不用装东西；团队项目多用 <code>pytest</code>，因为写起来短、失败信息更好读。<strong>两者不冲突</strong>——<code>pytest</code> 能直接跑 <code>unittest</code> 写的用例。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "先写一个会失败的测试",
+      "html": "新功能开始时，先写一个断言\"期望行为\"的测试，看它红；再实现，看它绿。这个循环能防止\"写完发现测的是错的东西\"。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>assertRaises(ValueError)</code> 用在 <code>with</code> 语句里，断言的是什么？",
+      "options": [
+        "代码块里任何异常都会通过",
+        "代码块执行时必须抛出 ValueError",
+        "代码块执行时不能抛异常",
+        "ValueError 必须被捕获后不再抛出"
+      ],
+      "answer": 1,
+      "explain": "assertRaises 要求 with 块内抛出指定异常，没抛或抛了别的类型都算失败。它还能 as ctx 拿到异常对象，用来检查消息。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "测试方法以 <code>test_</code> 开头，断言用 <code>assertEqual</code> / <code>assertRaises</code> 这类专用方法。",
+        "<code>assertRaises</code> 用 <code>with</code> + <code>as ctx</code> 可以进一步检查异常消息。",
+        "<code>unittest</code> 是标准库、零依赖；<code>pytest</code> 更短更好读，且能跑 unittest 用例。",
+        "先写失败测试再实现，能避免\"测了错的东西\"。"
+      ]
+    }
+  ],
+  "prev": "s1-30-venv",
+  "next": "s2-32-classes"
+}

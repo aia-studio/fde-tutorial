@@ -1,0 +1,158 @@
+{
+  "id": "s3-67-threading",
+  "order": 67,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "advanced",
+  "title": "线程与 GIL",
+  "concepts": [
+    "threading",
+    "GIL",
+    "lock",
+    "race condition",
+    "queue"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "线程适合等，不适合算"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "竞态：没有锁的计数器"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "Lock：把三步变成一步"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "GIL：CPU 密集任务线程不加速"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：threading",
+      "url": "https://docs.python.org/3/library/threading.html"
+    },
+    {
+      "title": "Library Reference：queue",
+      "url": "https://docs.python.org/3/library/queue.html"
+    }
+  ],
+  "prereq": [
+    66
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "线程适合等，不适合算"
+    },
+    {
+      "type": "p",
+      "html": "Python 线程的两句话结论：<strong>等 IO 时有用</strong>（GIL 会在等待时释放），<strong>跑 CPU 密集计算时无效</strong>（GIL 保证同一时刻只有一个线程执行字节码）。但即使无效，<strong>共享状态不加锁</strong>照样出竞态——两件事要分开理解。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "竞态：没有锁的计数器"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import threading\n\ncounter = 0\n\n\ndef worker(n):\n    global counter\n    for _ in range(n):\n        counter += 1\n\n\nthreads = [threading.Thread(target=worker, args=(10000,)) for _ in range(4)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\n\nprint(counter, \"（期望 40000，实际几乎必然更小）\")",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "这块<strong>故意没有预期输出</strong>：结果每次都不同，且几乎一定小于 40000。<code>counter += 1</code> 是\"读、加、写\"三步，线程会在中途被切换——这就是<strong>竞态条件</strong>。第 3 课讲的名字绑定在这里变成了并发问题。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "Lock：把三步变成一步"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import threading\n\ncounter = 0\nlock = threading.Lock()\n\n\ndef worker(n):\n    global counter\n    for _ in range(n):\n        with lock:\n            counter += 1\n\n\nthreads = [threading.Thread(target=worker, args=(10000,)) for _ in range(4)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\n\nprint(counter)",
+      "runnable": true,
+      "editable": true,
+      "expect": "40000"
+    },
+    {
+      "type": "p",
+      "html": "<code>with lock:</code> 保证同一时刻只有一个线程在临界区里。锁的代价是串行化——临界区越小，并发度越高。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "GIL：CPU 密集任务线程不加速"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import threading\nimport time\n\n\ndef cpu_task():\n    return sum(i * i for i in range(200000))\n\n\nt0 = time.perf_counter()\nthreads = [threading.Thread(target=cpu_task) for _ in range(2)]\nfor t in threads:\n    t.start()\nfor t in threads:\n    t.join()\nt_threads = time.perf_counter() - t0\n\nt0 = time.perf_counter()\ncpu_task()\ncpu_task()\nt_serial = time.perf_counter() - t0\n\nprint(f\"两个线程 {t_threads:.3f}s，串行两次 {t_serial:.3f}s——差距与抖动同量级\")",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "这块同样没有预期输出。跑几次你会发现线程版<strong>并不更快</strong>：GIL 让字节码执行串行化。所以线程的适用场景是 IO 密集（网络请求、文件读写），CPU 密集要换 <code>multiprocessing</code>（下一课）。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "线程间传递数据用 queue.Queue",
+      "html": "共享变量 + 锁容易写错。<code>queue.Queue</code> 自带锁，\"生产者放、消费者取\"是线程协作的标准姿势，第 68 课的线程池就是它的封装。"
+    },
+    {
+      "type": "quiz",
+      "question": "一个纯 CPU 计算（如对 1 亿个数求和）想加速，应该？",
+      "options": [
+        "开 8 个线程，GIL 会自动并行",
+        "用 multiprocessing 分给多个进程，或用内置的向量化工具",
+        "加 threading.Lock 保护计算",
+        "把函数改成 async"
+      ],
+      "answer": 1,
+      "explain": "GIL 使同一时刻只有一个线程执行字节码，CPU 密集任务多线程不加速（free-threading 构建除外）。绕开方式：多进程（无 GIL）或把循环下沉到 numpy 这类 C 扩展。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>counter += 1</code> 是三步操作，多线程下必然竞态；临界区用 <code>with lock:</code>。",
+        "GIL：同一时刻一个线程执行字节码——线程加速不了 CPU 密集任务。",
+        "线程的用武之地是 IO 等待；CPU 并行用 multiprocessing。",
+        "线程间通信用 <code>queue.Queue</code>，少用共享变量加锁。"
+      ]
+    }
+  ],
+  "prev": "s3-66-optimization",
+  "next": "s3-68-process-pool"
+}

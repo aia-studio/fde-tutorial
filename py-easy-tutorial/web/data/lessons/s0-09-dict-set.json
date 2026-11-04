@@ -1,0 +1,188 @@
+{
+  "id": "s0-09-dict-set",
+  "order": 9,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "字典与集合",
+  "concepts": [
+    "dict",
+    "set",
+    "hash",
+    "get",
+    "setdefault"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "靠哈希找东西，快到可以当常数"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "字典：键值对，按键取"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "集合：只关心\"在不在\""
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "为什么键必须可哈希"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 5.5：字典",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#dictionaries"
+    },
+    {
+      "title": "Library Reference：映射类型 dict",
+      "url": "https://docs.python.org/3/library/stdtypes.html#mapping-types-dict"
+    }
+  ],
+  "prereq": [
+    8
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "靠哈希找东西，快到可以当常数"
+    },
+    {
+      "type": "p",
+      "html": "字典和集合是 Python 里唯一两个<strong>基于哈希</strong>的内置容器。理解\"为什么键必须可哈希\"，就理解了它们的全部约束。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "字典：键值对，按键取"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "user = {\"name\": \"Ada\", \"lang\": \"Python\"}\n\nprint(user[\"name\"])\nprint(user.get(\"age\", \"未知\"))\nprint(sorted(user))",
+      "runnable": true,
+      "editable": true,
+      "expect": "Ada\n未知\n['lang', 'name']"
+    },
+    {
+      "type": "p",
+      "html": "<code>user[\"age\"]</code> 会抛 <code>KeyError</code>，<code>user.get(\"age\")</code> 返回 <code>None</code> 或你给的后备值。<strong>不确定键在不在，就用 <code>get</code></strong>。"
+    },
+    {
+      "type": "p",
+      "html": "统计词频是最典型的写法："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "counts = {}\nfor word in [\"a\", \"b\", \"a\", \"c\", \"a\"]:\n    counts[word] = counts.get(word, 0) + 1\n\nprint(counts)\nprint(counts[\"a\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "{'a': 3, 'b': 1, 'c': 1}\n3"
+    },
+    {
+      "type": "p",
+      "html": "字典保持<strong>插入顺序</strong>（3.7 起的语言保证），所以打印结果每次一致。但这不意味着字典是\"有序容器\"——它是映射，别依赖顺序做逻辑。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "集合：只关心\"在不在\""
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "a = {1, 2, 3}\nb = {2, 3, 4}\n\nprint(sorted(a & b))\nprint(sorted(a | b))\nprint(sorted(a - b))\nprint(2 in a)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[2, 3]\n[1, 2, 3, 4]\n[1]\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "集合的价值在 <code>in</code>：判断元素是否存在，列表要一个个比（O(n)），集合直接算哈希（O(1)）。数据量大时这是数量级的差别——第 53 课会用 <code>timeit</code> 量给你看。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "去重最快的写法",
+      "html": "<code>list(set(items))</code> 一行去重。但注意它会打乱顺序；要保序用 <code>dict.fromkeys(items)</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "为什么键必须可哈希"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "try:\n    mapping = {[1, 2]: \"值\"}\nexcept TypeError as exc:\n    print(type(exc).__name__, exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "TypeError cannot use 'list' as a dict key (unhashable type: 'list')"
+    },
+    {
+      "type": "p",
+      "html": "哈希表的原理是：用键算出桶的位置，把值放进去。如果键能变，它的哈希值也会变，之后按原来的键就找不到那个桶了——表结构直接失效。"
+    },
+    {
+      "type": "p",
+      "html": "所以规则很简单：<strong>可变对象不能当键</strong>（<code>list</code>、<code>dict</code>、<code>set</code>），不可变对象可以（<code>int</code>、<code>str</code>、<code>tuple</code>，前提是元组里每个元素也可哈希）。"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "print({(1, 2): \"元组可以\"})\nprint({\"a\": 1, \"b\": 2}.keys())",
+      "runnable": true,
+      "editable": true,
+      "expect": "{(1, 2): '元组可以'}\ndict_keys(['a', 'b'])"
+    },
+    {
+      "type": "quiz",
+      "question": "下面哪个<strong>不能</strong>作为字典的键？",
+      "options": [
+        "(1, 2)",
+        "\"abc\"",
+        "[1, 2]",
+        "42"
+      ],
+      "answer": 2,
+      "explain": "列表可变，哈希值会随内容变化，破坏哈希表结构，所以不可哈希。元组不可变，只要元素都可哈希就能当键。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>d[k]</code> 缺键抛 <code>KeyError</code>，<code>d.get(k, default)</code> 不抛。",
+        "字典保持插入顺序，但它是映射不是序列。",
+        "集合的 <code>in</code> 是 O(1)，列表是 O(n)。",
+        "键必须可哈希：可变对象不行，元组行（元素也得可哈希）。"
+      ]
+    }
+  ],
+  "prev": "s0-08-list-tuple",
+  "next": "s0-10-comparison"
+}

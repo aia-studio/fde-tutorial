@@ -1,0 +1,153 @@
+{
+  "id": "s3-65-profiling",
+  "order": 65,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "性能剖析",
+  "concepts": [
+    "cProfile",
+    "pstats",
+    "tracemalloc",
+    "hotspot"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "profiler 会告诉你真相"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "cProfile：时间花在哪个函数"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "tracemalloc：内存花在哪个对象"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "剖析的正确流程"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：cProfile 与 pstats",
+      "url": "https://docs.python.org/3/library/profile.html"
+    },
+    {
+      "title": "Library Reference：tracemalloc",
+      "url": "https://docs.python.org/3/library/tracemalloc.html"
+    }
+  ],
+  "prereq": [
+    64
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "profiler 会告诉你真相"
+    },
+    {
+      "type": "p",
+      "html": "timeit 回答\"这段代码多快\"；profiler 回答\"整个程序的时间花在哪\"。<strong>没有 profiler 就开始优化，是瞎猜</strong>——直觉找热点，十次九错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "cProfile：时间花在哪个函数"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import cProfile\nimport pstats\nimport io\n\n\ndef slow_part():\n    return sum(i * i for i in range(20000))\n\n\ndef fast_part():\n    return 1 + 1\n\n\ndef main():\n    slow_part()\n    fast_part()\n\n\npr = cProfile.Profile()\npr.enable()\nmain()\npr.disable()\n\nout = io.StringIO()\npstats.Stats(pr, stream=out).sort_stats(\"cumulative\").print_stats(5)\nreport = out.getvalue()\n\nprint(\"ncalls\" in report)\nprint(\"slow_part\" in report)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "报告里两个关键列：<code>tottime</code>（本函数自身耗时，不含子调用）和 <code>cumtime</code>（含子调用的累计）。<strong>找优化点看 tottime 排序</strong>——<code>cumtime</code> 高的往往只是调用了很多本来就该慢的东西。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "tracemalloc：内存花在哪个对象"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import tracemalloc\n\ntracemalloc.start()\ndata = [bytes(1024) for _ in range(100)]\ncurrent, peak = tracemalloc.get_traced_memory()\nsnapshot = tracemalloc.take_snapshot()\ntracemalloc.stop()\n\nprint(current >= 100 * 1024)\nprint(peak >= current)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>current</code> 是当前占用量（100 个 1KB），<code>peak</code> 是历史峰值，<code>snapshot</code> 能按文件行号对比两次快照、找出内存增长的来源。排查\"程序越跑越占内存\"（泄漏）就靠它。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "剖析的正确流程"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "text",
+      "code": "1. 用真实数据量跑 cProfile（不是 10 条记录）\n2. tottime 排序，找前 3 名\n3. 对第一名做最小复现，用 timeit 验证改进\n4. 改完必须重测总耗时——局部快了整体没变快=白改",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "别在剖析模式下优化",
+      "html": "cProfile 会给每个函数调用加计时开销（约 2 倍慢），所以它只回答\"谁占大头\"，<strong>不能</strong>用它比较两个实现的绝对速度——那是 timeit 的事。两个工具分工明确。"
+    },
+    {
+      "type": "quiz",
+      "question": "cProfile 报告里 <code>tottime</code> 和 <code>cumtime</code> 的区别是？",
+      "options": [
+        "tottime 是自身耗时，cumtime 包含它调用的所有函数",
+        "tottime 是平均耗时，cumtime 是总耗时",
+        "tottime 是 CPU 时间，cumtime 是墙上时间",
+        "两者相同，只是单位不同"
+      ],
+      "answer": 0,
+      "explain": "tottime 不含子调用（找「谁在烧 CPU」），cumtime 含全部子调用（看「入口函数整体成本」）。优化热点看 tottime 排序。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>cProfile</code> 找函数热点，<code>tottime</code> 排序是入口。",
+        "<code>tracemalloc</code> 查内存增长来源，<code>peak</code> 看峰值。",
+        "剖析用真实数据量；改完必须重测整体。",
+        "剖析与基准测试分工：找热点用 cProfile，比速度用 timeit。"
+      ]
+    }
+  ],
+  "prev": "s3-64-perf-intuition",
+  "next": "s3-66-optimization"
+}

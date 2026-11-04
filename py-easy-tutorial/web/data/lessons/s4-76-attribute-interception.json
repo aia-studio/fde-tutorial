@@ -1,0 +1,151 @@
+{
+  "id": "s4-76-attribute-interception",
+  "order": 76,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "moderate",
+  "title": "属性拦截",
+  "concepts": [
+    "__getattr__",
+    "__getattribute__",
+    "proxy",
+    "lazy loading"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "两个拦截器，一步之差"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "__getattr__：只在找不到时触发"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "__getattribute__：每次都经过"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "代理：两个拦截器的正当用途"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference：自定义属性访问",
+      "url": "https://docs.python.org/3/reference/datamodel.html#customizing-attribute-access"
+    },
+    {
+      "title": "Library Reference：object.__getattr__",
+      "url": "https://docs.python.org/3/reference/datamodel.html#object.__getattr__"
+    }
+  ],
+  "prereq": [
+    75
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "两个拦截器，一步之差"
+    },
+    {
+      "type": "p",
+      "html": "<code>__getattr__</code> 是<strong>常规查找失败后</strong>的兜底；<code>__getattribute__</code> 是<strong>所有属性访问的必经之路</strong>。一个温和、一个凶猛——用错后者，递归爆炸只需一行代码。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__getattr__</code>：只在找不到时触发"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Config:\n    def __init__(self):\n        self.debug = True\n\n    def __getattr__(self, name):\n        return f\"<默认值：{name}>\"\n\n\nc = Config()\nprint(c.debug)\nprint(c.timeout)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\n<默认值：timeout>"
+    },
+    {
+      "type": "p",
+      "html": "<code>c.debug</code> 存在于实例字典，<code>__getattr__</code> <strong>不会被调用</strong>；<code>c.timeout</code> 找不到，才轮到它。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__getattribute__</code>：每次都经过"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Logged:\n    def __init__(self):\n        self.x = 1\n\n    def __getattribute__(self, name):\n        print(f\"访问 {name}\")\n        return super().__getattribute__(name)\n\n\nobj = Logged()\nprint(obj.x)",
+      "runnable": true,
+      "editable": true,
+      "expect": "访问 x\n1"
+    },
+    {
+      "type": "p",
+      "html": "所有访问（包括 <code>self.x</code> 这种方法内部的）都会经过。<strong>在里面直接写 <code>self.x</code> 会无限递归</strong>——必须用 <code>super().__getattribute__</code>。这也是它危险的原因：一个疏忽就是 <code>RecursionError</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "代理：两个拦截器的正当用途"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class LazyProxy:\n    def __init__(self, factory):\n        self._factory = factory\n        self._target = None\n\n    def _load(self):\n        if self._target is None:\n            self._target = self._factory()\n        return self._target\n\n    def __getattr__(self, name):\n        return getattr(self._load(), name)\n\n\ndef heavy():\n    print(\"（真正加载）\")\n    return type(\"Data\", (), {\"greet\": lambda self: \"你好\"})()\n\n\nproxy = LazyProxy(heavy)\nprint(\"代理已创建，但还没加载\")\nprint(proxy.greet())\nprint(proxy.greet())",
+      "runnable": true,
+      "editable": true,
+      "expect": "代理已创建，但还没加载\n（真正加载）\n你好\n你好"
+    },
+    {
+      "type": "p",
+      "html": "第一次访问才真正构造目标对象——懒加载。<code>__getattr__</code> 把未知属性转发给目标，这就是<strong>代理模式</strong>。注意 <code>_factory</code>、<code>_target</code> 以下划线开头，避免被代理转发。"
+    },
+    {
+      "type": "quiz",
+      "question": "在 <code>__getattribute__</code> 里直接写 <code>return self.name</code>，会发生什么？",
+      "options": [
+        "正常返回 name 属性",
+        "无限递归，最终 RecursionError",
+        "返回 None",
+        "抛 AttributeError"
+      ],
+      "answer": 1,
+      "explain": "self.name 又触发一次 __getattribute__，再访问 self.name……唯一安全的路径是 super().__getattribute__(name)。同理 __setattr__ 里要写 super().__setattr__。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>__getattr__</code> = 失败兜底；<code>__getattribute__</code> = 全部必经，危险。",
+        "<code>__getattribute__</code> 内部必须走 <code>super()</code>，否则递归。",
+        "正当用途：代理、懒加载、属性访问日志。",
+        "用 <code>__getattr__</code> 做懒加载时，内部状态名用下划线开头。"
+      ]
+    }
+  ],
+  "prev": "s4-75-descriptors",
+  "next": "s4-77-metaclass"
+}

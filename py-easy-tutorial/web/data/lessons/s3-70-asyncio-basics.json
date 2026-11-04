@@ -1,0 +1,158 @@
+{
+  "id": "s3-70-asyncio-basics",
+  "order": 70,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "advanced",
+  "title": "asyncio 基础",
+  "concepts": [
+    "async def",
+    "await",
+    "event loop",
+    "gather",
+    "create_task"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "async def 定义的是\"可暂停的函数\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "顺序执行 vs 并发执行"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "事件顺序：任务在 await 处切换"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "create_task：立刻开始跑"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：asyncio",
+      "url": "https://docs.python.org/3/library/asyncio.html"
+    },
+    {
+      "title": "Library Reference：协程与任务",
+      "url": "https://docs.python.org/3/library/asyncio-task.html"
+    }
+  ],
+  "prereq": [
+    69
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>async def</code> 定义的是\"可暂停的函数\""
+    },
+    {
+      "type": "p",
+      "html": "<code>async def</code> 声明协程：调用它<strong>不执行函数体</strong>，返回一个协程对象；<code>await</code> 才驱动它，并在 <code>await</code> 处把控制权交还事件循环。三个概念 chained：事件循环调度任务，任务包裹协程，<code>await</code> 是切换点。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "顺序执行 vs 并发执行"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import asyncio\n\n\nasync def worker(name, delay):\n    await asyncio.sleep(delay)\n    return f\"{name} 完成\"\n\n\nasync def sequential():\n    a = await worker(\"A\", 0.1)\n    b = await worker(\"B\", 0.1)\n    return [a, b]\n\n\nasync def concurrent():\n    return await asyncio.gather(worker(\"A\", 0.1), worker(\"B\", 0.1))\n\n\nprint(asyncio.run(sequential()))\nprint(asyncio.run(concurrent()))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['A 完成', 'B 完成']\n['A 完成', 'B 完成']"
+    },
+    {
+      "type": "p",
+      "html": "两者结果相同，耗时不同：顺序版 0.2 秒，并发版 0.1 秒。<code>await asyncio.gather(...)</code> 同时启动多个任务，等<strong>全部</strong>完成。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "事件顺序：任务在 await 处切换"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import asyncio\n\nevents = []\n\n\nasync def worker(name):\n    for i in range(2):\n        await asyncio.sleep(0.01)\n        events.append(f\"{name}{i}\")\n\n\nasync def main():\n    await asyncio.gather(worker(\"A\"), worker(\"B\"))\n\n\nasyncio.run(main())\nprint(events)",
+      "runnable": true,
+      "editable": true,
+      "expect": "['A0', 'B0', 'A1', 'B1']"
+    },
+    {
+      "type": "p",
+      "html": "执行轨迹：A 跑到 <code>await</code> 让出 → B 跑到 <code>await</code> 让出 → A 恢复 → B 恢复。这就是<strong>协作式调度</strong>：谁不 <code>await</code>，谁就独占循环（第 69 课的反例）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>create_task</code>：立刻开始跑"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import asyncio\n\nresults = []\n\n\nasync def background():\n    await asyncio.sleep(0.02)\n    results.append(\"后台任务\")\n\n\nasync def main():\n    task = asyncio.create_task(background())\n    results.append(\"主流程先做事\")\n    await task\n    print(results)\n\n\nasyncio.run(main())",
+      "runnable": true,
+      "editable": true,
+      "expect": "['主流程先做事', '后台任务']"
+    },
+    {
+      "type": "p",
+      "html": "<code>gather</code> 是\"等一批\"，<code>create_task</code> 是\"现在就启动，稍后再等\"。后台任务在 <code>create_task</code> 的下一行<strong>已经开始执行</strong>，主流程可以先干别的再 <code>await task</code> 收结果。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "别忘了 await 你的任务",
+      "html": "<code>create_task</code> 之后从不 <code>await</code>，任务可能没跑完程序就结束了，而且没有异常报告。要么 <code>await task</code>，要么把它放进 <code>gather</code>——\"发了任务不收\"是最常见的 asyncio bug。"
+    },
+    {
+      "type": "quiz",
+      "question": "调用 <code>worker(\"A\", 0.1)</code>（协程函数）时，函数体里的代码何时开始执行？",
+      "options": [
+        "立刻执行到第一个 await",
+        "完全不执行——只有被 await 或包装成 Task 后才开始",
+        "在事件循环启动时执行",
+        "由解释器后台线程执行"
+      ],
+      "answer": 1,
+      "explain": "协程对象是「暂停的函数」。直接调用只创建对象；gather/create_task/await 才把它交给事件循环驱动。这也是为什么忘了 await 会有 coroutine was never awaited 警告。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>async def</code> 创建协程对象，<code>await</code> 驱动它并在该点切换。",
+        "<code>gather</code> 并发等一批；<code>create_task</code> 立即启动、稍后收结果。",
+        "调度是协作式的：切换单点只有 <code>await</code>。",
+        "任务必须被 await，否则不执行且异常无声丢失。"
+      ]
+    }
+  ],
+  "prev": "s3-69-concurrency-choice",
+  "next": "s3-71-asyncio-advanced"
+}

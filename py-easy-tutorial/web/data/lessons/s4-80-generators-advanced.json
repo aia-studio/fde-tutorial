@@ -1,0 +1,158 @@
+{
+  "id": "s4-80-generators-advanced",
+  "order": 80,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "生成器进阶",
+  "concepts": [
+    "state machine",
+    "send",
+    "throw",
+    "close",
+    "yield from"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "生成器是有状态的对象"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "send：推动状态机"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "close 与 finally：清理一定执行"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "yield from：委托子生成器"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：生成器方法",
+      "url": "https://docs.python.org/3/reference/expressions.html#generator-methods"
+    },
+    {
+      "title": "PEP 342：通过生成器实现协程",
+      "url": "https://peps.python.org/pep-0342/"
+    }
+  ],
+  "prereq": [
+    79
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "生成器是有状态的对象"
+    },
+    {
+      "type": "p",
+      "html": "<code>yield</code> 之后生成器<strong>暂停但不死</strong>——它记着局部变量和执行位置。这让它天然是\"状态机\"：每次 <code>send</code> 推动状态前进。理解了这一点，<code>async def</code> 只是把这套机制包装得更顺手。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "send：推动状态机"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def state_machine():\n    state = \"开始\"\n    while True:\n        received = yield state\n        if received == \"go\":\n            state = \"运行\"\n        elif received == \"stop\":\n            break\n\n\nsm = state_machine()\nprint(next(sm))\nprint(sm.send(\"go\"))\n\ntry:\n    sm.send(\"stop\")\nexcept StopIteration:\n    print(\"结束\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "开始\n运行\n结束"
+    },
+    {
+      "type": "p",
+      "html": "<code>send(\"go\")</code> 把值送进 <code>received</code> 并推进到下一个 <code>yield</code>。<code>break</code> 触发生成器结束，调用方收到 <code>StopIteration</code>——状态机走完了一生。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "close 与 finally：清理一定执行"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def resource():\n    print(\"打开资源\")\n    try:\n        yield 1\n        yield 2\n    finally:\n        print(\"释放资源\")\n\n\ng = resource()\nprint(next(g))\ng.close()",
+      "runnable": true,
+      "editable": true,
+      "expect": "打开资源\n1\n释放资源"
+    },
+    {
+      "type": "p",
+      "html": "<code>close()</code> 在生成器内部暂停点抛 <code>GeneratorExit</code>，<code>finally</code> 因此执行。<strong>持有资源的生成器必须保证能被安全 close</strong>——这也是为什么清理逻辑要放在 <code>try/finally</code> 里而不是 yield 之后。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>yield from</code>：委托子生成器"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def inner():\n    yield 1\n    yield 2\n\n\ndef outer():\n    yield 0\n    yield from inner()\n    yield 3\n\n\nprint(list(outer()))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[0, 1, 2, 3]"
+    },
+    {
+      "type": "p",
+      "html": "<code>yield from</code> 把控制权完整交给子生成器：子生成器的值逐个产出，<code>send</code>/<code>throw</code> 也直接透传。它在语义上等价于\"展开子生成器的所有 yield\"，是构建<strong>生成器流水线</strong>的积木。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "从 yield 到 async 的演进",
+      "html": "3.4 时代 <code>@asyncio.coroutine</code> 就是用 <code>yield from</code> 实现协程；3.5 引入 <code>async/await</code> 语法糖。所以看到旧代码里的 <code>yield from</code>，大脑里可以自动翻译成 <code>await</code>——语义几乎一致。"
+    },
+    {
+      "type": "quiz",
+      "question": "对暂停中的生成器调用 <code>close()</code>，内部会发生什么？",
+      "options": [
+        "什么都不做，生成器保持暂停",
+        "在暂停点抛出 GeneratorExit，finally 得以执行",
+        "从第一行重新开始执行",
+        "立即终止进程"
+      ],
+      "answer": 1,
+      "explain": "close() 在当前 yield 处注入 GeneratorExit 异常，触发 try/finally 的清理路径。这就是「持有资源的生成器要能被安全关闭」的实现机制。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>send</code> 推动状态机：暂停点收值、继续执行到下一个 yield。",
+        "<code>close()</code> 注入 GeneratorExit，<code>finally</code> 负责清理。",
+        "<code>yield from</code> 委托子生成器，值与控制权都透传。",
+        "<code>yield from</code> 是 <code>await</code> 的前身，旧协程代码可照此理解。"
+      ]
+    }
+  ],
+  "prev": "s4-79-generics",
+  "next": "s4-81-memory-gc"
+}

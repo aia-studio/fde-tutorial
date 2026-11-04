@@ -1,0 +1,194 @@
+{
+  "id": "s2-49-regex",
+  "order": 49,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "正则表达式",
+  "concepts": [
+    "re",
+    "findall",
+    "groups",
+    "greedy",
+    "sub"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "一把快刀，但刀刃向内"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "findall 与分组"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "贪婪：.* 的默认行为会坑你"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "sub：替换也带分组"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "预编译：同一个模式用两次就该编译"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：re",
+      "url": "https://docs.python.org/3/library/re.html"
+    },
+    {
+      "title": "HOWTO：正则表达式",
+      "url": "https://docs.python.org/3/howto/regex.html"
+    }
+  ],
+  "prereq": [
+    48
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "一把快刀，但刀刃向内"
+    },
+    {
+      "type": "p",
+      "html": "正则能一行解决文本提取，也能一行制造没人看得懂的代码。这一课只讲<strong>日常 80% 场景</strong>的用法，以及两个最容易翻车的点：贪婪和预编译。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "findall 与分组"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import re\n\ntext = \"Ada 36, Bob 25\"\n\nprint(re.findall(r\"\\d+\", text))\nprint(re.findall(r\"(\\w+) (\\d+)\", text))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['36', '25']\n[('Ada', '36'), ('Bob', '25')]"
+    },
+    {
+      "type": "p",
+      "html": "<code>\\d+</code> 匹配数字串。加括号就是<strong>分组</strong>，<code>findall</code> 返回元组列表而不是字符串列表。命名分组更可读："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import re\n\nmatch = re.search(r\"(?P<name>\\w+)=(?P<value>\\d+)\", \"port=5432\")\nprint(match.group(\"name\"), match.group(\"value\"))\nprint(match.group(0))",
+      "runnable": true,
+      "editable": true,
+      "expect": "port 5432\nport=5432"
+    },
+    {
+      "type": "p",
+      "html": "<code>search</code> 找<strong>第一个</strong>匹配（没有则 None），<code>findall</code> 找全部，<code>fullmatch</code> 要求整串匹配——校验用户输入用 <code>fullmatch</code>，别用 <code>match</code>（它只锚定开头）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "贪婪：<code>.*</code> 的默认行为会坑你"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import re\n\nhtml = \"<a><b>\"\n\nprint(re.findall(r\"<.+>\", html))\nprint(re.findall(r\"<.+?>\", html))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['<a><b>']\n['<a>', '<b>']"
+    },
+    {
+      "type": "p",
+      "html": "<code>.*</code> 是<strong>贪婪</strong>的：能吃多少吃多少，一口气吞到行尾的 <code>&gt;</code> 才回退。加 <code>?</code> 变成<strong>非贪婪</strong>：碰到第一个能结束的位置就停。这两行代码的差异，是正则 bug 排行榜的第一名。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "复杂解析不要用正则",
+      "html": "嵌套结构（HTML、JSON）不是正则语言，<code>&lt;div&gt;</code> 套 <code>&lt;div&gt;</code> 的场景迟早出事。文本用正则，结构用解析器。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>sub</code>：替换也带分组"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import re\n\nprint(re.sub(r\"\\s+\", \" \", \"a  b\\n c\"))\nprint(re.sub(r\"(\\d{4})-(\\d{2})\", r\"\\2/\\1\", \"2026-10\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "a b c\n10/2026"
+    },
+    {
+      "type": "p",
+      "html": "替换串里 <code>\\1</code>、<code>\\2</code> 引用分组——日期重排这类转换一行完成。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "预编译：同一个模式用两次就该编译"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "import re\n\nEMAIL = re.compile(r\"[\\w.+-]+@[\\w-]+\\.[\\w.]+\")\n\ntext = \"联系 a@x.com 或 b@y.org\"\nprint(EMAIL.findall(text))\nprint(bool(EMAIL.fullmatch(\"c@z.io\")))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['a@x.com', 'b@y.org']\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "模块级 <code>re.compile</code> 一次、复用多次；速度更快，模式有名字、离使用处远一点，可读性也更好。"
+    },
+    {
+      "type": "quiz",
+      "question": "校验用户输入的手机号格式，应该用哪个函数？",
+      "options": [
+        "re.match(pattern, text)",
+        "re.search(pattern, text)",
+        "re.fullmatch(pattern, text)",
+        "re.findall(pattern, text)"
+      ],
+      "answer": 2,
+      "explain": "fullmatch 要求整个字符串匹配，末尾多余字符会导致失败——校验场景正需要这种严格性。match 只锚定开头，'13800138000abc' 也会通过。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>search</code> 找第一个、<code>findall</code> 找全部、<code>fullmatch</code> 校验整串。",
+        "分组 <code>(...)</code> 捕获，<code>(?P&lt;name&gt;...)</code> 命名，替换用 <code>\\1</code> 引用。",
+        "<code>.*</code> 贪婪、<code>.*?</code> 非贪婪，90% 的正则 bug 在这里。",
+        "复用模式先 <code>re.compile</code>；解析结构化文本（HTML/JSON）不用正则。"
+      ]
+    }
+  ],
+  "prev": "s2-48-abc-protocols",
+  "next": "s2-50-unicode"
+}

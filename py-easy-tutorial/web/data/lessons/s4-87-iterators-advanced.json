@@ -1,0 +1,168 @@
+{
+  "id": "s4-87-iterators-advanced",
+  "order": 87,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "迭代器进阶",
+  "concepts": [
+    "single pass",
+    "reversed",
+    "custom iteration",
+    "iter sentinel"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "迭代器是一次性的，函数参数尤其如此"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "迭代器一旦耗尽就永远是空的"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "两种函数签名的契约"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "reversed：不是所有序列都支持"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：reversed",
+      "url": "https://docs.python.org/3/library/functions.html#reversed"
+    },
+    {
+      "title": "Language Reference：迭代协议",
+      "url": "https://docs.python.org/3/reference/datamodel.html#iterators"
+    }
+  ],
+  "prereq": [
+    86
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "迭代器是一次性的，函数参数尤其如此"
+    },
+    {
+      "type": "p",
+      "html": "第 27 课讲过\"迭代器只能走一遍\"。这一课把这个知识推进到实战：<strong>函数签名里什么时候该写 Iterable，什么时候该写 Iterator</strong>，以及 <code>reversed</code> 为什么比想象中挑剔。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "迭代器一旦耗尽就永远是空的"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def consume(items):\n    return list(items)\n\n\ndata = iter([1, 2, 3])\nfirst = consume(data)\nsecond = consume(data)\n\nprint(first, second)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 2, 3] []"
+    },
+    {
+      "type": "p",
+      "html": "同一个迭代器第二次遍历得到空列表。当函数签名是 <code>def f(items: Iterator[int])</code> 时，调用方要明白：<strong>这个函数拥有迭代器，用完就没了</strong>。"
+    },
+    {
+      "type": "p",
+      "html": "这也解释了一个 zip 的经典坑："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "zipped = zip([1, 2, 3], [\"a\", \"b\", \"c\"])\nprint(list(zipped))\nprint(list(zipped))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[(1, 'a'), (2, 'b'), (3, 'c')]\n[]"
+    },
+    {
+      "type": "p",
+      "html": "zip 返回的也是迭代器。调试时打印过一次，再用就是空的——变量名的 <code>zipped</code> 长得像列表，但不是。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "两种函数签名的契约"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from collections.abc import Iterable, Iterator\n\n\ndef report(items: Iterable[int]) -> None:\n    \"\"\"可以多次遍历：函数内部会先 list() 物化。\"\"\"\n    values = list(items)\n    print(len(values), sum(values))\n\n\ndef stream(items: Iterator[int]) -> None:\n    \"\"\"只遍历一次：数据可能来自无限流。\"\"\"\n    print(sum(items))\n\n\nreport(iter([1, 2, 3]))\nstream(iter([1, 2, 3]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "3 6\n6"
+    },
+    {
+      "type": "p",
+      "html": "<code>Iterable</code> 参数的函数承诺\"可以反复遍历\"（必要时内部物化）；<code>Iterator</code> 参数的函数承诺\"只走一遍但省内存\"。<strong>签名即契约</strong>——选错了，调用方就会踩到空迭代器。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>reversed</code>：不是所有序列都支持"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "reversed([1, 2, 3])\nreversed((1, 2, 3))\nreversed(\"abc\")\n\ntry:\n    reversed(iter([1, 2, 3]))\nexcept TypeError as exc:\n    print(type(exc).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "TypeError"
+    },
+    {
+      "type": "p",
+      "html": "<code>reversed</code> 需要 <code>__len__</code> + <code>__getitem__</code>（序列），或实现 <code>__reversed__</code>。迭代器不能反着走——它只会前进。需要\"反着迭代一遍\"时，先物化成序列。"
+    },
+    {
+      "type": "quiz",
+      "question": "函数签名写 <code>items: Iterator[int]</code>，对调用方意味着什么？",
+      "options": [
+        "函数会复制一份，调用方的迭代器不受影响",
+        "这个迭代器会被消耗，调用后不能再遍历",
+        "函数内部会转成列表并返回",
+        "和 Iterable[int] 完全一样"
+      ],
+      "answer": 1,
+      "explain": "Iterator 参数 = 所有权转移：函数拥有这个迭代器并用掉它。需要多次遍历的调用方应传列表；想省内存的调用方才传迭代器。签名就是契约。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "迭代器耗尽即空，<code>zip</code>/<code>map</code>/生成器都一样。",
+        "<code>Iterable</code> 参数可反复遍历（内部物化），<code>Iterator</code> 参数只走一次。",
+        "<code>reversed</code> 只支持序列，迭代器不行。",
+        "在文档与签名里区分两者，调用方就不会踩空迭代器的坑。"
+      ]
+    }
+  ],
+  "prev": "s4-86-contextlib",
+  "next": "s4-88-serialization"
+}

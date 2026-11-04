@@ -1,0 +1,168 @@
+{
+  "id": "s4-94-c-extensions",
+  "order": 94,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "resources",
+  "title": "C 扩展入门",
+  "concepts": [
+    "ctypes",
+    "c extension",
+    "numpy",
+    "build process"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "走到解释器边界（只读延伸）"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "ctypes：不写 C 也能调 C"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "手写扩展的流程（不可在沙箱运行）"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "性能边界：什么时候值得"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：ctypes",
+      "url": "https://docs.python.org/3/library/ctypes.html"
+    },
+    {
+      "title": "Python Packaging：C/C++ 扩展",
+      "url": "https://packaging.python.org/en/latest/guides/building-and-distributing-packages-with-setuptools/#extending-or-customizing-setuptools"
+    }
+  ],
+  "prereq": [
+    93
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "走到解释器边界（只读延伸）"
+    },
+    {
+      "type": "p",
+      "html": "这是本阶段第一门<strong>只读课</strong>：不判题、部分代码不可运行。当 Python 层的优化（第 80 课）已经到顶，把热点下沉到 C 是最后一级火箭。这一课看清边界在哪、怎么跨过去、代价是什么。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "ctypes：不写 C 也能调 C"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import ctypes\n\n\nclass Point(ctypes.Structure):\n    _fields_ = [(\"x\", ctypes.c_int), (\"y\", ctypes.c_int)]\n\n\np = Point(3, 4)\nprint(p.x, p.y, ctypes.sizeof(p))",
+      "runnable": true,
+      "editable": true,
+      "expect": "3 4 8"
+    },
+    {
+      "type": "p",
+      "html": "<code>ctypes</code> 能直接加载动态链接库（Windows 的 DLL、Linux 的 .so）并调用其导出函数——<code>libc</code> 的数学函数、系统 API、自己编译的 <code>.so</code> 都行。上面用 <code>Structure</code> 定义了一个与 C 结构体布局一致的对象：两个 c_int 正好 8 字节。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "手写扩展的流程（不可在沙箱运行）"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "c",
+      "code": "// mymod.c —— 概念示意，实际还需模块初始化与错误处理\n#include <Python.h>\n\nstatic PyObject *square(PyObject *self, PyObject *args) {\n    long n;\n    if (!PyArg_ParseTuple(args, \"l\", &n))\n        return NULL;\n    return PyLong_FromLong(n * n);\n}",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "text",
+      "code": "编译（三种路径）：\n1. setuptools：在 pyproject.toml 声明 ext_modules，pip install 时自动编译\n2. 手动：cl /LD mymod.c /I<include>（Windows）或 gcc -shared（Linux/macOS）\n3. scikit-build / meson：需要 cmake 的复杂项目\n\n产物：mymod.cp315-win_amd64.pyd → import mymod 直接可用",
+      "runnable": false,
+      "editable": false,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "发布含 C 扩展的包，<strong>每个平台 × 每个 Python 版本都要出一个 wheel</strong>（<code>cp315-cp315-win_amd64</code> 就是这个含义），社区用 cibuildwheel 自动化。这也是\"纯 Python 包随处可装、C 扩展包要挑平台\"的根本原因。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "性能边界：什么时候值得"
+    },
+    {
+      "type": "table",
+      "head": [
+        "情况",
+        "结论"
+      ],
+      "rows": [
+        [
+          "循环里有大量纯数值计算",
+          "下沉收益巨大（numpy 就是这么做的）"
+        ],
+        [
+          "主要在等 IO",
+          "下沉无用——瓶颈在网络，不在解释器"
+        ],
+        [
+          "只是函数调用太慢",
+          "先试算法与数据结构（第 66 课）"
+        ]
+      ]
+    },
+    {
+      "type": "quiz",
+      "question": "含 C 扩展的包发布到 PyPI，与纯 Python 包最大的差别是？",
+      "options": [
+        "需要更多文档",
+        "每个平台与 Python 版本组合都要构建对应的 wheel，否则用户需本地编译",
+        "不能使用 pyproject.toml",
+        "必须开源 C 代码"
+      ],
+      "answer": 1,
+      "explain": "C 扩展的 wheel 与解释器 ABI、平台绑定（如 cp315-win_amd64），矩阵很大，通常用 cibuildwheel 在 CI 上批量构建。纯 Python 包只有一个 universal wheel。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>ctypes</code> 免编译调用动态库；<code>Structure</code> 与 C 结构体布局对齐。",
+        "手写扩展 = 实现 PyInit + 构建 wheel，按平台 × 版本出矩阵。",
+        "下沉 C 的前提是 CPU 热点；IO 密集场景无收益。",
+        "本课与 95、96 均为只读延伸：不判题，示例以可复制的真实命令为主。"
+      ]
+    }
+  ],
+  "prev": "s4-93-numeric-protocol",
+  "next": "s4-95-embedding"
+}

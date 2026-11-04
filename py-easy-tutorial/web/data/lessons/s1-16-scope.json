@@ -1,0 +1,190 @@
+{
+  "id": "s1-16-scope",
+  "order": 16,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "作用域与名字查找",
+  "concepts": [
+    "scope",
+    "LEGB",
+    "global",
+    "nonlocal",
+    "UnboundLocalError"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "名字在哪里生效"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "局部遮蔽全局"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "但读取外层的值是可以的"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "global：确实要改全局"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "nonlocal：改外层函数的值"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference §4.2：命名与绑定",
+      "url": "https://docs.python.org/3/reference/executionmodel.html#binding-of-names"
+    },
+    {
+      "title": "Python FAQ：Python 的作用域规则",
+      "url": "https://docs.python.org/3/faq/programming.html#what-are-the-rules-for-local-and-global-variables-in-python"
+    }
+  ],
+  "prereq": [
+    15
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "名字在哪里生效"
+    },
+    {
+      "type": "p",
+      "html": "Python 查一个名字时按 <strong>LEGB</strong> 顺序找：Local（函数内）→ Enclosing（外层函数）→ Global（模块）→ Builtin（内置）。找不到就 <code>NameError</code>。这条规则不难，难的是<strong>赋值会让名字变成局部的</strong>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "局部遮蔽全局"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "x = \"global\"\n\n\ndef show():\n    x = \"local\"\n    return x\n\n\nprint(show())\nprint(x)",
+      "runnable": true,
+      "editable": true,
+      "expect": "local\nglobal"
+    },
+    {
+      "type": "p",
+      "html": "函数内的 <code>x = \"local\"</code> 创建了一个新的局部名字，和外面的 <code>x</code> 没有关系。这是好事——函数不会意外污染全局。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "但读取外层的值是可以的"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "x = \"global\"\n\n\ndef read():\n    return x\n\n\nprint(read())",
+      "runnable": true,
+      "editable": true,
+      "expect": "global"
+    },
+    {
+      "type": "p",
+      "html": "只读不赋值时，找不到局部名字就往上找，所以能读到全局的 <code>x</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>global</code>：确实要改全局"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "count = 0\n\n\ndef bump():\n    global count\n    count += 1\n\n\nbump()\nbump()\nprint(count)",
+      "runnable": true,
+      "editable": true,
+      "expect": "2"
+    },
+    {
+      "type": "p",
+      "html": "去掉 <code>global</code> 会怎样？<code>count += 1</code> 既是读也是写，Python 看到赋值就认定 <code>count</code> 是局部的，于是读取时抛出 <code>UnboundLocalError</code>："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "total = 0\n\n\ndef broken():\n    try:\n        total += 1\n    except UnboundLocalError as exc:\n        return type(exc).__name__\n\n\nprint(broken())",
+      "runnable": true,
+      "editable": true,
+      "expect": "UnboundLocalError"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "为什么要这样设计",
+      "html": "编译期就能确定每个名字属于哪个作用域，局部变量可以放在固定槽位里（<code>LOAD_FAST</code>），比每次查字典快得多。代价就是这个\"赋值即局部\"的规则。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>nonlocal</code>：改外层函数的值"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "def counter():\n    n = 0\n\n    def inc():\n        nonlocal n\n        n += 1\n        return n\n\n    return inc\n\n\nc = counter()\nprint(c(), c(), c())",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 2 3"
+    },
+    {
+      "type": "p",
+      "html": "<code>nonlocal</code> 指向<strong>最近的外层函数作用域</strong>，不跨越到全局。它和闭包是配套的，下一课会看到 <code>nonlocal</code> 正是闭包保持状态的机制。"
+    },
+    {
+      "type": "quiz",
+      "question": "函数内执行 <code>count += 1</code> 但没有声明 global，会发生什么？",
+      "options": [
+        "修改全局 count",
+        "抛 UnboundLocalError，因为赋值让 count 变成局部名字",
+        "创建局部 count，全局不变",
+        "语法错误"
+      ],
+      "answer": 1,
+      "explain": "<code>+=</code> 含赋值语义，编译期就把 count 判定为局部变量；执行到读取那一步时局部还没绑定，于是 UnboundLocalError。要改全局必须写 global，要新建局部则不该读它的旧值。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "查找顺序 LEGB：局部 → 外层函数 → 全局 → 内置。",
+        "<strong>只要在函数里赋值，这个名字就是局部的</strong>，除非声明 <code>global</code> / <code>nonlocal</code>。",
+        "<code>UnboundLocalError</code> 几乎总是\"忘了写 global\"或\"变量名打错\"。",
+        "<code>nonlocal</code> 只穿透到最近的外层函数，不触及全局。"
+      ]
+    }
+  ],
+  "prev": "s1-15-functions",
+  "next": "s1-17-closures"
+}

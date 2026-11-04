@@ -1,0 +1,164 @@
+{
+  "id": "s2-41-decorators-advanced",
+  "order": 41,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "装饰器进阶",
+  "concepts": [
+    "decorator factory",
+    "registration",
+    "class decorator",
+    "stacking"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "三层结构：带参数的装饰器"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "带参数的装饰器"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "注册表：装饰器的另一面"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "叠加顺序：从下往上"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：functools",
+      "url": "https://docs.python.org/3/library/functools.html"
+    },
+    {
+      "title": "HOWTO：装饰器入门",
+      "url": "https://docs.python.org/3/howto/descriptor.html#functions-and-methods"
+    }
+  ],
+  "prereq": [
+    40
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "三层结构：带参数的装饰器"
+    },
+    {
+      "type": "p",
+      "html": "<code>@repeat(3)</code> 比基础版多一层：<code>repeat(3)</code> 先执行，返回真正的装饰器。理解\"装饰器可以是<strong>返回装饰器的函数</strong>\"，这条语法就通了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "带参数的装饰器"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import functools\n\n\ndef repeat(times):\n    def deco(fn):\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            return [fn(*args, **kwargs) for _ in range(times)]\n\n        return wrapper\n\n    return deco\n\n\n@repeat(3)\ndef beep(i):\n    return f\"beep {i}\"\n\n\nprint(beep(1))",
+      "runnable": true,
+      "editable": true,
+      "expect": "['beep 1', 'beep 1', 'beep 1']"
+    },
+    {
+      "type": "p",
+      "html": "读法：<code>@repeat(3)</code> → 先调 <code>repeat(3)</code> 得到 <code>deco</code> → 再 <code>beep = deco(beep)</code>。三层各司其职：<code>times</code> 存参数、<code>deco</code> 收函数、<code>wrapper</code> 干活。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "注册表：装饰器的另一面"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "_registry = {}\n\n\ndef register(name):\n    def deco(fn):\n        _registry[name] = fn\n        return fn\n\n    return deco\n\n\n@register(\"greet\")\ndef greet():\n    return \"hi\"\n\n\n@register(\"bye\")\ndef bye():\n    return \"bye\"\n\n\nprint(sorted(_registry))\nprint(_registry[\"bye\"]())",
+      "runnable": true,
+      "editable": true,
+      "expect": "['bye', 'greet']\nbye"
+    },
+    {
+      "type": "p",
+      "html": "注意 <code>deco</code> <strong>返回的是原函数</strong>，没有包装——这类装饰器不做行为改造，只做\"登记\"。命令路由、插件发现、测试收集全是这个模式的变体。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "叠加顺序：从下往上"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def add_a(fn):\n    def wrapper():\n        return \"A\" + fn()\n    return wrapper\n\n\ndef add_b(fn):\n    def wrapper():\n        return \"B\" + fn()\n    return wrapper\n\n\ndef base():\n    return \"C\"\n\n\nprint(add_a(add_b(base))())",
+      "runnable": true,
+      "editable": true,
+      "expect": "ABC"
+    },
+    {
+      "type": "p",
+      "html": "对应的装饰器写法是从下往上套："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "def add_a(fn):\n    def wrapper():\n        return \"A\" + fn()\n\n    return wrapper\n\n\ndef add_b(fn):\n    def wrapper():\n        return \"B\" + fn()\n\n    return wrapper\n\n\n@add_a\n@add_b\ndef base():\n    return \"C\"\n\n\nprint(base())",
+      "runnable": true,
+      "editable": true,
+      "expect": "ABC"
+    },
+    {
+      "type": "p",
+      "html": "<code>@add_a</code> 在上表示\"最外层\"，所以执行顺序是 add_a(add_b(base))。想清楚这个，就不会被多层装饰器绕晕。"
+    },
+    {
+      "type": "quiz",
+      "question": "带参装饰器 <code>@repeat(3)</code> 的调用顺序是？",
+      "options": [
+        "repeat 和 deco 同时收到参数与函数",
+        "先调 repeat(3) 返回装饰器，再用它包装函数",
+        "只调用 repeat 一次，直接完成包装",
+        "repeat 会被调用三次"
+      ],
+      "answer": 1,
+      "explain": "带参装饰器是「装饰器工厂」：第一层收参数，第二层收函数，第三层是实际执行体。三层各司其职，忘了哪一层都会包错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "带参装饰器 = 装饰器工厂，三层结构：参数 → 函数 → wrapper。",
+        "注册类装饰器返回<strong>原函数</strong>，只登记不包装。",
+        "多个装饰器从下往上叠加，最上面的最外层执行。",
+        "functools.wraps 每一层 wrapper 都要加。"
+      ]
+    }
+  ],
+  "prev": "s2-40-decorators",
+  "next": "s2-42-itertools"
+}

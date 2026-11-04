@@ -1,0 +1,156 @@
+{
+  "id": "s2-37-operators",
+  "order": 37,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "运算符重载与容器协议",
+  "concepts": [
+    "__add__",
+    "__len__",
+    "__getitem__",
+    "__contains__",
+    "NotImplemented"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "让自己的类\" behaves like builtins\""
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "__add__ 与反射版本"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "容器协议：len、索引、in"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "可变容器：再补两个方法"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：模拟数字类型",
+      "url": "https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types"
+    },
+    {
+      "title": "Library Reference：模拟容器类型",
+      "url": "https://docs.python.org/3/reference/datamodel.html#emulating-container-types"
+    }
+  ],
+  "prereq": [
+    36
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "让自己的类\" behaves like builtins\""
+    },
+    {
+      "type": "p",
+      "html": "<code>a + b</code>、<code>len(x)</code>、<code>\"x\" in y</code> 背后都是协议方法：<code>__add__</code>、<code>__len__</code>、<code>__contains__</code>。实现哪个协议，类就获得哪种\"内置感\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__add__</code> 与反射版本"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Money:\n    def __init__(self, cents):\n        self.cents = cents\n\n    def __add__(self, other):\n        if not isinstance(other, Money):\n            return NotImplemented\n        return Money(self.cents + other.cents)\n\n    def __repr__(self):\n        return f\"Money({self.cents})\"\n\n\nprint(Money(100) + Money(250))\nprint(sum([Money(1), Money(2), Money(3)], start=Money(0)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "Money(350)\nMoney(6)"
+    },
+    {
+      "type": "p",
+      "html": "<code>sum</code> 的写法暴露了另一个要点：<code>Money(0) + Money(1)</code> 走 <code>__add__</code>，没问题。但如果反过来 <code>1 + Money(2)</code>，<code>int.__add__</code> 不认识 Money，Python 会问 Money 的 <code>__radd__</code>（反射加法）——没实现就返回 <code>NotImplemented</code>，最后抛 <code>TypeError</code>。"
+    },
+    {
+      "type": "p",
+      "html": "<strong><code>NotImplemented</code> 不是异常，是\"我不认识，你去问对方\"的信号</strong>，第 79 课展开。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "容器协议：len、索引、in"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Playlist:\n    def __init__(self, songs):\n        self._songs = list(songs)\n\n    def __len__(self):\n        return len(self._songs)\n\n    def __getitem__(self, index):\n        return self._songs[index]\n\n    def __contains__(self, song):\n        return song in self._songs\n\n\npl = Playlist([\"a\", \"b\", \"c\"])\nprint(len(pl), pl[0], pl[-1])\nprint(\"b\" in pl, \"z\" in pl)\nprint(list(pl))",
+      "runnable": true,
+      "editable": true,
+      "expect": "3 a c\nTrue False\n['a', 'b', 'c']"
+    },
+    {
+      "type": "p",
+      "html": "只实现了 <code>__getitem__</code>，<code>for</code> 和 <code>list()</code> 就都能用——Python 的旧式迭代协议看到 <code>__getitem__</code> 会自动包一层。想更规范，实现 <code>__iter__</code>（第 27 课的协议）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "可变容器：再补两个方法"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class Registry:\n    def __init__(self):\n        self._data = {}\n\n    def __setitem__(self, key, value):\n        self._data[key] = value\n\n    def __delitem__(self, key):\n        del self._data[key]\n\n    def __getitem__(self, key):\n        return self._data[key]\n\n    def __len__(self):\n        return len(self._data)\n\n\nr = Registry()\nr[\"a\"] = 1\nr[\"b\"] = 2\nprint(r[\"a\"], len(r))\ndel r[\"a\"]\nprint(len(r))",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 2\n1"
+    },
+    {
+      "type": "p",
+      "html": "完整实现 <code>__setitem__</code> / <code>__delitem__</code> 后，类可以像字典一样用——但<strong>没有字典快</strong>。这是接口便利和性能的权衡，数据量大时包一层真字典更明智。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>__add__</code> 遇到不支持的类型时，正确做法是什么？",
+      "options": [
+        "抛 TypeError",
+        "返回 NotImplemented，让 Python 去问对方的反射方法",
+        "返回 None",
+        "返回 0"
+      ],
+      "answer": 1,
+      "explain": "返回 NotImplemented 后，Python 会尝试 other.__radd__；两边都 NotImplemented 才抛 TypeError。抛 TypeError 会剥夺对方参与运算的机会，1 + Money(2) 这种「谁在前」的问题就无解了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>__add__</code> 等算术方法返回<strong>新对象</strong>，不要原地改。",
+        "不支持的类型返回 <code>NotImplemented</code>，让反射方法有机会接手。",
+        "容器协议：<code>__len__</code> / <code>__getitem__</code> / <code>__setitem__</code> / <code>__contains__</code> 按需实现。",
+        "实现了 <code>__getitem__</code> 就自动获得迭代能力，但显式 <code>__iter__</code> 更规范。"
+      ]
+    }
+  ],
+  "prev": "s2-36-property-slots",
+  "next": "s2-38-enum"
+}

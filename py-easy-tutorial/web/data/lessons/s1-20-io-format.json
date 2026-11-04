@@ -1,0 +1,203 @@
+{
+  "id": "s1-20-io-format",
+  "order": 20,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "输入输出与格式化",
+  "concepts": [
+    "print",
+    "sep",
+    "end",
+    "fstring",
+    "format spec",
+    "repr"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "输出的三种控制：分隔、结尾、格式"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "sep 与 end"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "对齐与精度"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "repr 与 str 的区别"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 7.1：格式化字符串字面量",
+      "url": "https://docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals"
+    },
+    {
+      "title": "Library Reference：格式规格迷你语言",
+      "url": "https://docs.python.org/3/library/string.html#format-specification-mini-language"
+    }
+  ],
+  "prereq": [
+    18
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "输出的三种控制：分隔、结尾、格式"
+    },
+    {
+      "type": "p",
+      "html": "<code>print</code> 的 <code>sep</code> 和 <code>end</code> 决定\"怎么连\"，f-string 的格式说明符决定\"每个值怎么显示\"。这两件事分清楚，输出就不会再靠手工拼空格对齐。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>sep</code> 与 <code>end</code>"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "print(\"a\", \"b\", sep=\"-\", end=\"!\\n\")\nprint(\"x\", end=\"\")\nprint(\"y\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "a-b!\nxy"
+    },
+    {
+      "type": "p",
+      "html": "<code>sep</code> 只在多个参数之间插入，<code>end</code> 决定本次输出怎么收尾。默认 <code>end=\"\\n\"</code>，所以第二行的 <code>print(\"x\", end=\"\")</code> 把换行去掉了，<code>y</code> 接在后面。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "对齐与精度"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "print(f\"{3.14159:10.3f}|\")\nprint(f\"{'hi':>6}|\")\nprint(f\"{255:#06x}\")\nprint(f\"{0.5:.1%}\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "     3.142|\n    hi|\n0x00ff\n50.0%"
+    },
+    {
+      "type": "p",
+      "html": "格式说明符的通用形状是 <code>[[填充]对齐][符号][宽度][,][.精度][类型]</code>："
+    },
+    {
+      "type": "table",
+      "head": [
+        "写法",
+        "含义",
+        "结果"
+      ],
+      "rows": [
+        [
+          "<code>10.3f</code>",
+          "宽 10、保留 3 位小数",
+          "<code>     3.142</code>"
+        ],
+        [
+          "<code>&gt;6</code>",
+          "右对齐占 6 格",
+          "<code>    hi</code>"
+        ],
+        [
+          "<code>#06x</code>",
+          "十六进制、补 <code>0x</code>、总宽 6",
+          "<code>0x00ff</code>"
+        ],
+        [
+          "<code>.1%</code>",
+          "百分比、1 位小数",
+          "<code>50.0%</code>"
+        ],
+        [
+          "<code>,</code>",
+          "千分位",
+          "<code>1,234,567</code>"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "print(f\"{1234567:,}\")\nprint(f\"{-42:+d}\")\nprint(f\"{'ok':^8}|\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "1,234,567\n-42\n   ok   |"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>repr</code> 与 <code>str</code> 的区别"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "text = \"a\\nb\"\n\nprint(text)\nprint(repr(text))\nprint(f\"{text!r}\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "a\nb\n'a\\nb'\n'a\\nb'"
+    },
+    {
+      "type": "p",
+      "html": "<code>str</code> 给人看（真的换行），<code>repr</code> 给开发者看（转义后的字面量）。调试时打印 <code>repr</code>，才能看清到底有没有隐藏字符——空格、制表符、换行、不可见 Unicode。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "调试三件套",
+      "html": "<code>print(repr(x))</code> 看真实内容，<code>print(type(x), len(x))</code> 看类型和长度，<code>print(f\"{x=}\")</code> 直接输出\"变量名=值\"，省掉手写标签。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>print('a', 'b', sep='', end='')</code> 之后紧接着 <code>print('c')</code>，屏幕上输出什么？",
+      "options": [
+        "a b\\nc",
+        "ab\\nc",
+        "abc",
+        "a b c"
+      ],
+      "answer": 1,
+      "explain": "sep='' 让 a 和 b 之间没有分隔符，end='' 让第一次 print 不换行；第二次 print('c') 结束时补上换行。所以屏幕上是 ab 紧接着 c，然后换行。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>sep</code> 控制参数之间，<code>end</code> 控制本次结束，默认换行。",
+        "格式说明符 <code>[[填充]对齐][宽度][.精度][类型]</code>，对齐用 <code>&lt;</code> <code>&gt;</code> <code>^</code>。",
+        "<code>,</code> 千分位、<code>+</code> 强制符号、<code>#</code> 加前缀，都能组合。",
+        "调试用 <code>repr</code>，<code>!r</code> 是 f-string 里的简写。"
+      ]
+    }
+  ],
+  "prev": "s1-19-packages",
+  "next": "s1-21-files"
+}

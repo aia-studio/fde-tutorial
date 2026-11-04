@@ -1,0 +1,181 @@
+{
+  "id": "s2-51-datetime",
+  "order": 51,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "日期与时间",
+  "concepts": [
+    "datetime",
+    "timezone",
+    "zoneinfo",
+    "strptime",
+    "aware"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "天真时间与带时区时间"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "时区转换：先给时间点，再换显示"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "天真时间不能和带时区时间比较"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "zoneinfo：真实世界的时区"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "解析：格式必须逐字符对应"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：datetime",
+      "url": "https://docs.python.org/3/library/datetime.html"
+    },
+    {
+      "title": "Library Reference：zoneinfo",
+      "url": "https://docs.python.org/3/library/zoneinfo.html"
+    }
+  ],
+  "prereq": [
+    49
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "天真时间与带时区时间"
+    },
+    {
+      "type": "p",
+      "html": "<code>datetime</code> 最重要的一条规则：<strong>内部一律用 UTC，只在展示时转时区</strong>。做到这条，夏令时、跨时区比较的 bug 基本绝迹。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "时区转换：先给时间点，再换显示"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from datetime import datetime, timezone, timedelta\n\ndt = datetime(2026, 10, 29, 12, 0, tzinfo=timezone.utc)\nprint(dt.isoformat())\nprint(dt.astimezone(timezone(timedelta(hours=8))))",
+      "runnable": true,
+      "editable": true,
+      "expect": "2026-10-29T12:00:00+00:00\n2026-10-29 20:00:00+08:00"
+    },
+    {
+      "type": "p",
+      "html": "同一个时间点，UTC 显示 12 点，东八区显示 20 点。<code>astimezone</code> 不改变时间点本身，只改变它的\"读法\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "天真时间不能和带时区时间比较"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from datetime import datetime, timezone\n\nnaive = datetime(2026, 1, 1)\naware = datetime(2026, 1, 1, tzinfo=timezone.utc)\n\ntry:\n    naive < aware\nexcept TypeError:\n    print(\"天真时间不能和带时区时间比较\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "天真时间不能和带时区时间比较"
+    },
+    {
+      "type": "p",
+      "html": "没有时区的时间（naive）是\"一个数字\"，带时区的（aware）是\"一个时刻\"。两者无法比较——这个 <code>TypeError</code> 其实是保护你：混用两种时间，结果毫无意义。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>zoneinfo</code>：真实世界的时区"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from datetime import datetime\nfrom zoneinfo import ZoneInfo\n\nsh = datetime(2026, 10, 29, 12, 0, tzinfo=ZoneInfo(\"Asia/Shanghai\"))\nprint(sh.isoformat())\nprint(sh.astimezone(ZoneInfo(\"UTC\")).hour)",
+      "runnable": true,
+      "editable": true,
+      "expect": "2026-10-29T12:00:00+08:00\n4"
+    },
+    {
+      "type": "p",
+      "html": "<code>ZoneInfo</code> 带着真实的时区规则（含夏令时历史），比手写 <code>+8</code> 可靠。上海没有夏令时，但纽约有——手动加减小时数的代码在 3 月和 11 月会各错一次。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "别用 datetime.utcnow()",
+      "html": "它返回的是<strong>天真时间</strong>，值是 UTC 但不带时区标记，后续比较和序列化都会埋雷。用 <code>datetime.now(timezone.utc)</code>（aware）替代——它在 3.12 起已被标记弃用。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "解析：格式必须逐字符对应"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from datetime import datetime\n\nparsed = datetime.strptime(\"29/10/2026 14:30\", \"%d/%m/%Y %H:%M\")\nprint(parsed.isoformat(sep=\" \"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "2026-10-29 14:30:00"
+    },
+    {
+      "type": "p",
+      "html": "<code>strptime</code> 用格式串解析，<code>%d</code> 日、<code>%m</code> 月、<code>%Y</code> 年。格式写错不会报错——<code>29/10/2026</code> 用 <code>%m/%d</code> 解析会把 29 当月数直接抛 <code>ValueError</code>，所以<strong>解析外部时间必须捕获异常</strong>。反过来格式化用 <code>strftime</code>。"
+    },
+    {
+      "type": "quiz",
+      "question": "内部存储时间戳应该用哪种形式？",
+      "options": [
+        "本地时区的 naive datetime",
+        "UTC 的 aware datetime，展示时再转时区",
+        "格式化好的字符串",
+        "本地时间的 Unix 时间戳除以 86400"
+      ],
+      "answer": 1,
+      "explain": "内部一律用 UTC（aware），展示层再 astimezone 到本地。这样夏令时切换、跨时区用户都不会算错；naive 时间无法回答「这到底是什么时刻」。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "内部存 UTC（aware），展示时 <code>astimezone</code> 转时区。",
+        "naive 与 aware 不能比较，混用即 bug。",
+        "<code>ZoneInfo</code> 带真实时区规则，替代手写偏移。",
+        "<code>strptime</code> 解析外部时间要捕获 <code>ValueError</code>；<code>utcnow()</code> 已弃用。"
+      ]
+    }
+  ],
+  "prev": "s2-50-unicode",
+  "next": "s2-52-random-hash"
+}

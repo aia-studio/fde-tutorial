@@ -1,0 +1,236 @@
+{
+  "id": "s2-34-data-model",
+  "order": 34,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "数据模型入门",
+  "concepts": [
+    "__repr__",
+    "__str__",
+    "__eq__",
+    "__hash__",
+    "dunder"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "你的对象，Python 怎么“看”它"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "默认的 repr 帮不上忙"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "__repr__ 与 __eq__：一起写"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "__hash__：一改 __eq__，它就被收走了"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "四个方法的职责边界"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference §3：数据模型",
+      "url": "https://docs.python.org/3/reference/datamodel.html"
+    },
+    {
+      "title": "Python HOWTOs",
+      "url": "https://docs.python.org/3/howto/index.html"
+    }
+  ],
+  "prereq": [
+    33
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "你的对象，Python 怎么“看”它"
+    },
+    {
+      "type": "p",
+      "html": "写 <code>class Point</code> 的时候，你只写了 <code>__init__</code>。但 <code>print</code>、<code>==</code>、放进 <code>set</code>、<code>in</code> 判断——这些操作全都能用。原因是 Python 给每个类都准备了默认行为，而<strong>特殊方法（dunder method）就是改这些默认行为的接口</strong>。"
+    },
+    {
+      "type": "p",
+      "html": "这一课只讲最常用的四个：<code>__repr__</code>、<code>__str__</code>、<code>__eq__</code>、<code>__hash__</code>。它们的坑集中在“什么时候必须一起改”。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "默认的 repr 帮不上忙"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\np = Point(1, 2)\nprint(repr(p).startswith(\"<__main__.Point object at\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "<code>&lt;__main__.Point object at 0x...&gt;</code> 除了一片内存地址什么信息都没有。调试时你盯着这串字符，唯一能确定的是“它确实是个 Point”。这就是要自己写 <code>__repr__</code> 的理由：<strong>repr 是给开发者看的，应当能重建这个对象</strong>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__repr__</code> 与 <code>__eq__</code>：一起写"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __repr__(self):\n        return f\"Point({self.x!r}, {self.y!r})\"\n\n    def __eq__(self, other):\n        if not isinstance(other, Point):\n            return NotImplemented\n        return (self.x, self.y) == (other.x, other.y)\n\n\nprint(Point(1, 2))\nprint(Point(1, 2) == Point(1, 2))\nprint(Point(1, 2) == (1, 2))",
+      "runnable": true,
+      "editable": true,
+      "expect": "Point(1, 2)\nTrue\nFalse"
+    },
+    {
+      "type": "p",
+      "html": "两个细节值得停一下："
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>print(p)</code> 用的是 <code>__str__</code>，没定义就回退到 <code>__repr__</code>。所以只写 <code>__repr__</code> 通常够用。",
+        "<code>__eq__</code> 遇到不认识的类型要返回 <code>NotImplemented</code>，而不是 <code>False</code>。返回 <code>NotImplemented</code> 是告诉 Python“我没法判断，你去问对方”，于是 <code>(1, 2).__eq__(point)</code> 还有机会接手。"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__hash__</code>：一改 <code>__eq__</code>，它就被收走了"
+    },
+    {
+      "type": "p",
+      "html": "这是最容易踩的一脚。Python 规定：<strong>定义了 <code>__eq__</code> 却没定义 <code>__hash__</code>，这个类就变成不可哈希</strong>。"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class P:\n    def __eq__(self, other):\n        return True\n\ntry:\n    hash(P())\nexcept TypeError as exc:\n    print(\"TypeError:\", exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "TypeError: unhashable type: 'P'"
+    },
+    {
+      "type": "p",
+      "html": "原因不难想：哈希和相等必须自洽。如果两个对象“相等”，它们的哈希就必须相同；你自己定了相等规则，解释器就没法替你保证这一点，索性把默认哈希撤掉。"
+    },
+    {
+      "type": "p",
+      "html": "补上它，对象立刻能进 <code>set</code> 和 <code>dict</code>："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __eq__(self, other):\n        if not isinstance(other, Point):\n            return NotImplemented\n        return (self.x, self.y) == (other.x, other.y)\n\n    def __hash__(self):\n        return hash((self.x, self.y))\n\n\nprint(len({Point(1, 2), Point(1, 2), Point(3, 4)}))",
+      "runnable": true,
+      "editable": true,
+      "expect": "2"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "可变对象不要定义 <code>__hash__</code>",
+      "html": "如果 <code>Point</code> 之后可能被修改（<code>p.x = 9</code>），它就不该可哈希——哈希值变了，<code>set</code> 里的位置却不会跟着变，查找会静默失败。不可变对象才配拥有稳定的哈希。这也是 <code>dataclass(frozen=True)</code> 才生成 <code>__hash__</code> 的原因。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "四个方法的职责边界"
+    },
+    {
+      "type": "table",
+      "head": [
+        "方法",
+        "谁在看",
+        "该返回什么",
+        "不写会怎样"
+      ],
+      "rows": [
+        [
+          "<code>__repr__</code>",
+          "开发者、调试器、REPL",
+          "能重建对象的表达式",
+          "一串内存地址"
+        ],
+        [
+          "<code>__str__</code>",
+          "最终用户",
+          "可读文本",
+          "回退到 <code>__repr__</code>"
+        ],
+        [
+          "<code>__eq__</code>",
+          "<code>==</code>、<code>in</code>、<code>list.remove</code>",
+          "<code>True</code> / <code>False</code> / <code>NotImplemented</code>",
+          "比较身份（<code>is</code>）"
+        ],
+        [
+          "<code>__hash__</code>",
+          "<code>set</code>、<code>dict</code> 键",
+          "整数，且与 <code>__eq__</code> 自洽",
+          "定义 <code>__eq__</code> 后变成不可哈希"
+        ]
+      ]
+    },
+    {
+      "type": "quiz",
+      "question": "一个类只定义了 <code>__eq__</code>，没有定义 <code>__hash__</code>。把它放进 <code>set()</code> 会怎样？",
+      "options": [
+        "正常放入，使用默认哈希",
+        "抛出 TypeError: unhashable type",
+        "放入成功，但之后查找不到",
+        "自动改用 id() 作为哈希"
+      ],
+      "answer": 1,
+      "explain": "定义 __eq__ 会把 __hash__ 置为 None。此时 hash() 直接抛 TypeError，set 和 dict 都无法使用。需要显式实现 __hash__，并保证与 __eq__ 一致。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "默认 <code>repr</code> 只有地址，调试价值为零；写 <code>__repr__</code> 是最划算的一笔投入。",
+        "<code>__eq__</code> 对不认识的类型返回 <code>NotImplemented</code>，不是 <code>False</code>。",
+        "定义 <code>__eq__</code> 会顺手把 <code>__hash__</code> 撤掉；要进 <code>set</code>/<code>dict</code> 就得自己补，并保证两者自洽。",
+        "可变对象不该可哈希。"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "下一课会看到这些方法背后的统一机制：<strong>属性查找</strong>。<code>p.x</code> 到底先查实例还是先查类，答案比“先实例后类”要绕一点。"
+    }
+  ],
+  "prev": "s2-33-inheritance",
+  "next": "s2-35-dataclasses"
+}

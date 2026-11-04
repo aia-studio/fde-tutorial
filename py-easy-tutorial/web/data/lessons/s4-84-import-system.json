@@ -1,0 +1,184 @@
+{
+  "id": "s4-84-import-system",
+  "order": 84,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "导入系统深入",
+  "concepts": [
+    "finder",
+    "loader",
+    "importlib",
+    "circular import",
+    "__all__"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "import 的四步旅程"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "sys.modules 是缓存，也是注册表"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "finder/loader：谁去找、谁来装"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "循环导入：为什么会发生"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "__all__：import * 的白名单"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference：导入系统",
+      "url": "https://docs.python.org/3/reference/import.html"
+    },
+    {
+      "title": "Library Reference：importlib",
+      "url": "https://docs.python.org/3/library/importlib.html"
+    }
+  ],
+  "prereq": [
+    83
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>import</code> 的四步旅程"
+    },
+    {
+      "type": "p",
+      "html": "<code>import foo</code> 做了四件事：查缓存（<code>sys.modules</code>）→ 找到模块（finder）→ 加载并执行（loader）→ 绑定名字。理解这四步，循环导入、<code>--only</code> 之外的一切导入怪象都有解。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>sys.modules</code> 是缓存，也是注册表"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import sys\nimport types\n\nmod = types.ModuleType(\"demo\")\nmod.value = 42\nsys.modules[\"demo\"] = mod\n\nimport demo\n\nprint(demo.value)",
+      "runnable": true,
+      "editable": true,
+      "expect": "42"
+    },
+    {
+      "type": "p",
+      "html": "把一个模块对象塞进 <code>sys.modules</code> 后，<code>import demo</code> 直接命中缓存——<strong>根本不会去找文件</strong>。这个技巧是\"运行时注入模块\"的基础（测试里 mock 整个模块就是这么干的）。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "finder/loader：谁去找、谁来装"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import importlib.util\n\nspec = importlib.util.find_spec(\"json\")\nprint(spec.name)\nprint(spec.origin.endswith(\"__init__.py\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "json\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>find_spec</code> 返回模块的\"规格说明\"：名字、来源路径、加载器。<code>sys.meta_path</code> 里的 finder 依次询问\"这个模块你认识吗\"，找到后交给对应 loader 执行。第 70 课的\"导入系统深入\"查源码路径，本质就是读 spec。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "循环导入：为什么会发生"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "# a.py 的内容：\n#     import b\n#     X = 1\n#\n# b.py 的内容：\n#     import a          ← 此刻 a 模块只执行到第一行，X 还不存在\n#     Y = a.X           ← AttributeError 或 ImportError",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "导入 <code>a</code> 时，Python 把半成品 <code>a</code> 放进 <code>sys.modules</code>，开始执行顶层代码；第一行 <code>import b</code> 触发导入 <code>b</code>，而 <code>b</code> 又要读 <code>a.X</code>——此刻 <code>a</code> 还没执行到 <code>X = 1</code>。<strong>循环导入的报错点永远在\"半成品属性\"上</strong>，修复方向都是把\"定义\"与\"使用\"错开："
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "把 <code>import</code> 移到函数内部（用到才导入）；",
+        "把共享常量抽到第三个模块，双方都导入它；",
+        "重构层级，让依赖变成单向。"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__all__</code>：<code>import *</code> 的白名单"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import sys\nimport types\n\n_demo = types.ModuleType(\"demo_pkg\")\n_demo.__dict__[\"__all__\"] = [\"public_api\"]\n_demo.__dict__[\"public_api\"] = lambda: \"公开\"\n_demo.__dict__[\"_private\"] = lambda: \"私有\"\nsys.modules[\"demo_pkg\"] = _demo\n\nfrom demo_pkg import *  # noqa: F403\nprint(\"public_api\" in globals())\nprint(_demo.__all__)\nprint(_demo._private())",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\n['public_api']\n私有"
+    },
+    {
+      "type": "p",
+      "html": "<code>__all__</code> 只约束 <code>import *</code> 的行为，<strong>不影响普通导入</strong>——<code>_private</code> 依然可以显式导入。它是\"这是公共接口\"的声明，不是访问控制。"
+    },
+    {
+      "type": "quiz",
+      "question": "出现 <code>ImportError: cannot import name 'X' from partially initialized module</code>，最可能的原因是？",
+      "options": [
+        "模块文件不存在",
+        "循环导入：两个模块互相 import，读取了半成品模块的属性",
+        "Python 版本不支持该语法",
+        "模块名与内置模块重名"
+      ],
+      "answer": 1,
+      "explain": "partially initialized 说明导入发生在对方顶层代码执行完毕之前。修复方向：局部导入、抽出共享常量模块、或理顺依赖方向让图变成无环。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>import</code> = 查 <code>sys.modules</code> 缓存 → finder 找 → loader 执行 → 绑定名字。",
+        "往 <code>sys.modules</code> 塞模块对象，可以\"伪造\"一个可导入的模块。",
+        "循环导入的报错点是\"半成品属性\"，修复靠打破环。",
+        "<code>__all__</code> 只管 <code>import *</code>，不是访问控制。"
+      ]
+    }
+  ],
+  "prev": "s4-83-bytecode",
+  "next": "s4-85-exceptions-advanced"
+}

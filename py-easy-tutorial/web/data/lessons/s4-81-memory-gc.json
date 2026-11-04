@@ -1,0 +1,162 @@
+{
+  "id": "s4-81-memory-gc",
+  "order": 81,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "内存与垃圾回收",
+  "concepts": [
+    "refcount",
+    "gc",
+    "cycle",
+    "__del__",
+    "tracemalloc"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "CPython 怎么回收你的对象"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "引用计数：归零即回收"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "循环引用：引用计数失效的地方"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "__del__：能不写就不写"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：gc",
+      "url": "https://docs.python.org/3/library/gc.html"
+    },
+    {
+      "title": "Library Reference：sys.getrefcount",
+      "url": "https://docs.python.org/3/library/sys.html#sys.getrefcount"
+    }
+  ],
+  "prereq": [
+    79
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "CPython 怎么回收你的对象"
+    },
+    {
+      "type": "p",
+      "html": "CPython 的回收是<strong>两层</strong>的：主回收是引用计数（立即、确定），循环引用交给 <code>gc</code> 模块定期处理。理解这两层，就明白\"对象什么时候死\"和\"<code>__del__</code> 为什么不可靠\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "引用计数：归零即回收"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import sys\n\nx = [1, 2, 3]\nprint(sys.getrefcount(x) >= 2)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "<code>getrefcount(x)</code> 的值比直觉大 1（传参本身临时引用一次）。引用计数归零，对象<strong>立即</strong>被回收——这就是 CPython 里 <code>del</code> 之后文件句柄\"看起来\"自动关闭的原因。但正如第 21 课所说，这是实现细节，不能当设计。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "循环引用：引用计数失效的地方"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import gc\n\n\nclass Node:\n    def __init__(self, other=None):\n        if other:\n            other.partner = self\n        self.partner = other\n\n\na = Node()\nb = Node(a)\na.partner = b\n\ndel a, b\ncollected = gc.collect()\nprint(collected >= 0)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "<code>a</code> 和 <code>b</code> 互相引用：即使两个名字都删了，计数仍是 1+1，引用计数永远不归零。<code>gc.collect()</code> 的循环检测器会找到这类\"孤岛\"并回收。返回值是本次回收的对象数（≥0）。"
+    },
+    {
+      "type": "p",
+      "html": "<code>gc</code> 平时自动运行（按分配阈值触发），无需手动调用；<code>gc.collect()</code> 在测试与排查时手动触发。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__del__</code>：能不写就不写"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import gc\n\n\nclass Resource:\n    def __del__(self):\n        pass\n\n\nr = Resource()\nweak_pool = gc.get_referrers(r)\nprint(isinstance(weak_pool, list))",
+      "runnable": true,
+      "editable": true,
+      "expect": "True"
+    },
+    {
+      "type": "p",
+      "html": "<code>__del__</code> 的三宗罪：<strong>调用时机不确定</strong>（可能延迟到进程退出）、<strong>循环引用里带 <code>__del__</code> 的对象曾长期无法回收</strong>（3.4 起已修复，但仍应避免）、<strong>异常会被静默忽略</strong>。清理资源请用 <code>with</code>（上下文管理器），<code>__del__</code> 顶多是最后一道保险。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "排查内存增长",
+      "html": "第 65 课的 <code>tracemalloc</code> 看分配热点；<code>gc.get_objects()</code> 能列出所有存活对象、按类型统计——程序越跑越慢/越占内存时，先用它确认是不是泄漏，再谈优化。"
+    },
+    {
+      "type": "quiz",
+      "question": "两个对象互相引用，名字全部删除后，它们会被回收吗？",
+      "options": [
+        "不会，引用计数永远不为零",
+        "会——gc 的循环检测器负责回收不可达的引用环",
+        "只有调用 gc.collect() 手动触发才会回收",
+        "对象会永久占用内存直到进程退出"
+      ],
+      "answer": 1,
+      "explain": "引用计数处理不了循环，gc 的循环检测器会定期扫描并回收不可达的环。gc.collect() 可以立即触发一次；即使不调用，自动阈值也会处理。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "引用计数是主回收：归零即释放，立即且确定。",
+        "循环引用交给 <code>gc</code> 循环检测器，自动或手动触发。",
+        "<code>__del__</code> 时机不确定、异常被忽略——清理用 <code>with</code>。",
+        "内存排查：<code>tracemalloc</code> 看分配，<code>gc.get_objects()</code> 看存活。"
+      ]
+    }
+  ],
+  "prev": "s4-80-generators-advanced",
+  "next": "s4-82-weakref"
+}

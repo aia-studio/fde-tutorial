@@ -1,0 +1,201 @@
+{
+  "id": "s0-10-comparison",
+  "order": 10,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "比较、真值与身份",
+  "concepts": [
+    "comparison",
+    "truthiness",
+    "identity",
+    "equality",
+    "None"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "三个问句：相等吗、是同一个吗、算真吗"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "== 看内容，is 看身份"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "链式比较是语法糖，但很值"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "真值：空的就是假"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Language Reference §6.10：比较运算",
+      "url": "https://docs.python.org/3/reference/expressions.html#comparisons"
+    },
+    {
+      "title": "内置类型：真值检验",
+      "url": "https://docs.python.org/3/library/stdtypes.html#truth-value-testing"
+    }
+  ],
+  "prereq": [
+    9
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "三个问句：相等吗、是同一个吗、算真吗"
+    },
+    {
+      "type": "p",
+      "html": "Python 里判断一件事，有三种不同的问法，混用就会出隐蔽 bug："
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>a == b</code>：值相等吗",
+        "<code>a is b</code>：是同一个对象吗",
+        "<code>if a:</code>：它的\"真值\"是什么"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>==</code> 看内容，<code>is</code> 看身份"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "x = [1, 2]\ny = [1, 2]\n\nprint(x == y)\nprint(x is y)\nprint(x is x)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>==</code> 会调用 <code>__eq__</code>，逐个元素比；<code>is</code> 直接比对象地址，没有商量的余地。"
+    },
+    {
+      "type": "p",
+      "html": "那什么时候该用 <code>is</code>？<strong>只有跟单例比较时</strong>：<code>None</code>、<code>True</code>、<code>False</code>。"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "value = None\nprint(value is None)\nprint(value == None)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "两行都是 <code>True</code>，但只有第一行是对的。<code>None</code> 是全局唯一对象，用 <code>is</code> 既准确又快；写 <code>==</code> 会调用 <code>__eq__</code>，如果对面是个重载了比较的自定义对象，还可能返回意想不到的结果。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "永远不要用 <code>is</code> 比较数字和字符串",
+      "html": "<code>a = 1000; b = 1000; a is b</code> 的结果依赖实现细节（小整数缓存、常量折叠），不是语言保证。要比较值就用 <code>==</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "链式比较是语法糖，但很值"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "age = 25\n\nprint(18 <= age < 65)\nprint(1 < 2 < 3 < 4)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>18 &lt;= age &lt; 65</code> 等价于 <code>18 &lt;= age and age &lt; 65</code>，但 <code>age</code> 只求值一次。写区间判断时优先用这个形式。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "真值：空的就是假"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "for value in [0, 1, \"\", \"0\", [], [0], None, False]:\n    print(repr(value), bool(value))",
+      "runnable": true,
+      "editable": true,
+      "expect": "0 False\n1 True\n'' False\n'0' True\n[] False\n[0] True\nNone False\nFalse False"
+    },
+    {
+      "type": "p",
+      "html": "规则：<strong>空容器、零、<code>None</code>、<code>False</code> 为假，其余为真</strong>。注意 <code>\"0\"</code> 和 <code>[0]</code> 都是真的——\"非空\"就是真，内容是什么不重要。"
+    },
+    {
+      "type": "p",
+      "html": "所以 Python 里不写 <code>if len(items) &gt; 0:</code>，直接 <code>if items:</code>；也不写 <code>if x == None:</code>，直接 <code>if x is None:</code>。"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "def greet(name=None):\n    if not name:\n        return \"你好，陌生人\"\n    return f\"你好，{name}\"\n\n\nprint(greet())\nprint(greet(\"Ada\"))\nprint(greet(\"\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "你好，陌生人\n你好，Ada\n你好，陌生人"
+    },
+    {
+      "type": "p",
+      "html": "第三行暴露了一个真实的坑：空字符串也是\"假\"，所以传 <code>\"\"</code> 会被当成没传。要区分\"没传\"和\"传了空值\"，得写 <code>if name is None:</code>。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>[] == False</code> 的结果是？",
+      "options": [
+        "True",
+        "False",
+        "报错",
+        "取决于 Python 版本"
+      ],
+      "answer": 1,
+      "explain": "空列表的布尔值是 False，但 <code>==</code> 比较的是值相等：列表和布尔值类型不同，直接不等。<code>bool([]) == False</code> 才是 True。这正是「真值」和「相等」不能混用的例子。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>==</code> 比内容，<code>is</code> 比身份；只有 <code>None</code>/<code>True</code>/<code>False</code> 该用 <code>is</code>。",
+        "链式比较 <code>a &lt; b &lt; c</code> 只求值一次，写区间首选。",
+        "空容器、0、<code>None</code>、<code>False</code> 为假；<code>\"0\"</code>、<code>[0]</code> 为真。",
+        "判断\"有没有传参\"用 <code>is None</code>，不要用 <code>if not x</code>。"
+      ]
+    }
+  ],
+  "prev": "s0-09-dict-set",
+  "next": "s0-11-conditionals"
+}

@@ -1,0 +1,158 @@
+{
+  "id": "s2-38-enum",
+  "order": 38,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "枚举与常量组织",
+  "concepts": [
+    "Enum",
+    "auto",
+    "Flag",
+    "singleton",
+    "constants"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "魔法字符串是定时炸弹"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "基本用法"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "auto()：让解释器编号"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "Flag：位标志"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：enum",
+      "url": "https://docs.python.org/3/library/enum.html"
+    },
+    {
+      "title": "PEP 663：标准库中枚举的惯用法",
+      "url": "https://peps.python.org/pep-0663/"
+    }
+  ],
+  "prereq": [
+    37
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "魔法字符串是定时炸弹"
+    },
+    {
+      "type": "p",
+      "html": "<code>if status == \"published\"</code> 写十遍，第九遍拼成 <code>\"publised\"</code>，程序不会报错——只是行为悄悄错了。枚举把\"合法取值\"收进一个类型里，拼错会在<strong>写代码的当下</strong>被编辑器标红。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "基本用法"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from enum import Enum\n\n\nclass Status(Enum):\n    DRAFT = 1\n    PUBLISHED = 2\n    ARCHIVED = 3\n\n\nprint(Status.DRAFT.name, Status.DRAFT.value)\nprint(Status(2))\nprint(sorted(m.name for m in Status))",
+      "runnable": true,
+      "editable": true,
+      "expect": "DRAFT 1\nStatus.PUBLISHED\n['ARCHIVED', 'DRAFT', 'PUBLISHED']"
+    },
+    {
+      "type": "p",
+      "html": "成员是<strong>单例</strong>：<code>Status.DRAFT is Status.DRAFT</code> 恒为 True，可以直接用 <code>is</code> 比较。成员默认不可重复赋值，创建第二个 <code>DRAFT = 9</code> 会抛错。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>auto()</code>：让解释器编号"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from enum import Enum, auto\n\n\nclass Color(Enum):\n    RED = auto()\n    GREEN = auto()\n    BLUE = auto()\n\n\nprint(Color.RED.value, Color.GREEN.value)\nprint(Color[\"GREEN\"].name)",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 2\nGREEN"
+    },
+    {
+      "type": "p",
+      "html": "数值本身不重要（永远别依赖它是 1 还是 2）时用 <code>auto()</code>。<code>Color[\"GREEN\"]</code> 按名字取成员，和 <code>Color.GREEN</code> 等价——适合从配置文件读进来的字符串。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "Flag：位标志"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from enum import Flag, auto\n\n\nclass Perm(Flag):\n    READ = auto()\n    WRITE = auto()\n    EXEC = auto()\n\n\np = Perm.READ | Perm.WRITE\nprint(Perm.READ in p)\nprint(Perm.EXEC in p)\nprint(p)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nFalse\nPerm.READ|WRITE"
+    },
+    {
+      "type": "p",
+      "html": "<code>Perm.READ | Perm.WRITE</code> 组合成一个权限集合，<code>in</code> 检查是否包含。比 <code>can_read = True; can_write = True</code> 这类散落变量强得多——一个变量携带全部状态。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "什么时候该用枚举",
+      "html": "当一个值的取值集合<strong>封闭且有限</strong>（状态、方向、类型码），用 Enum。取值开放的（文件名、数字）不该用。用枚举后，函数签名 <code>def set_status(s: Status)</code> 本身就是文档。"
+    },
+    {
+      "type": "quiz",
+      "question": "枚举成员 <code>Status.DRAFT</code> 和 <code>Status(1)</code> 的关系是？",
+      "options": [
+        "不同对象，值相等",
+        "同一个单例对象，可以用 is 比较",
+        "每次 Status(1) 都会新建成员",
+        "Status(1) 会抛 ValueError"
+      ],
+      "answer": 1,
+      "explain": "枚举成员在类定义时创建且唯一，按值查找返回同一个单例。所以两者 is 相等。如果 1 不对应任何成员才抛 ValueError。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "枚举消灭魔法字符串/数字，拼错立刻报错。",
+        "成员是单例，用 <code>is</code> 比较；<code>Enum(值)</code> 按值反查。",
+        "<code>auto()</code> 表示\"编号无所谓\"，永远别依赖具体数字。",
+        "多个可同时成立的开关用 <code>Flag</code>，<code>|</code> 组合、<code>in</code> 检查。"
+      ]
+    }
+  ],
+  "prev": "s2-37-operators",
+  "next": "s2-39-context-managers"
+}

@@ -1,0 +1,157 @@
+{
+  "id": "s4-82-weakref",
+  "order": 82,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "弱引用与缓存设计",
+  "concepts": [
+    "weakref",
+    "WeakValueDictionary",
+    "cache invalidation",
+    "finalize"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "引用它，但不延长它的生命"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "弱引用的基本行为"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "WeakValueDictionary：会自动清理的缓存"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "弱引用不能指什么"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：weakref",
+      "url": "https://docs.python.org/3/library/weakref.html"
+    },
+    {
+      "title": "Library Reference：weakref.finalize",
+      "url": "https://docs.python.org/3/library/weakref.html#weakref.finalize"
+    }
+  ],
+  "prereq": [
+    81
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "引用它，但不延长它的生命"
+    },
+    {
+      "type": "p",
+      "html": "弱引用指向对象，却<strong>不增加引用计数</strong>——对象是否存活由别人决定。这是\"缓存不阻止回收\"的唯一解法：缓存里的对象没人用了，就该自动消失。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "弱引用的基本行为"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import weakref\n\n\nclass Service:\n    pass\n\n\nobj = Service()\nref = weakref.ref(obj)\n\nprint(ref() is obj)\n\ndel obj\nprint(ref() is None)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>ref()</code> 返回原对象，<strong>或 None</strong>（对象已死）。调用方每次都必须处理 None 分支——这正是弱引用的契约：\"我给你对象，但不保证它活着\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "WeakValueDictionary：会自动清理的缓存"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import weakref\n\n\nclass Session:\n    pass\n\n\npool = weakref.WeakValueDictionary()\nsession = Session()\npool[\"user-1\"] = session\n\nprint(pool[\"user-1\"] is session)\n\ndel session\nprint(len(pool))",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\n0"
+    },
+    {
+      "type": "p",
+      "html": "值是弱引用：除了缓存没有任何地方引用 <code>Session</code> 时，条目自动消失。会话池、对象池、按需重建的重资源缓存，都适合这个模式。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "弱引用不能指什么"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import weakref\n\ntry:\n    weakref.ref([1, 2, 3])\nexcept TypeError as exc:\n    print(type(exc).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "TypeError"
+    },
+    {
+      "type": "p",
+      "html": "<code>list</code>、<code>dict</code>、<code>str</code> 等<strong>内置基础类型不支持弱引用</strong>——它们没有给弱引用留钩子位。实践上这不是问题：给自定义类的实例建弱引用即可，或者用 <code>weakref.ref(obj.some_list)</code> 引用\"持有列表的对象\"。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "weakref.finalize：不依赖 __del__ 的清理",
+      "html": "<code>finalize(obj, callback)</code> 注册\"对象死后执行\"的回调，且回调持有的是 finalize 对象而不是 obj，不会形成循环。它是 <code>__del__</code> 的安全替代，特别适合\"注册表 + 对象释放时反注册\"。"
+    },
+    {
+      "type": "quiz",
+      "question": "用弱引用实现缓存，缓存条目什么时候消失？",
+      "options": [
+        "缓存被清空时",
+        "对象的所有强引用都消失时",
+        "调用 gc.collect() 时立即全部消失",
+        "永远不会消失"
+      ],
+      "answer": 1,
+      "explain": "弱引用不延长对象生命周期。当别处不再有强引用，对象被回收，弱引用条目随之失效并自动清理。gc.collect() 只是可能提前触发回收，不是条件。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>weakref.ref(obj)()</code>：返回原对象或 None，每次都要处理 None。",
+        "<code>WeakValueDictionary</code>：值消失条目自动清理，适合会话/资源池。",
+        "内置基础类型不支持弱引用；给自定义类用。",
+        "清理回调用 <code>weakref.finalize</code> 替代 <code>__del__</code>。"
+      ]
+    }
+  ],
+  "prev": "s4-81-memory-gc",
+  "next": "s4-83-bytecode"
+}

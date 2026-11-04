@@ -1,0 +1,157 @@
+{
+  "id": "s1-29-project-todo",
+  "order": 29,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "moderate",
+  "title": "小项目：命令行待办",
+  "concepts": [
+    "project",
+    "json persistence",
+    "shlex",
+    "cli parsing"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "把前面几课拼起来"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "数据模型"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "持久化：存得住才算工具"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "命令解析：别用 split"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：shlex",
+      "url": "https://docs.python.org/3/library/shlex.html"
+    },
+    {
+      "title": "Tutorial 7.2：读写文件",
+      "url": "https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files"
+    }
+  ],
+  "prereq": [
+    28
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "把前面几课拼起来"
+    },
+    {
+      "type": "p",
+      "html": "一个能用的待办工具需要：数据结构（列表 + 字典）、持久化（JSON 文件）、命令解析（拆分用户输入）、异常处理（文件不存在）。这四件事前面都单独学过，现在合起来。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "数据模型"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import json\n\ntodos = []\n\n\ndef add(todos, text):\n    todos.append({\"text\": text, \"done\": False})\n\n\ndef finish(todos, index):\n    todos[index][\"done\"] = True\n\n\nadd(todos, \"写作业\")\nadd(todos, \"买菜\")\nfinish(todos, 1)\n\nprint(json.dumps(todos, ensure_ascii=False))\nprint(sum(1 for t in todos if not t[\"done\"]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[{\"text\": \"写作业\", \"done\": false}, {\"text\": \"买菜\", \"done\": true}]\n1"
+    },
+    {
+      "type": "p",
+      "html": "用字典而不是元组，是因为字段还会增加（截止日期、标签）——元组一改就要动所有调用点。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "持久化：存得住才算工具"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import json\nfrom pathlib import Path\n\npath = Path(\"todos.json\")\ntodos = [{\"text\": \"写作业\", \"done\": False}]\n\npath.write_text(json.dumps(todos, ensure_ascii=False), encoding=\"utf-8\")\n\nif path.exists():\n    loaded = json.loads(path.read_text(encoding=\"utf-8\"))\nelse:\n    loaded = []\n\nprint(len(loaded), loaded[0][\"text\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 写作业"
+    },
+    {
+      "type": "p",
+      "html": "读之前先判 <code>exists()</code>，否则第一次运行就崩。这就是\"文件不存在\"这个异常最自然的处理方式——<strong>预期内的失败，用判断而不是捕获</strong>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "命令解析：别用 split"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import shlex\n\n\ndef parse(line):\n    parts = shlex.split(line)\n    return parts[0], parts[1:]\n\n\nprint(parse(\"add 写作业\"))\nprint(parse('add \"两件事 一起\"'))",
+      "runnable": true,
+      "editable": true,
+      "expect": "('add', ['写作业'])\n('add', ['两件事 一起'])"
+    },
+    {
+      "type": "p",
+      "html": "<code>line.split()</code> 会把带空格的参数切碎。<code>shlex.split</code> 按 shell 规则处理引号，是解析命令行文本的正确工具。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "真做 CLI 时用 argparse",
+      "html": "这一课手写解析是为了看清原理。真实工具用 <code>argparse</code>（第 46 课），它自动生成 <code>--help</code>、处理子命令和类型转换。"
+    },
+    {
+      "type": "quiz",
+      "question": "读取一个可能不存在的配置文件，更合适的写法是？",
+      "options": [
+        "直接 open()，崩了再说",
+        "用 try/except FileNotFoundError 包住 open()",
+        "先 if path.exists() 再 open()",
+        "用 os.access(path, os.R_OK) 判断"
+      ],
+      "answer": 1,
+      "explain": "exists() 之后再 open() 之间存在竞态（文件可能被删），而且多一次系统调用。直接 try 是 Python 的惯用法（EAFP），也更短。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "数据结构用字典，字段可以扩展而不破坏调用方。",
+        "持久化先写 JSON，读之前处理\"文件不存在\"。",
+        "命令行文本用 <code>shlex.split</code>，不要用 <code>str.split</code>。",
+        "预期内的失败优先用判断，真正的异常用 try/except。"
+      ]
+    }
+  ],
+  "prev": "s1-28-generators",
+  "next": "s1-30-venv"
+}

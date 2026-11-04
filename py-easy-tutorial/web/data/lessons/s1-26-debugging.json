@@ -1,0 +1,181 @@
+{
+  "id": "s1-26-debugging",
+  "order": 26,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "调试",
+  "concepts": [
+    "traceback",
+    "assert",
+    "warnings",
+    "pdb",
+    "reproduce"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "先看清，再动手"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "traceback 是线索，不是噪音"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "assert：把假设写进代码"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "warnings：提醒但不打断"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "pdb：断点比 print 高效"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：traceback",
+      "url": "https://docs.python.org/3/library/traceback.html"
+    },
+    {
+      "title": "Library Reference：pdb",
+      "url": "https://docs.python.org/3/library/pdb.html"
+    }
+  ],
+  "prereq": [
+    25
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "先看清，再动手"
+    },
+    {
+      "type": "p",
+      "html": "调试最大的浪费不是修得慢，而是<strong>修错了地方</strong>。所以顺序永远是：拿到完整 traceback → 定位到具体行 → 复现最小案例 → 再改。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "traceback 是线索，不是噪音"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import traceback\n\n\ndef inner():\n    return 1 / 0\n\n\ntry:\n    inner()\nexcept ZeroDivisionError:\n    tb = traceback.format_exc()\n\nprint(\"ZeroDivisionError\" in tb)\nprint(\"inner\" in tb)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "从下往上看 traceback：最后一行是异常类型和消息，上面依次是调用栈，<strong>离你最近的帧在最下面</strong>。<code>format_exc()</code> 拿到完整文本，可以写进日志。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "读 traceback 的顺序",
+      "html": "先看最后一行（什么错），再看倒数第二个 <code>File</code> 行（哪一行），最后才往上看调用链。初学者常从第一行读起，读完一屏还没看到错误类型。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "assert：把假设写进代码"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def average(nums):\n    assert nums, \"空列表没有平均值\"\n    return sum(nums) / len(nums)\n\n\nprint(average([1, 2, 3]))\n\ntry:\n    average([])\nexcept AssertionError as exc:\n    print(type(exc).__name__, exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "2.0\nAssertionError 空列表没有平均值"
+    },
+    {
+      "type": "p",
+      "html": "<code>assert</code> 表达的是\"这里必须成立，否则是我的代码有 bug\"，不是\"用户输入要校验\"。区别很重要：<strong><code>python -O</code> 会移除所有 assert</strong>，所以不能用它做参数校验。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "warnings：提醒但不打断"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import warnings\n\nwith warnings.catch_warnings(record=True) as caught:\n    warnings.simplefilter(\"always\")\n    warnings.warn(\"这个参数下个版本会移除\", UserWarning)\n\nprint(len(caught))\nprint(caught[0].message)",
+      "runnable": true,
+      "editable": true,
+      "expect": "1\n这个参数下个版本会移除"
+    },
+    {
+      "type": "p",
+      "html": "弃用警告就该用 <code>warnings</code>，而不是 <code>print</code>——调用方可以按类别过滤或升级为异常。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "pdb：断点比 print 高效"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "def buggy(nums):\n    total = 0\n    for n in nums:\n        total += n\n    return total / len(nums)",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "在 <code>return</code> 那行写 <code>breakpoint()</code>，程序会停在那里，可以逐行执行、查看每个变量。常用命令只有五个：<code>n</code>（下一行）、<code>s</code>（进入函数）、<code>c</code>（继续）、<code>p expr</code>（打印）、<code>q</code>（退出）。"
+    },
+    {
+      "type": "quiz",
+      "question": "用 <code>assert</code> 校验用户输入，最大的问题是什么？",
+      "options": [
+        "assert 只能比较数字",
+        "python -O 会移除所有 assert，校验直接失效",
+        "assert 会抛 ValueError",
+        "assert 不能带消息"
+      ],
+      "answer": 1,
+      "explain": "assert 是给开发者自己用的自检，优化模式下会被整体删掉。用户输入校验必须用 if + raise，否则生产环境等于没校验。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "traceback 从下往上读：错误类型 → 出错行 → 调用链。",
+        "<code>assert</code> 用于内部不变式，不用于输入校验（<code>-O</code> 会移除）。",
+        "弃用提醒用 <code>warnings</code>，别用 <code>print</code>。",
+        "<code>breakpoint()</code> + <code>n/s/c/p/q</code> 五个命令足够日常调试。"
+      ]
+    }
+  ],
+  "prev": "s1-25-exceptions",
+  "next": "s1-27-iteration"
+}

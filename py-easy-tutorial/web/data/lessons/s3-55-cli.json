@@ -1,0 +1,157 @@
+{
+  "id": "s3-55-cli",
+  "order": 55,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "moderate",
+  "title": "命令行接口",
+  "concepts": [
+    "argparse",
+    "subcommand",
+    "choices",
+    "type conversion"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "sys.argv 是字符串，argparse 才是接口"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "位置参数与类型转换"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "子命令：git 风格的接口"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "--help 是白送的"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：argparse",
+      "url": "https://docs.python.org/3/library/argparse.html"
+    },
+    {
+      "title": "Tutorial 4.8.4：argparse",
+      "url": "https://docs.python.org/3/tutorial/stdlib.html#command-line-arguments"
+    }
+  ],
+  "prereq": [
+    54
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>sys.argv</code> 是字符串，argparse 才是接口"
+    },
+    {
+      "type": "p",
+      "html": "<code>sys.argv</code> 给的是裸字符串列表，类型转换、必填校验、<code>--help</code> 全要自己造。<code>argparse</code> 用<strong>声明式</strong>定义接口，剩下的事它做。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "位置参数与类型转换"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import argparse\n\nparser = argparse.ArgumentParser(prog=\"todo\")\nparser.add_argument(\"command\", choices=[\"add\", \"list\", \"done\"])\nparser.add_argument(\"text\", nargs=\"*\")\n\nargs = parser.parse_args([\"add\", \"写作业\", \"买菜\"])\nprint(args.command, args.text)",
+      "runnable": true,
+      "editable": true,
+      "expect": "add ['写作业', '买菜']"
+    },
+    {
+      "type": "p",
+      "html": "<code>choices</code> 限定合法取值（枚举思路的命令行版）；<code>nargs=\"*\"</code> 收零到多个参数。非法的命令会让 argparse 自己打印错误并以退出码 2 退出——不需要你写校验。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "子命令：git 风格的接口"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import argparse\n\nparser = argparse.ArgumentParser(prog=\"todo\")\nsub = parser.add_subparsers(dest=\"cmd\", required=True)\n\np_add = sub.add_parser(\"add\")\np_add.add_argument(\"text\")\n\np_done = sub.add_parser(\"done\")\np_done.add_argument(\"index\", type=int)\n\nargs = parser.parse_args([\"add\", \"买菜\"])\nprint(args.cmd, args.text)\n\nargs = parser.parse_args([\"done\", \"2\"])\nprint(args.cmd, args.index, type(args.index).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "add 买菜\ndone 2 int"
+    },
+    {
+      "type": "p",
+      "html": "每个子命令有<strong>独立的参数定义</strong>：<code>add</code> 要文本、<code>done</code> 要整数。<code>dest=\"cmd\"</code> 把选中的子命令名存进结果。<code>type=int</code> 负责转换，转不了它自己报错。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "子命令是 CLI 的目录",
+      "html": "工具超过三个功能就该拆子命令：<code>todo add</code>、<code>todo list</code>、<code>todo done 2</code>。每个子命令在自己的 parser 里定义参数，互不干扰——和第 19 课的包结构是同一种组织思想。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>--help</code> 是白送的"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import argparse\n\nparser = argparse.ArgumentParser(prog=\"todo\", description=\"一个待办工具\")\nparser.add_argument(\"--version\", action=\"version\", version=\"todo 1.0\")\nparser.parse_args([\"--version\"])",
+      "runnable": true,
+      "editable": true,
+      "expect": "todo 1.0"
+    },
+    {
+      "type": "p",
+      "html": "<code>--version</code>、<code>-h/--help</code> 全部自动生成，帮助文本来自你写的 <code>description</code> 和参数说明。<strong>接口文档和接口定义在同一处</strong>，这是声明式最大的红利。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>parser.add_argument(\"done\", type=int)</code> 的 <code>type=int</code> 负责？",
+      "options": [
+        "仅作文档说明，不影响运行",
+        "把命令行字符串转成 int，转换失败自动报错退出",
+        "限制取值范围",
+        "把结果存成 int 类型的字符串"
+      ],
+      "answer": 1,
+      "explain": "argparse 会对每个位置参数调用 type()，失败时打印错误并以退出码 2 结束。也就是说类型校验在接口层完成，业务代码拿到的已经是转换后的值。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>choices</code> 限定取值，<code>type</code> 负责转换，非法输入自动报错退出。",
+        "子命令让工具按功能组织，各自有独立参数。",
+        "<code>--help</code> / <code>--version</code> 自动生成，文档与实现同源。",
+        "接口层的校验做完，业务代码拿到的就是干净的数据。"
+      ]
+    }
+  ],
+  "prev": "s3-54-logging",
+  "next": "s3-56-subprocess"
+}

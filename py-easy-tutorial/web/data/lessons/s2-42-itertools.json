@@ -1,0 +1,158 @@
+{
+  "id": "s2-42-itertools",
+  "order": 42,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "itertools",
+  "concepts": [
+    "itertools",
+    "chain",
+    "islice",
+    "groupby",
+    "combinations"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "迭代器的乐高块"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "chain 与 islice：拼接与切片"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "groupby：按 key 分组（要先排序）"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "组合与排列"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：itertools",
+      "url": "https://docs.python.org/3/library/itertools.html"
+    },
+    {
+      "title": "HOWTO：itertools 配方",
+      "url": "https://docs.python.org/3/library/itertools.html#itertools-recipes"
+    }
+  ],
+  "prereq": [
+    40
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "迭代器的乐高块"
+    },
+    {
+      "type": "p",
+      "html": "itertools 全部是<strong>惰性</strong>的、用 C 实现的迭代器工具。组合起来能表达复杂的流处理，速度接近手写循环，代码只有一行。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "chain 与 islice：拼接与切片"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "from itertools import chain, islice, count\n\nprint(list(chain([1, 2], [3], \"ab\")))\nprint(list(islice(count(10), 3)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 2, 3, 'a', 'b']\n[10, 11, 12]"
+    },
+    {
+      "type": "p",
+      "html": "<code>chain</code> 把多个可迭代对象串成一条流（注意字符串也被逐字符遍历）；<code>count(10)</code> 是<strong>无限</strong>计数器，<code>islice</code> 从中切出前 3 个——无限流必须配 islice 或提前 break，否则死循环。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "groupby：按 key 分组（要先排序）"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from itertools import groupby\n\nwords = [\"apple\", \"avocado\", \"banana\", \"blueberry\"]\ngroups = {k: list(g) for k, g in groupby(sorted(words), key=lambda w: w[0])}\n\nprint(sorted(groups.items()))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[('a', ['apple', 'avocado']), ('b', ['banana', 'blueberry'])]"
+    },
+    {
+      "type": "p",
+      "html": "<code>groupby</code> 只对<strong>相邻</strong>的相同键分组——不排序就会漏组。这是它最容易踩的坑，也是最常被忽略的文档细节。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "组合与排列"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "from itertools import combinations, product, permutations\n\nprint(list(combinations(\"AB\", 2)))\nprint(list(product([0, 1], repeat=2)))\nprint(len(list(permutations(\"ABC\"))))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[('A', 'B')]\n[(0, 0), (0, 1), (1, 0), (1, 1)]\n6"
+    },
+    {
+      "type": "p",
+      "html": "三个函数的语义要分清：<code>combinations</code> 组合（不管顺序）、<code>permutations</code> 排列（管顺序）、<code>product</code> 笛卡尔积（可重复）。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "无限流 + islice 是标准姿势",
+      "html": "<code>count</code> / <code>cycle</code> / <code>repeat</code> 都是无限迭代器。配合 <code>islice</code> 或 <code>zip(..., range(n))</code> 截断，可以写出\"取前 N 个满足条件的\"这类逻辑而不用手写计数器。"
+    },
+    {
+      "type": "quiz",
+      "question": "直接 <code>list(groupby(words))</code> 不排序先分组，最可能的结果是？",
+      "options": [
+        "和排序后一样",
+        "组之间出现重复的键",
+        "抛 ValueError",
+        "结果按字母序自动排列"
+      ],
+      "answer": 1,
+      "explain": "groupby 逐个比较相邻元素。数据无序时，同一个键会出现在多个不相邻的位置，于是同一键产生多个分组——先 sorted 再 groupby 是固定套路。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>chain</code> 串流、<code>islice</code> 切无限流、<code>count/cycle</code> 无限生成。",
+        "<code>groupby</code> 只对<strong>相邻</strong>键分组，先排序。",
+        "<code>combinations</code> 无序组合、<code>permutations</code> 有序排列、<code>product</code> 笛卡尔积。",
+        "全部惰性：组合使用不会产生中间列表。"
+      ]
+    }
+  ],
+  "prev": "s2-41-decorators-advanced",
+  "next": "s2-43-functools"
+}

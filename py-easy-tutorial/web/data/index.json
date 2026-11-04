@@ -1,0 +1,4956 @@
+{
+  "generated_at": "2026-10-29T09:35:07+00:00",
+  "python": "3.15.2",
+  "planned_total": 103,
+  "published": 103,
+  "stages": [
+    {
+      "id": "s0",
+      "title": "起步",
+      "subtitle": "能跑、能查、能算、能存",
+      "lessons": [
+        {
+          "id": "s0-01-install-repl",
+          "order": 1,
+          "title": "安装、解释器与运行方式",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-02-docs-map",
+          "order": 2,
+          "title": "文档地图与查资料的方法",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-03-names-objects",
+          "order": 3,
+          "title": "名字与对象：变量到底是什么",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-04-numbers",
+          "order": 4,
+          "title": "数字与精度",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-05-floating-point",
+          "order": 5,
+          "title": "浮点数专题：0.1 + 0.2 为什么不是 0.3",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-06-strings",
+          "order": 6,
+          "title": "字符串：不可变序列",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-07-bytes",
+          "order": 7,
+          "title": "编码与字节：str 和 bytes 的边界",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-08-list-tuple",
+          "order": 8,
+          "title": "列表与元组",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-09-dict-set",
+          "order": 9,
+          "title": "字典与集合",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-10-comparison",
+          "order": 10,
+          "title": "比较、真值与身份",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-11-conditionals",
+          "order": 11,
+          "title": "条件与 match",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-12-loops",
+          "order": 12,
+          "title": "循环与循环控制",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-13-comprehensions",
+          "order": 13,
+          "title": "推导式与生成器表达式",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s0-14-builtins",
+          "order": 14,
+          "title": "内置函数工具箱",
+          "official_group": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "s1",
+      "title": "组织",
+      "subtitle": "函数、模块、文件、异常、测试",
+      "lessons": [
+        {
+          "id": "s1-15-functions",
+          "order": 15,
+          "title": "函数与参数",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-16-scope",
+          "order": 16,
+          "title": "作用域与名字查找",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-17-closures",
+          "order": 17,
+          "title": "闭包与晚绑定",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-18-modules",
+          "order": 18,
+          "title": "模块与 `__main__`",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-19-packages",
+          "order": 19,
+          "title": "包与项目结构",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-20-io-format",
+          "order": 20,
+          "title": "输入输出与格式化",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-21-files",
+          "order": 21,
+          "title": "文件读写",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-22-stdlib-tour",
+          "order": 22,
+          "title": "标准库速览：os、pathlib、datetime",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-23-paths",
+          "order": 23,
+          "title": "路径与文件系统",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-24-structured-data",
+          "order": 24,
+          "title": "结构化数据：json、csv、toml",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-25-exceptions",
+          "order": 25,
+          "title": "异常处理",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-26-debugging",
+          "order": 26,
+          "title": "调试",
+          "official_group": "beginner"
+        },
+        {
+          "id": "s1-27-iteration",
+          "order": 27,
+          "title": "迭代协议",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s1-28-generators",
+          "order": 28,
+          "title": "生成器",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s1-29-project-todo",
+          "order": 29,
+          "title": "小项目：命令行待办",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s1-30-venv",
+          "order": 30,
+          "title": "虚拟环境与依赖",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s1-31-testing",
+          "order": 31,
+          "title": "测试入门",
+          "official_group": "moderate"
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "抽象",
+      "subtitle": "类、协议、装饰器、生成器、注解",
+      "lessons": [
+        {
+          "id": "s2-32-classes",
+          "order": 32,
+          "title": "类与实例",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-33-inheritance",
+          "order": 33,
+          "title": "继承与组合",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-34-data-model",
+          "order": 34,
+          "title": "数据模型入门",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-35-dataclasses",
+          "order": 35,
+          "title": "dataclasses",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-36-property-slots",
+          "order": 36,
+          "title": "property 与 __slots__",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-37-operators",
+          "order": 37,
+          "title": "运算符重载与容器协议",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-38-enum",
+          "order": 38,
+          "title": "枚举与常量组织",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-39-context-managers",
+          "order": 39,
+          "title": "上下文管理器",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-40-decorators",
+          "order": 40,
+          "title": "装饰器基础",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-41-decorators-advanced",
+          "order": 41,
+          "title": "装饰器进阶",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-42-itertools",
+          "order": 42,
+          "title": "itertools",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-43-functools",
+          "order": 43,
+          "title": "functools",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-44-collections",
+          "order": 44,
+          "title": "collections",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-45-sorting",
+          "order": 45,
+          "title": "排序与比较",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-46-typing-basics",
+          "order": 46,
+          "title": "类型注解入门",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-47-typing-advanced",
+          "order": 47,
+          "title": "typing 进阶",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-48-abc-protocols",
+          "order": 48,
+          "title": "抽象基类与协议",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-49-regex",
+          "order": 49,
+          "title": "正则表达式",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-50-unicode",
+          "order": 50,
+          "title": "文本与 Unicode",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-51-datetime",
+          "order": 51,
+          "title": "日期与时间",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-52-random-hash",
+          "order": 52,
+          "title": "随机、哈希与密钥",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s2-53-pitfalls",
+          "order": 53,
+          "title": "十大陷阱合集",
+          "official_group": "moderate"
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "工程",
+      "subtitle": "日志、打包、类型检查、并发",
+      "lessons": [
+        {
+          "id": "s3-54-logging",
+          "order": 54,
+          "title": "日志",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-55-cli",
+          "order": 55,
+          "title": "命令行接口",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-56-subprocess",
+          "order": 56,
+          "title": "子进程与外部命令",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-57-testing-advanced",
+          "order": 57,
+          "title": "测试进阶",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-58-type-checking",
+          "order": 58,
+          "title": "类型检查实战",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-59-security",
+          "order": 59,
+          "title": "安全编程",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-60-design-patterns",
+          "order": 60,
+          "title": "Pythonic 设计模式",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-61-packaging-basics",
+          "order": 61,
+          "title": "打包基础：pyproject 与项目布局",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-62-build-wheel",
+          "order": 62,
+          "title": "构建、wheel 与入口点",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-63-publish-pypi",
+          "order": 63,
+          "title": "发布到 PyPI",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-64-perf-intuition",
+          "order": 64,
+          "title": "性能直觉与 timeit",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-65-profiling",
+          "order": 65,
+          "title": "性能剖析",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-66-optimization",
+          "order": 66,
+          "title": "优化实战：从算法到内置工具",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s3-67-threading",
+          "order": 67,
+          "title": "线程与 GIL",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s3-68-process-pool",
+          "order": 68,
+          "title": "多进程与线程池",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s3-69-concurrency-choice",
+          "order": 69,
+          "title": "并发模型选型",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s3-70-asyncio-basics",
+          "order": 70,
+          "title": "asyncio 基础",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s3-71-asyncio-advanced",
+          "order": 71,
+          "title": "asyncio 进阶",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s3-72-contextvars",
+          "order": 72,
+          "title": "contextvars 与任务上下文",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s3-73-capstone-cli",
+          "order": 73,
+          "title": "综合项目：可测试的 CLI 工具",
+          "official_group": "advanced"
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "深入",
+      "subtitle": "对象模型、描述符、元类、GC、字节码",
+      "lessons": [
+        {
+          "id": "s4-74-object-model",
+          "order": 74,
+          "title": "对象模型：属性到底从哪来",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-75-descriptors",
+          "order": 75,
+          "title": "描述符协议",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s4-76-attribute-interception",
+          "order": 76,
+          "title": "属性拦截",
+          "official_group": "moderate"
+        },
+        {
+          "id": "s4-77-metaclass",
+          "order": 77,
+          "title": "元类与类创建钩子",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-78-mro",
+          "order": 78,
+          "title": "MRO 与多继承",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-79-generics",
+          "order": 79,
+          "title": "泛型与型变",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-80-generators-advanced",
+          "order": 80,
+          "title": "生成器进阶",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-81-memory-gc",
+          "order": 81,
+          "title": "内存与垃圾回收",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-82-weakref",
+          "order": 82,
+          "title": "弱引用与缓存设计",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-83-bytecode",
+          "order": 83,
+          "title": "字节码与执行模型",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-84-import-system",
+          "order": 84,
+          "title": "导入系统深入",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-85-exceptions-advanced",
+          "order": 85,
+          "title": "异常进阶",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-86-contextlib",
+          "order": 86,
+          "title": "contextlib 全家桶",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-87-iterators-advanced",
+          "order": 87,
+          "title": "迭代器进阶",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-88-serialization",
+          "order": 88,
+          "title": "序列化与拷贝",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-89-metaprogramming",
+          "order": 89,
+          "title": "元编程实战",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-90-annotations-runtime",
+          "order": 90,
+          "title": "注解的运行时",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-91-inspect-signature",
+          "order": 91,
+          "title": "函数签名与 inspect",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-92-module-getattr",
+          "order": 92,
+          "title": "模块级 __getattr__ 与懒加载",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-93-numeric-protocol",
+          "order": 93,
+          "title": "数值与运算符协议",
+          "official_group": "advanced"
+        },
+        {
+          "id": "s4-94-c-extensions",
+          "order": 94,
+          "title": "C 扩展入门",
+          "official_group": "resources"
+        },
+        {
+          "id": "s4-95-embedding",
+          "order": 95,
+          "title": "嵌入解释器",
+          "official_group": "resources"
+        },
+        {
+          "id": "s4-96-c-api",
+          "order": 96,
+          "title": "C API：对象协议与引用计数",
+          "official_group": "resources"
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "参考",
+      "subtitle": "术语表、PEP、FAQ、Zen、路线图",
+      "lessons": [
+        {
+          "id": "s5-97-glossary",
+          "order": 97,
+          "title": "交互式术语表",
+          "official_group": "general"
+        },
+        {
+          "id": "s5-98-pep-guide",
+          "order": 98,
+          "title": "PEP 导读与索引",
+          "official_group": "general"
+        },
+        {
+          "id": "s5-99-faq",
+          "order": 99,
+          "title": "FAQ 与报错对照",
+          "official_group": "general"
+        },
+        {
+          "id": "s5-100-guido-essays",
+          "order": 100,
+          "title": "读 Guido 的设计文章",
+          "official_group": "general"
+        },
+        {
+          "id": "s5-101-zen",
+          "order": 101,
+          "title": "The Zen of Python 与 Pythonic 思维",
+          "official_group": "general"
+        },
+        {
+          "id": "s5-102-version-features",
+          "order": 102,
+          "title": "新版本特性 3.10–3.15",
+          "official_group": "general"
+        },
+        {
+          "id": "s5-103-roadmap",
+          "order": 103,
+          "title": "学习路线图",
+          "official_group": "general"
+        }
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "s0-01-install-repl",
+      "order": 1,
+      "title": "安装、解释器与运行方式",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "interpreter",
+        "repl",
+        "script",
+        "runpy",
+        "__main__"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三条路，一个解释器"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "先确认你在跑哪个解释器"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "__name__ 是理解运行方式的关键"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "三种运行方式对照"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "常用开关"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "本页代码块可以直接改"
+        },
+        {
+          "anchor": "sec-7",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-02-docs-map",
+      "order": 2,
+      "title": "文档地图与查资料的方法",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "docs",
+        "docstring",
+        "dir",
+        "inspect",
+        "help"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "先学会查，再学会背"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "文档就在对象身上"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "dir() 告诉你有什么，inspect 告诉你长什么样"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "三份文档各管一段"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-03-names-objects",
+      "order": 3,
+      "title": "名字与对象：变量到底是什么",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "variable",
+        "binding",
+        "reference",
+        "id",
+        "mutability"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "变量不是盒子，是标签"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "两个名字，一个对象"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "重新赋值 ≠ 修改对象"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "为什么这件事值得单独一课"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-04-numbers",
+      "order": 4,
+      "title": "数字与精度",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "int",
+        "float",
+        "division",
+        "modulo",
+        "round",
+        "decimal"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三种数字，两个除法，一个坑"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "/ 和 // 不是一回事"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "浮点数：0.1 + 0.2 不等于 0.3"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "四舍五入也不是你想的那样"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-05-floating-point",
+      "order": 5,
+      "title": "浮点数专题：0.1 + 0.2 为什么不是 0.3",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "float",
+        "ieee754",
+        "isclose",
+        "decimal",
+        "rounding"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "误差不在你的代码里，在二进制里"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "先看清误差有多大"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "比较浮点数：用 isclose，不要用 =="
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "三个必须换工具的场景"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "打印时怎么控制显示"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-06-strings",
+      "order": 6,
+      "title": "字符串：不可变序列",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "str",
+        "slicing",
+        "fstring",
+        "immutability",
+        "split"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "切片、方法、格式化"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "索引与切片"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "常用方法都是返回新字符串"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "不可变意味着什么"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "f-string 是默认选择"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-07-bytes",
+      "order": 7,
+      "title": "编码与字节：str 和 bytes 的边界",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "str",
+        "bytes",
+        "utf-8",
+        "encode",
+        "decode",
+        "unicode"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "文本是文本，字节是字节"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "一个字，几个字节？"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "编码是一张映射表，选错了就对不上"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "什么时候会遇到 bytes"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-08-list-tuple",
+      "order": 8,
+      "title": "列表与元组",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "list",
+        "tuple",
+        "mutability",
+        "aliasing",
+        "unpacking"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "一个能改，一个不能改"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "列表的基本操作"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "元组：不可变，所以能当键"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "那个著名的嵌套列表陷阱"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-09-dict-set",
+      "order": 9,
+      "title": "字典与集合",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "dict",
+        "set",
+        "hash",
+        "get",
+        "setdefault"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "靠哈希找东西，快到可以当常数"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "字典：键值对，按键取"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "集合：只关心\"在不在\""
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "为什么键必须可哈希"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-10-comparison",
+      "order": 10,
+      "title": "比较、真值与身份",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "comparison",
+        "truthiness",
+        "identity",
+        "equality",
+        "None"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三个问句：相等吗、是同一个吗、算真吗"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "== 看内容，is 看身份"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "链式比较是语法糖，但很值"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "真值：空的就是假"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-11-conditionals",
+      "order": 11,
+      "title": "条件与 match",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "if",
+        "elif",
+        "match",
+        "pattern matching",
+        "walrus"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "分支的两种写法"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "if / elif / else：只走一条"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "match：匹配形状，不是匹配值"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "海象运算符：在条件里赋值"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-12-loops",
+      "order": 12,
+      "title": "循环与循环控制",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "for",
+        "while",
+        "range",
+        "break",
+        "continue",
+        "loop-else"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "for 遍历的是东西，不是计数器"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "for 与 range"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "while 与 break"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "循环的 else：没被 break 才执行"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-13-comprehensions",
+      "order": 13,
+      "title": "推导式与生成器表达式",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "comprehension",
+        "generator expression",
+        "lazy",
+        "filter",
+        "nesting"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "一行建一个容器"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "三种推导式"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "条件写在两个位置，含义不同"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "生成器表达式：不建列表"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "嵌套：从左到右读"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s0-14-builtins",
+      "order": 14,
+      "title": "内置函数工具箱",
+      "stage": "s0",
+      "official_group": "beginner",
+      "concepts": [
+        "zip",
+        "enumerate",
+        "sorted",
+        "any",
+        "all",
+        "sum"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "十个函数，少写一半循环"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "enumerate：同时拿下标和值"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "zip：并排走"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "sorted：key 才是重点"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "any / all / sum / min / max"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-15-functions",
+      "order": 15,
+      "title": "函数与参数",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "function",
+        "default argument",
+        "args",
+        "kwargs",
+        "keyword-only"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "参数的四种形态"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "默认参数与关键字传参"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "*args 与 **kwargs"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "那个著名的默认参数陷阱"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "仅关键字参数"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-16-scope",
+      "order": 16,
+      "title": "作用域与名字查找",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "scope",
+        "LEGB",
+        "global",
+        "nonlocal",
+        "UnboundLocalError"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "名字在哪里生效"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "局部遮蔽全局"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "但读取外层的值是可以的"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "global：确实要改全局"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "nonlocal：改外层函数的值"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-17-closures",
+      "order": 17,
+      "title": "闭包与晚绑定",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "closure",
+        "cell",
+        "late binding",
+        "factory function"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "函数记着自己的出生地"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "工厂函数：用闭包造函数"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "晚绑定：lambda 在循环里的经典坑"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-18-modules",
+      "order": 18,
+      "title": "模块与 `__main__`",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "module",
+        "import",
+        "sys.modules",
+        "__main__",
+        "namespace"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "一个文件就是一个模块"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "脚本运行时，__name__ 是 __main__"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "导入会执行模块顶层代码"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "名字空间：模块就是一层命名空间"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-19-packages",
+      "order": 19,
+      "title": "包与项目结构",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "package",
+        "__init__.py",
+        "namespace package",
+        "relative import",
+        "layout"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "目录也是模块"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "建一个包，然后导入它"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "点号就是层级"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "相对导入只认包上下文"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-20-io-format",
+      "order": 20,
+      "title": "输入输出与格式化",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "print",
+        "sep",
+        "end",
+        "fstring",
+        "format spec",
+        "repr"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "输出的三种控制：分隔、结尾、格式"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "sep 与 end"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "对齐与精度"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "repr 与 str 的区别"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-21-files",
+      "order": 21,
+      "title": "文件读写",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "open",
+        "with",
+        "encoding",
+        "readlines",
+        "json"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "打开的，一定要关"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "写与读"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "逐行读，不要一次全读进来"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "用 json 存结构化数据"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "二进制与文本要分清"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-22-stdlib-tour",
+      "order": 22,
+      "title": "标准库速览：os、pathlib、datetime",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "os",
+        "sys",
+        "pathlib",
+        "datetime",
+        "timedelta"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三个模块，覆盖大半日常活"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "os 与 sys：问清楚自己在哪"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "pathlib：路径是对象，不是字符串"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "datetime：区分\"时间点\"和\"时长\""
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-23-paths",
+      "order": 23,
+      "title": "路径与文件系统",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "pathlib",
+        "glob",
+        "rglob",
+        "mkdir",
+        "tempfile"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "建、找、删"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "建目录、写文件、遍历"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "按模式筛选"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "临时目录：测试的好帮手"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-24-structured-data",
+      "order": 24,
+      "title": "结构化数据：json、csv、toml",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "json",
+        "csv",
+        "tomllib",
+        "configparser",
+        "serialization"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三种格式，三种脾气"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "JSON：默认的交换格式"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "CSV：表格，但别手写分割"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "TOML：配置文件的现代选择"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-25-exceptions",
+      "order": 25,
+      "title": "异常处理",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "try",
+        "except",
+        "finally",
+        "raise",
+        "exception chaining",
+        "custom exception"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "异常是控制流，不是灾难"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "四个子句各管一段"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "自定义异常：让调用方分得清"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "异常链：别丢掉根因"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-26-debugging",
+      "order": 26,
+      "title": "调试",
+      "stage": "s1",
+      "official_group": "beginner",
+      "concepts": [
+        "traceback",
+        "assert",
+        "warnings",
+        "pdb",
+        "reproduce"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "先看清，再动手"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "traceback 是线索，不是噪音"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "assert：把假设写进代码"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "warnings：提醒但不打断"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "pdb：断点比 print 高效"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-27-iteration",
+      "order": 27,
+      "title": "迭代协议",
+      "stage": "s1",
+      "official_group": "moderate",
+      "concepts": [
+        "iter",
+        "next",
+        "StopIteration",
+        "__iter__",
+        "__next__",
+        "iterator"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "for 到底做了什么"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "手写一个迭代器"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "可迭代对象 ≠ 迭代器"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-28-generators",
+      "order": 28,
+      "title": "生成器",
+      "stage": "s1",
+      "official_group": "moderate",
+      "concepts": [
+        "yield",
+        "generator",
+        "send",
+        "lazy evaluation",
+        "pipeline"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "函数可以\"暂停\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "生成器就是迭代器的快捷写法"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "惰性：不算完不占内存"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "send：双向通道"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "生成器表达式 vs 列表推导"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-29-project-todo",
+      "order": 29,
+      "title": "小项目：命令行待办",
+      "stage": "s1",
+      "official_group": "moderate",
+      "concepts": [
+        "project",
+        "json persistence",
+        "shlex",
+        "cli parsing"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "把前面几课拼起来"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "数据模型"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "持久化：存得住才算工具"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "命令解析：别用 split"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-30-venv",
+      "order": 30,
+      "title": "虚拟环境与依赖",
+      "stage": "s1",
+      "official_group": "moderate",
+      "concepts": [
+        "venv",
+        "pip",
+        "requirements",
+        "sys.prefix",
+        "isolation"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "每个项目一个干净的房间"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "判断自己在不在隔离环境里"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "常用命令"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "依赖声明的两种风格"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s1-31-testing",
+      "order": 31,
+      "title": "测试入门",
+      "stage": "s1",
+      "official_group": "moderate",
+      "concepts": [
+        "unittest",
+        "pytest",
+        "assertEqual",
+        "assertRaises",
+        "test naming"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "测试是给未来的自己写的"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "最小可用的测试"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "测试异常"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "unittest 与 pytest 的差别"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-32-classes",
+      "order": 32,
+      "title": "类与实例",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "class",
+        "__init__",
+        "self",
+        "instance attribute",
+        "class attribute"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "类是模板，实例是复印件"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "self 是谁"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "类属性 vs 实例属性"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "方法也是属性"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-33-inheritance",
+      "order": 33,
+      "title": "继承与组合",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "inheritance",
+        "super",
+        "composition",
+        "isinstance",
+        "override"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "先问\"是什么\"，再问\"有一个\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "继承与方法覆盖"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "super() 是\"下一个\"，不是\"父类\""
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "组合：把零件装进去"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "怎么选"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-34-data-model",
+      "order": 34,
+      "title": "数据模型入门",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "__repr__",
+        "__str__",
+        "__eq__",
+        "__hash__",
+        "dunder"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "你的对象，Python 怎么“看”它"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "默认的 repr 帮不上忙"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "__repr__ 与 __eq__：一起写"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "__hash__：一改 __eq__，它就被收走了"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "四个方法的职责边界"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-35-dataclasses",
+      "order": 35,
+      "title": "dataclasses",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "dataclass",
+        "frozen",
+        "field",
+        "default_factory",
+        "eq"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "把样板代码交给解释器"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "三行顶三屏"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "frozen：不可变数据类"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "默认值与可变字段"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-36-property-slots",
+      "order": 36,
+      "title": "property 与 __slots__",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "property",
+        "setter",
+        "slots",
+        "attribute control"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "属性访问也能定制"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "property：读的是计算结果"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "setter：赋值时校验"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "__slots__：关掉实例字典"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-37-operators",
+      "order": 37,
+      "title": "运算符重载与容器协议",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "__add__",
+        "__len__",
+        "__getitem__",
+        "__contains__",
+        "NotImplemented"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "让自己的类\" behaves like builtins\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "__add__ 与反射版本"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "容器协议：len、索引、in"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "可变容器：再补两个方法"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-38-enum",
+      "order": 38,
+      "title": "枚举与常量组织",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "Enum",
+        "auto",
+        "Flag",
+        "singleton",
+        "constants"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "魔法字符串是定时炸弹"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "基本用法"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "auto()：让解释器编号"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "Flag：位标志"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-39-context-managers",
+      "order": 39,
+      "title": "上下文管理器",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "with",
+        "__enter__",
+        "__exit__",
+        "contextmanager",
+        "suppress"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "不管成不成功，收尾都要做"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "实现一个上下文管理器"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "异常路径也逃不掉"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "@contextmanager：生成器的快捷写法"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "suppress：精确吞掉已知异常"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-40-decorators",
+      "order": 40,
+      "title": "装饰器基础",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "decorator",
+        "wraps",
+        "higher-order function",
+        "wrapper"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "@ 语法只是函数调用的糖"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "最小装饰器"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "忘了 wraps 会怎样"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "装饰器在导入时执行"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-41-decorators-advanced",
+      "order": 41,
+      "title": "装饰器进阶",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "decorator factory",
+        "registration",
+        "class decorator",
+        "stacking"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三层结构：带参数的装饰器"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "带参数的装饰器"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "注册表：装饰器的另一面"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "叠加顺序：从下往上"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-42-itertools",
+      "order": 42,
+      "title": "itertools",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "itertools",
+        "chain",
+        "islice",
+        "groupby",
+        "combinations"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "迭代器的乐高块"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "chain 与 islice：拼接与切片"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "groupby：按 key 分组（要先排序）"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "组合与排列"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-43-functools",
+      "order": 43,
+      "title": "functools",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "lru_cache",
+        "partial",
+        "singledispatch",
+        "reduce",
+        "wraps"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "函数层面的工具箱"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "lru_cache：一行加缓存"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "partial：固定一部分参数"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "singledispatch：按类型分发"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "reduce：慎用但要知道"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-44-collections",
+      "order": 44,
+      "title": "collections",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "Counter",
+        "defaultdict",
+        "deque",
+        "namedtuple",
+        "OrderedDict"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "四个容器，替代大半手写循环"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "Counter：数数"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "defaultdict：缺键自动补"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "deque：两端操作 O(1)"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "namedtuple：轻量记录"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-45-sorting",
+      "order": 45,
+      "title": "排序与比较",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "sorted",
+        "key",
+        "itemgetter",
+        "stability",
+        "total_ordering"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "sorted 一招，key 是全部"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "多级排序：key 返回元组"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "稳定性：同 key 保持原顺序"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "itemgetter：比 lambda 快一点、短一点"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "total_ordering：只写两个比较"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-46-typing-basics",
+      "order": 46,
+      "title": "类型注解入门",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "type hints",
+        "annotations",
+        "static typing",
+        "list[int]"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "注解是写给\"人 + 工具\"的"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "给函数加注解"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "注解是运行时可见的元数据"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "变量与常见类型"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-47-typing-advanced",
+      "order": 47,
+      "title": "typing 进阶",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "generic",
+        "TypeVar",
+        "Protocol",
+        "Optional",
+        "TypedDict"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "注解的进阶形态"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "泛型：PEP 695 的新语法"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "X | None：可空返回值的标准写法"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "Protocol：结构化子类型"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-48-abc-protocols",
+      "order": 48,
+      "title": "抽象基类与协议",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "ABC",
+        "abstractmethod",
+        "runtime_checkable",
+        "register",
+        "interface"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "定义\"必须实现什么\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "抽象基类：漏实现直接报错"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "抽象属性与漏实现的时机"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "register：事后补票"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-49-regex",
+      "order": 49,
+      "title": "正则表达式",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "re",
+        "findall",
+        "groups",
+        "greedy",
+        "sub"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "一把快刀，但刀刃向内"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "findall 与分组"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "贪婪：.* 的默认行为会坑你"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "sub：替换也带分组"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "预编译：同一个模式用两次就该编译"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-50-unicode",
+      "order": 50,
+      "title": "文本与 Unicode",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "unicode",
+        "NFC",
+        "casefold",
+        "textwrap",
+        "combining"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "看起来相同，可能不是同一个字符串"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "组合字符：两种写法的 é"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "大小写：lower 不够用"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "textwrap：折行与缩略"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-51-datetime",
+      "order": 51,
+      "title": "日期与时间",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "datetime",
+        "timezone",
+        "zoneinfo",
+        "strptime",
+        "aware"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "天真时间与带时区时间"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "时区转换：先给时间点，再换显示"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "天真时间不能和带时区时间比较"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "zoneinfo：真实世界的时区"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "解析：格式必须逐字符对应"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-52-random-hash",
+      "order": 52,
+      "title": "随机、哈希与密钥",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "random",
+        "seed",
+        "secrets",
+        "hashlib",
+        "uuid"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "两种\"随机\"，用途完全不同"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "random：可复现，可测试"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "shuffle 与 sample"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "secrets：安全随机"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "哈希：不可逆的指纹"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s2-53-pitfalls",
+      "order": 53,
+      "title": "十大陷阱合集",
+      "stage": "s2",
+      "official_group": "moderate",
+      "concepts": [
+        "pitfalls",
+        "copy",
+        "aliasing",
+        "late binding",
+        "integer cache"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "这些坑，每个都会有人踩"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "深拷贝与浅拷贝"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "闭包晚绑定"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "is 不是 =="
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "其余七个，一句话版"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-54-logging",
+      "order": 54,
+      "title": "日志",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "logging",
+        "level",
+        "logger",
+        "handler",
+        "propagation"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "print 会在三个月后背叛你"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "级别：从低到高，可过滤"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "Logger 层级：按模块命名"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "异常要带栈"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-55-cli",
+      "order": 55,
+      "title": "命令行接口",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "argparse",
+        "subcommand",
+        "choices",
+        "type conversion"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "sys.argv 是字符串，argparse 才是接口"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "位置参数与类型转换"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "子命令：git 风格的接口"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "--help 是白送的"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-56-subprocess",
+      "order": 56,
+      "title": "子进程与外部命令",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "subprocess",
+        "capture_output",
+        "check",
+        "timeout",
+        "shell injection"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "调用外部程序的唯一正道"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "基本用法与返回值"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "check=True：失败要响"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "timeout：别等一个卡死的进程"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "本教程自身的执行引擎也是这么写的"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-57-testing-advanced",
+      "order": 57,
+      "title": "测试进阶",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "setUp",
+        "mock",
+        "subTest",
+        "patch",
+        "test isolation"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "隔离、替身、批量"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "setUp：每个用例全新开始"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "mock：把\"真东西\"换成假的"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "subTest：一组数据，一次失败各自报告"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-58-type-checking",
+      "order": 58,
+      "title": "类型检查实战",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "mypy",
+        "pyright",
+        "strict",
+        "type guard",
+        "cast"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "检查器是另一个\"读者\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "检查器抓什么"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "Optional 的纪律"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "cast：告诉检查器\"我比你懂\""
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "strict 模式与渐进策略"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-59-security",
+      "order": 59,
+      "title": "安全编程",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "eval",
+        "pickle",
+        "shell injection",
+        "path traversal"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "四种把服务器送走的写法"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "eval：等于把键盘交给用户"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "pickle：反序列化即代码执行"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "路径穿越：../ 就是钥匙"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "shell=True：第 56 课的坑，这里复盘"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-60-design-patterns",
+      "order": 60,
+      "title": "Pythonic 设计模式",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "singleton",
+        "factory",
+        "strategy",
+        "observer",
+        "pythonic"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "用语言特性替代模式"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "单例：模块就是单例"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "策略：字典代替 if 链"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "观察者：回调列表"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "工厂：dict + 类"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-61-packaging-basics",
+      "order": 61,
+      "title": "打包基础：pyproject 与项目布局",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "pyproject",
+        "src layout",
+        "dependencies",
+        "build-system"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "pyproject.toml 是项目的身份证"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "一个最小的 pyproject.toml"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "两种布局，差别在\"测试谁\""
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "依赖怎么写"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-62-build-wheel",
+      "order": 62,
+      "title": "构建、wheel 与入口点",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "sdist",
+        "wheel",
+        "entry points",
+        "versioning"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "两种产物：源码包和轮子"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "wheel 里装的是什么"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "入口点：装完就能敲命令"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "版本号：语义化 + 上限"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-63-publish-pypi",
+      "order": 63,
+      "title": "发布到 PyPI",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "twine",
+        "trusted publishing",
+        "yank",
+        "semver"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "发布是流程，不是按钮"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "三条命令"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "Trusted Publishing：不再用密码"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "版本号：语义化，且只往前走"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "发布前检查单"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-64-perf-intuition",
+      "order": 64,
+      "title": "性能直觉与 timeit",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "timeit",
+        "complexity",
+        "membership",
+        "premature optimization"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "先建立量级直觉，再谈优化"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "成员判断：O(n) 与 O(1) 的量级差"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "用 timeit 的正确姿势"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "复杂度速查：常见操作的成本"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-65-profiling",
+      "order": 65,
+      "title": "性能剖析",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "cProfile",
+        "pstats",
+        "tracemalloc",
+        "hotspot"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "profiler 会告诉你真相"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "cProfile：时间花在哪个函数"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "tracemalloc：内存花在哪个对象"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "剖析的正确流程"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-66-optimization",
+      "order": 66,
+      "title": "优化实战：从算法到内置工具",
+      "stage": "s3",
+      "official_group": "moderate",
+      "concepts": [
+        "algorithm",
+        "Counter",
+        "join",
+        "builtin",
+        "optimization"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "优化顺序：算法 → 数据结构 → 内置 → 最后才是微优化"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "第一层：换数据结构（收益最大）"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "第二层：减少 O(n²) 的拼接"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "第三层：微优化，收益有限"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-67-threading",
+      "order": 67,
+      "title": "线程与 GIL",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "threading",
+        "GIL",
+        "lock",
+        "race condition",
+        "queue"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "线程适合等，不适合算"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "竞态：没有锁的计数器"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "Lock：把三步变成一步"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "GIL：CPU 密集任务线程不加速"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-68-process-pool",
+      "order": 68,
+      "title": "多进程与线程池",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "ProcessPoolExecutor",
+        "ThreadPoolExecutor",
+        "pickling",
+        "map"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "高层接口：提交任务，拿结果"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "ThreadPoolExecutor：线程池"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "ProcessPoolExecutor：绕开 GIL"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "逐个完成：as_completed"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-69-concurrency-choice",
+      "order": 69,
+      "title": "并发模型选型",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "concurrency models",
+        "io-bound",
+        "cpu-bound",
+        "asyncio",
+        "threads"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "三种并发，一张决策表"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "实测：IO 密集任务，线程 5 倍加速"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "决策表"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "常见误用"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-70-asyncio-basics",
+      "order": 70,
+      "title": "asyncio 基础",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "async def",
+        "await",
+        "event loop",
+        "gather",
+        "create_task"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "async def 定义的是\"可暂停的函数\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "顺序执行 vs 并发执行"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "事件顺序：任务在 await 处切换"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "create_task：立刻开始跑"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-71-asyncio-advanced",
+      "order": 71,
+      "title": "asyncio 进阶",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "wait_for",
+        "TaskGroup",
+        "timeout",
+        "Semaphore",
+        "cancellation"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "超时、限流与结构化并发"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "wait_for：给任务上一道保险"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "TaskGroup：结构化并发"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "Semaphore：限制并发数"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-72-contextvars",
+      "order": 72,
+      "title": "contextvars 与任务上下文",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "ContextVar",
+        "context",
+        "async isolation",
+        "threading.local"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "每个\"请求\"一份上下文"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "协程任务间的隔离"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "与 threading.local 的对比"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "实际用法：日志与链路追踪"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s3-73-capstone-cli",
+      "order": 73,
+      "title": "综合项目：可测试的 CLI 工具",
+      "stage": "s3",
+      "official_group": "advanced",
+      "concepts": [
+        "capstone",
+        "layering",
+        "argparse",
+        "unittest",
+        "integration"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "S1–S3 的毕业考"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "核心逻辑 + 测试（同一块里自包含）"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "接口层：argparse 接收，分发到核心"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-74-object-model",
+      "order": 74,
+      "title": "对象模型：属性到底从哪来",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "type",
+        "object",
+        "__dict__",
+        "attribute lookup",
+        "method binding"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "a.x 背后发生的事"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "实例字典与类字典是两本账"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "类也是对象，类型是 type"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "方法为什么不用手动传 self"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "找不到时才轮到 __getattr__"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "完整查找顺序"
+        },
+        {
+          "anchor": "sec-7",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-75-descriptors",
+      "order": 75,
+      "title": "描述符协议",
+      "stage": "s4",
+      "official_group": "moderate",
+      "concepts": [
+        "descriptor",
+        "__get__",
+        "__set__",
+        "__set_name__",
+        "binding"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "self 的魔法从哪来"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "数据描述符与非数据描述符"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "方法绑定：__get__ 在起作用"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "__set_name__：描述符知道自己的名字"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-76-attribute-interception",
+      "order": 76,
+      "title": "属性拦截",
+      "stage": "s4",
+      "official_group": "moderate",
+      "concepts": [
+        "__getattr__",
+        "__getattribute__",
+        "proxy",
+        "lazy loading"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "两个拦截器，一步之差"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "__getattr__：只在找不到时触发"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "__getattribute__：每次都经过"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "代理：两个拦截器的正当用途"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-77-metaclass",
+      "order": 77,
+      "title": "元类与类创建钩子",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "metaclass",
+        "type",
+        "__init_subclass__",
+        "__prepare__",
+        "registry"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "类是对象，type 是造类的东西"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "类创建时的自动钩子"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "type 在工作"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "元类：定制\"造类\"本身"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-78-mro",
+      "order": 78,
+      "title": "MRO 与多继承",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "MRO",
+        "C3",
+        "diamond",
+        "cooperative super",
+        "mixin"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "多继承不是\"从左到右找\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "菱形继承：只有一个 __init__ 生效"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "MRO 就是查找顺序"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "不可能的结构：C3 拒绝"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-79-generics",
+      "order": 79,
+      "title": "泛型与型变",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "generic class",
+        "covariance",
+        "contravariance",
+        "Self",
+        "bounds"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "容器的类型怎么\"传下去\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "泛型类：PEP 695 语法"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "约束与有界类型"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "型变：容器之间的关系"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-80-generators-advanced",
+      "order": 80,
+      "title": "生成器进阶",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "state machine",
+        "send",
+        "throw",
+        "close",
+        "yield from"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "生成器是有状态的对象"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "send：推动状态机"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "close 与 finally：清理一定执行"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "yield from：委托子生成器"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-81-memory-gc",
+      "order": 81,
+      "title": "内存与垃圾回收",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "refcount",
+        "gc",
+        "cycle",
+        "__del__",
+        "tracemalloc"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "CPython 怎么回收你的对象"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "引用计数：归零即回收"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "循环引用：引用计数失效的地方"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "__del__：能不写就不写"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-82-weakref",
+      "order": 82,
+      "title": "弱引用与缓存设计",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "weakref",
+        "WeakValueDictionary",
+        "cache invalidation",
+        "finalize"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "引用它，但不延长它的生命"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "弱引用的基本行为"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "WeakValueDictionary：会自动清理的缓存"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "弱引用不能指什么"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-83-bytecode",
+      "order": 83,
+      "title": "字节码与执行模型",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "bytecode",
+        "dis",
+        "co_consts",
+        "constant folding",
+        "LOAD_FAST"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "Python 不是\"解释字符串\""
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "一行加法的字节码"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "常量折叠在编译期完成"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "从字符串编译"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-84-import-system",
+      "order": 84,
+      "title": "导入系统深入",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "finder",
+        "loader",
+        "importlib",
+        "circular import",
+        "__all__"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "import 的四步旅程"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "sys.modules 是缓存，也是注册表"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "finder/loader：谁去找、谁来装"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "循环导入：为什么会发生"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "__all__：import * 的白名单"
+        },
+        {
+          "anchor": "sec-6",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-85-exceptions-advanced",
+      "order": 85,
+      "title": "异常进阶",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "ExceptionGroup",
+        "except*",
+        "__notes__",
+        "cancellation"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "一次失败，多个原因"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "ExceptionGroup 与 except*"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "__notes__：给异常加备注"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "异常链的两种方式"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-86-contextlib",
+      "order": 86,
+      "title": "contextlib 全家桶",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "ExitStack",
+        "redirect_stdout",
+        "closing",
+        "reentrant"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "contextmanager 之外的四件武器"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "ExitStack：数量不定的资源"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "redirect_stdout：捕获第三方库的输出"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "closing：只有 close 没有 with 的对象"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-87-iterators-advanced",
+      "order": 87,
+      "title": "迭代器进阶",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "single pass",
+        "reversed",
+        "custom iteration",
+        "iter sentinel"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "迭代器是一次性的，函数参数尤其如此"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "迭代器一旦耗尽就永远是空的"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "两种函数签名的契约"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "reversed：不是所有序列都支持"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-88-serialization",
+      "order": 88,
+      "title": "序列化与拷贝",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "pickle",
+        "deepcopy",
+        "__reduce__",
+        "shallow vs deep"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "对象如何\"变成数据\"再变回来"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "深浅拷贝的分界线"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "deepcopy 的两个配套参数"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "pickle 的协议层：__reduce__"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-89-metaprogramming",
+      "order": 89,
+      "title": "元编程实战",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "dynamic class",
+        "registry",
+        "plugin system",
+        "__init_subclass__"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "写代码的代码"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "type 动态建类"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "插件系统：钩子 + 注册表 + 统一入口"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-90-annotations-runtime",
+      "order": 90,
+      "title": "注解的运行时",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "__annotations__",
+        "get_type_hints",
+        "PEP 649",
+        "annotationlib"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "注解存哪里、何时求值"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "直接读取"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "前向引用：从字符串到自然书写"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "get_type_hints 与框架"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-91-inspect-signature",
+      "order": 91,
+      "title": "函数签名与 inspect",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "inspect.signature",
+        "bind",
+        "parameter validation",
+        "decorator transparency"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "读取并校验任何函数的签名"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "读取签名"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "bind：不调用也能校验参数"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "验证装饰器：bind 的实战"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-92-module-getattr",
+      "order": 92,
+      "title": "模块级 __getattr__ 与懒加载",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "module __getattr__",
+        "lazy import",
+        "deprecation",
+        "__dir__"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "属性不存在时，问模块"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "模块级懒加载"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "弃用路径：旧名发警告"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-93-numeric-protocol",
+      "order": 93,
+      "title": "数值与运算符协议",
+      "stage": "s4",
+      "official_group": "advanced",
+      "concepts": [
+        "__radd__",
+        "__iadd__",
+        "__index__",
+        "NotImplemented",
+        "reflected"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "3 + obj 时，Python 问谁"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "反射运算：10 + obj"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "__iadd__：原地修改的运算"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "__index__：当对象需要\"当整数用\""
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-94-c-extensions",
+      "order": 94,
+      "title": "C 扩展入门",
+      "stage": "s4",
+      "official_group": "resources",
+      "concepts": [
+        "ctypes",
+        "c extension",
+        "numpy",
+        "build process"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "走到解释器边界（只读延伸）"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "ctypes：不写 C 也能调 C"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "手写扩展的流程（不可在沙箱运行）"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "性能边界：什么时候值得"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-95-embedding",
+      "order": 95,
+      "title": "嵌入解释器",
+      "stage": "s4",
+      "official_group": "resources",
+      "concepts": [
+        "embedding",
+        "Py_Initialize",
+        "free-threading",
+        "subinterpreters"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "反过来：把 Python 装进别的程序"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "嵌入的最小形态（不可在沙箱运行）"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "子解释器与 per-interpreter GIL"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "现实世界的嵌入长什么样"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s4-96-c-api",
+      "order": 96,
+      "title": "C API：对象协议与引用计数",
+      "stage": "s4",
+      "official_group": "resources",
+      "concepts": [
+        "PyObject",
+        "refcount",
+        "PyArg_ParseTuple",
+        "borrowed reference"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "引用计数显形了"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "PyObject 与引用计数"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "从 C 侧看一个调用"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "可变的另一面：对象不变性"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s5-97-glossary",
+      "order": 97,
+      "title": "交互式术语表",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "glossary",
+        "terminology"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "全程术语速查"
+        }
+      ]
+    },
+    {
+      "id": "s5-98-pep-guide",
+      "order": 98,
+      "title": "PEP 导读与索引",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "PEP",
+        "PEP 8",
+        "PEP 20",
+        "PEP 484",
+        "PEP 695"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "语言演进的议会记录"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "一篇 PEP 的结构"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "必读 PEP 清单"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "PEP 8 的三条最高频规则"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s5-99-faq",
+      "order": 99,
+      "title": "FAQ 与报错对照",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "KeyError",
+        "TypeError",
+        "ModuleNotFoundError",
+        "troubleshooting"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "报错 → 原因 → 修法"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "现场复现八种常见异常"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "对照表：报错 → 最可能的原因"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "FAQ 精编三则"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s5-100-guido-essays",
+      "order": 100,
+      "title": "读 Guido 的设计文章",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "design philosophy",
+        "readability",
+        "BDFL",
+        "explicit"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "设计者的自白"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "原则一：为可读性优化，为写的人让路"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "原则二：一种明显的方式"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "原则三：显式优于隐式"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s5-101-zen",
+      "order": 101,
+      "title": "The Zen of Python 与 Pythonic 思维",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "zen",
+        "pythonic",
+        "PEP 20",
+        "code review"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "二十条箴言，先看全文"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "六条最常被违反的"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s5-102-version-features",
+      "order": 102,
+      "title": "新版本特性 3.10–3.15",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "3.10 match",
+        "3.11 except*",
+        "3.12 generics",
+        "3.14 t-string",
+        "3.15"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "近六个版本，六张面孔"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "特性时间线"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "现场复验：你已经在用它们"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "读 What's New 的方法"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    },
+    {
+      "id": "s5-103-roadmap",
+      "order": 103,
+      "title": "学习路线图",
+      "stage": "s5",
+      "official_group": "general",
+      "concepts": [
+        "next steps",
+        "web",
+        "data",
+        "automation",
+        "roadmap"
+      ],
+      "outline": [
+        {
+          "anchor": "sec-1",
+          "level": 1,
+          "text": "103 课之后走哪条路"
+        },
+        {
+          "anchor": "sec-2",
+          "level": 2,
+          "text": "四条常见路线"
+        },
+        {
+          "anchor": "sec-3",
+          "level": 2,
+          "text": "每条路的第一周做什么"
+        },
+        {
+          "anchor": "sec-4",
+          "level": 2,
+          "text": "三条通用建议"
+        },
+        {
+          "anchor": "sec-5",
+          "level": 2,
+          "text": "小结"
+        }
+      ]
+    }
+  ]
+}

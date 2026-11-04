@@ -1,0 +1,173 @@
+{
+  "id": "s2-47-typing-advanced",
+  "order": 47,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "typing 进阶",
+  "concepts": [
+    "generic",
+    "TypeVar",
+    "Protocol",
+    "Optional",
+    "TypedDict"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "注解的进阶形态"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "泛型：PEP 695 的新语法"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "X | None：可空返回值的标准写法"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "Protocol：结构化子类型"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：typing",
+      "url": "https://docs.python.org/3/library/typing.html"
+    },
+    {
+      "title": "PEP 695：泛型语法",
+      "url": "https://peps.python.org/pep-0695/"
+    }
+  ],
+  "prereq": [
+    46
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "注解的进阶形态"
+    },
+    {
+      "type": "p",
+      "html": "三个高频问题，三个对应的进阶工具：「函数的输入输出类型相关」→ 泛型；「这个结构像什么」→ Protocol；「字典的键是什么」→ TypedDict。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "泛型：PEP 695 的新语法"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def first[T](items: list[T]) -> T:\n    return items[0]\n\n\nprint(first([1, 2]), first([\"a\", \"b\"]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "1 a"
+    },
+    {
+      "type": "p",
+      "html": "注意 <code>first([])</code> 会抛 <code>IndexError</code>——注解不解决运行时问题。但这正是静态检查器的用武之地：mypy 会提示\"列表可能为空\"，逼你在函数里处理空输入。"
+    },
+    {
+      "type": "p",
+      "html": "<code>[T]</code> 声明类型变量，<code>list[T] -&gt; T</code> 表达\"输入什么元素类型，就返回那种元素\"。"
+    },
+    {
+      "type": "p",
+      "html": "老写法需要 <code>TypeVar</code>："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "from typing import TypeVar\n\nT = TypeVar(\"T\")\n\n\ndef last(items: list[T]) -> T | None:\n    return items[-1] if items else None\n\n\nprint(last([1, 2]), last([]))",
+      "runnable": true,
+      "editable": true,
+      "expect": "2 None"
+    },
+    {
+      "type": "p",
+      "html": "3.12 之后的代码优先用新语法，老代码库会大量见到 <code>TypeVar</code>——两种都要能读懂。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>X | None</code>：可空返回值的标准写法"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def find_user(uid: int) -> str | None:\n    users = {1: \"Ada\"}\n    return users.get(uid)\n\n\nuser = find_user(2)\nprint(user)\nprint(user is None)",
+      "runnable": true,
+      "editable": true,
+      "expect": "None\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "签名里写着 <code>str | None</code>，调用方就知道<strong>必须处理 None 分支</strong>。返回类型从 <code>str</code> 改成 <code>str | None</code> 是一次破坏性变更，但比让调用方拿到 <code>None</code> 再炸要好。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>Protocol</code>：结构化子类型"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "from typing import Protocol\n\n\nclass Speaker(Protocol):\n    def speak(self) -> str: ...\n\n\nclass Dog:\n    def speak(self) -> str:\n        return \"汪\"\n\n\ndef announce(s: Speaker) -> str:\n    return f\"它说：{s.speak()}\"\n\n\nprint(announce(Dog()))",
+      "runnable": true,
+      "editable": true,
+      "expect": "它说：汪"
+    },
+    {
+      "type": "p",
+      "html": "<code>Dog</code> <strong>没有继承</strong> <code>Speaker</code>，但只要长得像（有 <code>speak</code> 方法），静态检查就认为它是 <code>Speaker</code>。这是\"鸭子类型 + 注解\"的组合：不要求显式声明关系，只要求行为匹配——比 ABC 灵活，第 59 课对比两者。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>Protocol</code> 与 <code>ABC</code> 的核心区别是？",
+      "options": [
+        "Protocol 性能更好",
+        "Protocol 是结构化的：不继承、只要求方法形状匹配",
+        "ABC 只能用于标准库",
+        "Protocol 不能定义方法签名"
+      ],
+      "answer": 1,
+      "explain": "ABC 是名义子类型（必须显式继承），Protocol 是结构子类型（长得像就算）。配合 runtime_checkable 还能做 isinstance 检查，但那只检查方法存在性。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>def f[T](x: list[T]) -&gt; T</code>：新泛型语法，输入输出类型联动。",
+        "<code>X | None</code> 强迫调用方处理空值分支，是最值得写的注解。",
+        "<code>Protocol</code> 用\"形状\"代替\"继承\"，鸭子类型终于有了注解支持。",
+        "老代码的 <code>TypeVar</code> / <code>Optional[X]</code> 等价物要能读懂。"
+      ]
+    }
+  ],
+  "prev": "s2-46-typing-basics",
+  "next": "s2-48-abc-protocols"
+}

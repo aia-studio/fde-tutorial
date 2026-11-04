@@ -1,0 +1,188 @@
+{
+  "id": "s0-11-conditionals",
+  "order": 11,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "条件与 match",
+  "concepts": [
+    "if",
+    "elif",
+    "match",
+    "pattern matching",
+    "walrus"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "分支的两种写法"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "if / elif / else：只走一条"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "match：匹配形状，不是匹配值"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "海象运算符：在条件里赋值"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 4.1：if 语句",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html#if-statements"
+    },
+    {
+      "title": "Tutorial 4.6：match 语句",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html#match-statements"
+    }
+  ],
+  "prereq": [
+    10
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "分支的两种写法"
+    },
+    {
+      "type": "p",
+      "html": "<code>if</code> 处理布尔条件，<code>match</code> 处理<strong>结构</strong>。两者不是替代关系——用 <code>match</code> 去代替一长串 <code>x == 1 or x == 2</code> 反而更绕。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "if / elif / else：只走一条"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def grade(score):\n    if score >= 90:\n        return \"A\"\n    elif score >= 80:\n        return \"B\"\n    elif score >= 70:\n        return \"C\"\n    return \"D\"\n\n\nfor s in [95, 85, 72, 60]:\n    print(s, grade(s))",
+      "runnable": true,
+      "editable": true,
+      "expect": "95 A\n85 B\n72 C\n60 D"
+    },
+    {
+      "type": "p",
+      "html": "<code>elif</code> 是\"否则如果\"，<strong>命中一条就跳出整条链</strong>。如果写成三个独立的 <code>if</code>，60 分会同时满足 <code>&gt;=70</code> 之外的条件？不会，但 95 分会同时进入 <code>&gt;=90</code> 和 <code>&gt;=80</code> 两个分支——这就是 <code>elif</code> 存在的理由。"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "score = 95\n\nprint(\"用 elif：\")\nif score >= 90:\n    print(\" A\")\nelif score >= 80:\n    print(\" B\")\n\nprint(\"用独立 if：\")\nif score >= 90:\n    print(\" A\")\nif score >= 80:\n    print(\" B\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "用 elif：\n A\n用独立 if：\n A\n B"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "match：匹配形状，不是匹配值"
+    },
+    {
+      "type": "p",
+      "html": "<code>match</code> 的强项是拆结构。看一个坐标点："
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "def describe(point):\n    match point:\n        case (0, 0):\n            return \"原点\"\n        case (x, 0):\n            return f\"x 轴上，x={x}\"\n        case (0, y):\n            return f\"y 轴上，y={y}\"\n        case (x, y):\n            return f\"点 ({x}, {y})\"\n\n\nprint(describe((0, 0)))\nprint(describe((3, 0)))\nprint(describe((2, 5)))",
+      "runnable": true,
+      "editable": true,
+      "expect": "原点\nx 轴上，x=3\n点 (2, 5)"
+    },
+    {
+      "type": "p",
+      "html": "注意 <code>case (x, 0)</code> 里的 <code>x</code> 是<strong>捕获变量</strong>，不是常量。这是 <code>match</code> 最容易误读的地方：小写名字一律当\"新变量\"。"
+    },
+    {
+      "type": "p",
+      "html": "匹配类型 + 守卫条件："
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "def classify(value):\n    match value:\n        case int() as n if n < 0:\n            return \"负整数\"\n        case int():\n            return \"非负整数\"\n        case str() as s if s:\n            return f\"非空字符串：{s}\"\n        case _:\n            return \"其他\"\n\n\nfor v in [-3, 7, \"hi\", \"\"]:\n    print(classify(v))",
+      "runnable": true,
+      "editable": true,
+      "expect": "负整数\n非负整数\n非空字符串：hi\n其他"
+    },
+    {
+      "type": "p",
+      "html": "<code>int()</code> 是类模式，表示\"是 int 的实例\"；<code>as n</code> 把匹配到的值绑到 <code>n</code>；<code>if n &lt; 0</code> 是守卫，不满足就继续往下试；<code>_</code> 是兜底通配符。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "match 不是 switch",
+      "html": "它不会做\"相等比较\"。<code>case 1:</code> 用的是字面量模式（等价于 <code>== 1</code> 且类型匹配），但 <code>case x:</code> 是捕获，永远匹配成功——如果你想要常量比较，必须用带点的名字（<code>case Color.RED:</code>）或字面量。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "海象运算符：在条件里赋值"
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "data = [1, 2, 3, 4]\n\nif (n := len(data)) > 3:\n    print(f\"长度 {n}，超过 3\")",
+      "runnable": true,
+      "editable": true,
+      "expect": "长度 4，超过 3"
+    },
+    {
+      "type": "p",
+      "html": "<code>:=</code> 把\"算出来\"和\"判断\"合成一步，避免写两遍 <code>len(data)</code>。它最常见的场景正是 <code>while (line := f.readline()):</code> 这类循环。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>match</code> 语句里 <code>case (x, 0):</code> 中的 <code>x</code> 是什么？",
+      "options": [
+        "名为 x 的常量，要求值等于 x",
+        "捕获变量，匹配任意值并绑定到 x",
+        "类型注解，要求 x 是整数",
+        "语法错误，必须写成 case (_, 0)"
+      ],
+      "answer": 1,
+      "explain": "match 的规则是：裸名字一律是捕获模式（irrefutable），会匹配任何值并绑定。要匹配常量必须用字面量、带点的限定名，或加守卫。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>elif</code> 命中即跳出整条链；独立 <code>if</code> 会全部检查。",
+        "<code>match</code> 匹配的是结构，裸名字是捕获而非比较。",
+        "类模式 <code>int()</code>、守卫 <code>if cond</code>、绑定 <code>as name</code>、兜底 <code>_</code> 是最常用的四件套。",
+        "<code>:=</code> 适合\"算一次、用两次\"的场景。"
+      ]
+    }
+  ],
+  "prev": "s0-10-comparison",
+  "next": "s0-12-loops"
+}

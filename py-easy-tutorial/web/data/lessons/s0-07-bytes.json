@@ -1,0 +1,206 @@
+{
+  "id": "s0-07-bytes",
+  "order": 7,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "编码与字节：str 和 bytes 的边界",
+  "concepts": [
+    "str",
+    "bytes",
+    "utf-8",
+    "encode",
+    "decode",
+    "unicode"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "文本是文本，字节是字节"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "一个字，几个字节？"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "编码是一张映射表，选错了就对不上"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "什么时候会遇到 bytes"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：二进制序列类型 bytes",
+      "url": "https://docs.python.org/3/library/stdtypes.html#binary-sequence-types-bytes-bytearray-memoryview"
+    },
+    {
+      "title": "Python HOWTOs：Unicode",
+      "url": "https://docs.python.org/3/howto/unicode.html"
+    }
+  ],
+  "prereq": [
+    6
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "文本是文本，字节是字节"
+    },
+    {
+      "type": "p",
+      "html": "Python 3 把这件事做了一次硬切割：<code>str</code> 是<strong>字符</strong>序列，<code>bytes</code> 是<strong>字节</strong>序列。两者不能混用，转换必须显式调用 <code>encode</code> / <code>decode</code>。这条规则看起来麻烦，但它消灭了 Python 2 时代一半的乱码问题。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "一个字，几个字节？"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "text = \"你好\"\n\ndata = text.encode(\"utf-8\")\nprint(data)\nprint(len(text), len(data))\nprint(data.decode(\"utf-8\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "b'\\xe4\\xbd\\xa0\\xe5\\xa5\\xbd'\n2 6\n你好"
+    },
+    {
+      "type": "p",
+      "html": "\"你好\"是 2 个字符，但 UTF-8 下一个汉字占 3 字节，所以编码后是 6 字节。<strong>长度取决于你在数什么</strong>——<code>len(str)</code> 数字符，<code>len(bytes)</code> 数字节。"
+    },
+    {
+      "type": "p",
+      "html": "<code>b'...'</code> 前缀就是 bytes 字面量，里面的 <code>\\xe4</code> 是一个字节的十六进制表示。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "编码是一张映射表，选错了就对不上"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "print(\"café\".encode(\"utf-8\"))\nprint(\"café\".encode(\"latin-1\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "b'caf\\xc3\\xa9'\nb'caf\\xe9'"
+    },
+    {
+      "type": "p",
+      "html": "同一个 <code>é</code>，UTF-8 用 2 字节，latin-1 用 1 字节。用 A 编码、用 B 解码，得到的不是报错就是乱码——这就是\"锟斤拷\"的来源。"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "try:\n    \"你好\".encode(\"ascii\")\nexcept UnicodeEncodeError:\n    print(\"ascii 装不下中文\")\n    print(\"café\".encode(\"ascii\", errors=\"replace\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "ascii 装不下中文\nb'caf?'"
+    },
+    {
+      "type": "p",
+      "html": "<code>errors=\"replace\"</code> 把编不出来的字符换成 <code>?</code>。还有 <code>ignore</code>（直接丢掉）和 <code>backslashreplace</code>（转成 <code>\\uXXXX</code>）。<strong>默认严格模式是好事</strong>——静默丢数据比报错可怕得多。"
+    },
+    {
+      "type": "callout",
+      "kind": "danger",
+      "title": "别用 errors=\"ignore\" 掩盖问题",
+      "html": "它会让\"用户名字里的生僻字\"在入库时静默消失。要处理编码问题，先确认源头用的是什么编码，而不是把异常吞掉。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "什么时候会遇到 bytes"
+    },
+    {
+      "type": "table",
+      "head": [
+        "场景",
+        "拿到的是"
+      ],
+      "rows": [
+        [
+          "读文本文件（默认）",
+          "<code>str</code>"
+        ],
+        [
+          "读二进制文件（<code>\"rb\"</code>）",
+          "<code>bytes</code>"
+        ],
+        [
+          "socket / HTTP 响应体",
+          "<code>bytes</code>"
+        ],
+        [
+          "<code>hashlib</code> 的结果",
+          "<code>bytes</code>"
+        ],
+        [
+          "命令行参数",
+          "<code>str</code>"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import hashlib\n\ndigest = hashlib.sha256(\"abc\".encode(\"utf-8\")).hexdigest()\nprint(digest[:16])\nprint(len(digest))",
+      "runnable": true,
+      "editable": true,
+      "expect": "ba7816bf8f01cfea\n64"
+    },
+    {
+      "type": "p",
+      "html": "<code>hashlib</code> 只接受 bytes，所以要先把字符串编码。<code>hexdigest()</code> 再把它变成 64 个十六进制字符的 <code>str</code>——注意这两步的方向相反。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>len(\"你好\")</code> 和 <code>len(\"你好\".encode(\"utf-8\"))</code> 分别是什么？",
+      "options": [
+        "2 和 2",
+        "6 和 6",
+        "2 和 6",
+        "6 和 2"
+      ],
+      "answer": 2,
+      "explain": "str 的长度是字符数（2 个汉字），UTF-8 编码后每个汉字 3 字节，所以 bytes 长度是 6。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>str</code> 是字符，<code>bytes</code> 是字节，转换必须显式 <code>encode</code>/<code>decode</code>。",
+        "UTF-8 下一个汉字 3 字节，<code>len</code> 的语义取决于类型。",
+        "编解码必须配对，<code>UTF-8</code> 是默认选择。",
+        "出错时先查源头编码，别用 <code>ignore</code> 吞掉。",
+        "哈希、网络、二进制文件这些场景拿到的是 bytes。"
+      ]
+    }
+  ],
+  "prev": "s0-06-strings",
+  "next": "s0-08-list-tuple"
+}

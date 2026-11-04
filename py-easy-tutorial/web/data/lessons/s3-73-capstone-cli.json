@@ -1,0 +1,135 @@
+{
+  "id": "s3-73-capstone-cli",
+  "order": 73,
+  "stage": "s3",
+  "stage_title": "工程",
+  "official_group": "advanced",
+  "title": "综合项目：可测试的 CLI 工具",
+  "concepts": [
+    "capstone",
+    "layering",
+    "argparse",
+    "unittest",
+    "integration"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "S1–S3 的毕业考"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "核心逻辑 + 测试（同一块里自包含）"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "接口层：argparse 接收，分发到核心"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 4.8：更多控制流工具（综合运用）",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html"
+    },
+    {
+      "title": "Library Reference：argparse",
+      "url": "https://docs.python.org/3/library/argparse.html"
+    }
+  ],
+  "prereq": [
+    72
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "S1–S3 的毕业考"
+    },
+    {
+      "type": "p",
+      "html": "一个\"能拿得出手\"的小工具要同时做到：<strong>逻辑可测试</strong>（纯函数）、<strong>接口可扩展</strong>（argparse 子命令）、<strong>状态可持久</strong>（JSON 文件）、<strong>失败可定位</strong>（异常与日志）。这一课把 15–72 课的零件装成一个整体。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "核心逻辑 + 测试（同一块里自包含）"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import json\nimport io\nimport unittest\nfrom pathlib import Path\n\n\ndef load(path: Path) -> list[dict]:\n    if not path.exists():\n        return []\n    return json.loads(path.read_text(encoding=\"utf-8\"))\n\n\ndef save(path: Path, todos: list[dict]) -> None:\n    path.write_text(json.dumps(todos, ensure_ascii=False), encoding=\"utf-8\")\n\n\ndef add(todos: list[dict], text: str) -> dict:\n    todo = {\"text\": text, \"done\": False}\n    todos.append(todo)\n    return todo\n\n\ndef finish(todos: list[dict], index: int) -> bool:\n    if 0 <= index < len(todos):\n        todos[index][\"done\"] = True\n        return True\n    return False\n\n\nclass TestCore(unittest.TestCase):\n    def test_add_returns_todo(self):\n        todos = []\n        todo = add(todos, \"写作业\")\n        self.assertEqual(todos, [{\"text\": \"写作业\", \"done\": False}])\n        self.assertIs(todos[0], todo)\n\n    def test_finish_out_of_range_is_safe(self):\n        self.assertFalse(finish([], 5))\n\n    def test_roundtrip(self):\n        with tempfile.TemporaryDirectory() as tmp:\n            store = Path(tmp) / \"data.json\"\n            todos = load(store)\n            add(todos, \"买菜\")\n            save(store, todos)\n            self.assertEqual(load(store)[0][\"text\"], \"买菜\")\n\n\nimport tempfile\n\nsuite = unittest.defaultTestLoader.loadTestsFromTestCase(TestCore)\nresult = unittest.TextTestRunner(stream=io.StringIO()).run(suite)\nprint(result.wasSuccessful(), result.testsRun)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True 3"
+    },
+    {
+      "type": "p",
+      "html": "分层在代码里的体现：<code>add</code> / <code>finish</code> 只操作列表、<strong>不碰文件</strong>——所以测试不需要文件；<code>load</code> / <code>save</code> 只做读写——所以它们可以单独测。<strong>逻辑与 IO 分层，是\"可测试\"的全部秘密。</strong>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "接口层：argparse 接收，分发到核心"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import argparse\n\n\ndef add(todos: list[dict], text: str) -> dict:\n    todo = {\"text\": text, \"done\": False}\n    todos.append(todo)\n    return todo\n\n\ndef finish(todos: list[dict], index: int) -> bool:\n    if 0 <= index < len(todos):\n        todos[index][\"done\"] = True\n        return True\n    return False\n\n\ndef build_parser() -> argparse.ArgumentParser:\n    parser = argparse.ArgumentParser(prog=\"todo\")\n    sub = parser.add_subparsers(dest=\"cmd\", required=True)\n    sub.add_parser(\"list\")\n\n    p_add = sub.add_parser(\"add\")\n    p_add.add_argument(\"text\")\n\n    p_done = sub.add_parser(\"done\")\n    p_done.add_argument(\"index\", type=int)\n    return parser\n\n\ndef run(args, todos: list[dict]) -> str:\n    if args.cmd == \"list\":\n        return \"\\n\".join(\n            f\"{'x' if t['done'] else ' '} {i} {t['text']}\" for i, t in enumerate(todos)\n        )\n    if args.cmd == \"add\":\n        add(todos, args.text)\n        return \"已添加\"\n    if args.cmd == \"done\":\n        return \"已完成\" if finish(todos, args.index) else \"编号不存在\"\n    return \"未知命令\"\n\n\nparser = build_parser()\ntodos = []\nprint(run(parser.parse_args([\"add\", \"买菜\"]), todos))\nprint(run(parser.parse_args([\"list\"]), todos))",
+      "runnable": true,
+      "editable": true,
+      "expect": "已添加\n  0 买菜"
+    },
+    {
+      "type": "p",
+      "html": "<code>run(args, todos)</code> 是纯函数：输入解析结果和状态，返回输出。它不打印、不读文件——真实项目里让它返回字符串列表，由最外层负责打印。<strong>每一层都可以单独替换</strong>：换 GUI 就换接口层，换数据库就换 load/save。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "从这里到真实项目还差三步",
+      "html": "1. 把 <code>load/save</code> 换成数据库（第 24 课的 JSON 已够教学用）； 2. 加 <code>logging</code>（第 54 课）代替 print 调试； 3. 用第 61–63 课的流程打包发布。课程后半段的综合项目（第 84 课）会把这三步做全。"
+    },
+    {
+      "type": "quiz",
+      "question": "「逻辑与 IO 分层」在测试上最大的好处是？",
+      "options": [
+        "测试跑得更快",
+        "纯函数不需要真实文件/网络就能测试所有分支，包括错误路径",
+        "可以少写测试",
+        "测试可以直接调用私有方法"
+      ],
+      "answer": 1,
+      "explain": "add/finish 只操作内存列表，边界条件（空列表、越界）全部可以在内存里构造，测试因此又快又稳定。IO 层单独留出薄薄的一层，用少量集成测试覆盖。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "分层：核心逻辑（纯函数）→ 存储层（load/save）→ 接口层（argparse）。",
+        "每层独立可测：逻辑用单测覆盖全分支，IO 留薄层。",
+        "argparse 子命令即接口文档；<code>run(args, state)</code> 返回结果而不是直接打印。",
+        "15–72 课的所有零件在这一课合体，第 84 课是它的加强版。"
+      ]
+    }
+  ],
+  "prev": "s3-72-contextvars",
+  "next": "s4-74-object-model"
+}

@@ -1,0 +1,185 @@
+{
+  "id": "s2-52-random-hash",
+  "order": 52,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "随机、哈希与密钥",
+  "concepts": [
+    "random",
+    "seed",
+    "secrets",
+    "hashlib",
+    "uuid"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "两种\"随机\"，用途完全不同"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "random：可复现，可测试"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "shuffle 与 sample"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "secrets：安全随机"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "哈希：不可逆的指纹"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：random",
+      "url": "https://docs.python.org/3/library/random.html"
+    },
+    {
+      "title": "Library Reference：secrets",
+      "url": "https://docs.python.org/3/library/secrets.html"
+    }
+  ],
+  "prereq": [
+    50
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "两种\"随机\"，用途完全不同"
+    },
+    {
+      "type": "p",
+      "html": "<code>random</code> 是<strong>伪随机</strong>：给定种子，序列完全可复现。这对测试是优点，对密码是灾难。安全场景一律用 <code>secrets</code>，这条线划清了两者边界。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>random</code>：可复现，可测试"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import random\n\nrandom.seed(42)\nprint(random.randint(1, 10))\nprint(random.choice([\"a\", \"b\", \"c\"]))\nprint(round(random.random(), 4))",
+      "runnable": true,
+      "editable": true,
+      "expect": "2\na\n0.7416"
+    },
+    {
+      "type": "p",
+      "html": "<code>seed(42)</code> 之后，三个调用的结果<strong>永远一样</strong>。测试里需要\"随机但可复现\"的数据就靠这个：种子固定，断言才能写死。"
+    },
+    {
+      "type": "p",
+      "html": "不设种子时，默认从系统熵源取种——每次运行都不同。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>shuffle</code> 与 <code>sample</code>"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import random\n\nrandom.seed(7)\ndeck = list(range(5))\nrandom.shuffle(deck)\nprint(deck)\n\nprint(random.sample(deck, 2))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[4, 0, 3, 1, 2]\n[4, 2]"
+    },
+    {
+      "type": "p",
+      "html": "<code>shuffle</code> 原地打乱；<code>sample</code> 无放回抽样，不会重复取同一个元素。抽卡、抽奖名单用 <code>sample</code> 而不是循环 <code>choice</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>secrets</code>：安全随机"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import secrets\n\ntoken = secrets.token_hex(16)\nprint(len(token))\nprint(secrets.compare_digest(token, token))",
+      "runnable": true,
+      "editable": true,
+      "expect": "32\nTrue"
+    },
+    {
+      "type": "p",
+      "html": "<code>token_hex(16)</code> 生成 32 个十六进制字符（16 字节熵）。<code>compare_digest</code> 做<strong>常数时间比较</strong>，防止通过比较耗时推断内容——校验令牌用它，别用 <code>==</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "哈希：不可逆的指纹"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "import hashlib\n\nh = hashlib.sha256(b\"abc\")\nprint(h.hexdigest()[:16])\nprint(h.digest_size)",
+      "runnable": true,
+      "editable": true,
+      "expect": "ba7816bf8f01cfea\n32"
+    },
+    {
+      "type": "p",
+      "html": "输入差一个字节，输出完全不同；无法从哈希反推输入。密码存储用 <code>hashlib.pbkdf2_hmac</code> 加盐迭代，<strong>绝不存明文</strong>，也别用普通 <code>sha256</code> 存密码（没有盐，可被彩虹表破解）。"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "什么时候用哪个",
+      "html": "测试造数据、随机抽样、洗牌 → <code>random</code>；令牌、密钥、密码重置链接 → <code>secrets</code>；指纹、文件校验 → <code>hashlib</code>；全局唯一 ID → <code>uuid.uuid4()</code>。选错的前一个字节就是安全事故。"
+    },
+    {
+      "type": "quiz",
+      "question": "生成用户密码重置链接里的随机令牌，应该用哪个？",
+      "options": [
+        "random.random()",
+        "random.seed(时间戳) 后取值",
+        "secrets.token_urlsafe(32)",
+        "hashlib.md5(用户名).hexdigest()"
+      ],
+      "answer": 2,
+      "explain": "重置令牌必须不可预测：random 是可复现的伪随机（知道种子就能推算），md5 可被穷举。secrets 从操作系统熵源取数，专门为安全用途设计。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>random</code> 伪随机可复现（<code>seed</code> 固定），适合测试与模拟。",
+        "<code>shuffle</code> 原地打乱，<code>sample</code> 无放回抽样。",
+        "安全令牌、密钥一律 <code>secrets</code>，比较用 <code>compare_digest</code>。",
+        "密码存储用 <code>pbkdf2_hmac</code> 加盐，指纹校验用 <code>sha256</code>。"
+      ]
+    }
+  ],
+  "prev": "s2-51-datetime",
+  "next": "s2-53-pitfalls"
+}

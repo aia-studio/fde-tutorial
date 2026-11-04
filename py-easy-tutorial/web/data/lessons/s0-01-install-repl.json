@@ -1,0 +1,233 @@
+{
+  "id": "s0-01-install-repl",
+  "order": 1,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "安装、解释器与运行方式",
+  "concepts": [
+    "interpreter",
+    "repl",
+    "script",
+    "runpy",
+    "__main__"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "三条路，一个解释器"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "先确认你在跑哪个解释器"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "__name__ 是理解运行方式的关键"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "三种运行方式对照"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "常用开关"
+    },
+    {
+      "anchor": "sec-6",
+      "level": 2,
+      "text": "本页代码块可以直接改"
+    },
+    {
+      "anchor": "sec-7",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Using Python：命令行与环境",
+      "url": "https://docs.python.org/3/using/index.html"
+    },
+    {
+      "title": "Tutorial 第 2 章：使用解释器",
+      "url": "https://docs.python.org/3/tutorial/interpreter.html"
+    }
+  ],
+  "prereq": [],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "三条路，一个解释器"
+    },
+    {
+      "type": "p",
+      "html": "同样一份代码，可以三种方式跑起来：交互式（REPL）、脚本、模块。这三种方式执行的是同一个解释器、同一套语义，差别只在<strong>入口</strong>和<strong>名字空间</strong>。先把这件事弄清楚，后面所有“为什么这里能跑、那里跑不了”的问题都会消失。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "先确认你在跑哪个解释器"
+    },
+    {
+      "type": "p",
+      "html": "机器上装多个 Python 是常态。写代码之前，先让解释器自报家门——这不是仪式，是排错的第一步。"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import sys\n\nprint(\"major =\", sys.version_info.major)\nprint(\"可运行本教程：\", sys.version_info >= (3, 15))",
+      "runnable": true,
+      "editable": true,
+      "expect": "major = 3\n可运行本教程： True"
+    },
+    {
+      "type": "p",
+      "html": "这里故意没有打印完整版本号：完整版本号会随机器变化，而 <code>sys.version_info</code> 的比较在任何 3.x 上都稳定。<strong>测试里依赖会变的东西，是脆弱的开始。</strong>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__name__</code> 是理解运行方式的关键"
+    },
+    {
+      "type": "p",
+      "html": "同一个文件，直接运行时 <code>__name__</code> 是 <code>“__main__”</code>；被 <code>import</code> 时，它是模块名。Python 就是靠这一个变量区分“入口”和“被引用”的。"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "print(\"__name__ 的值是:\", __name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "__name__ 的值是: __main__"
+    },
+    {
+      "type": "p",
+      "html": "所以那句看起来很怪的 <code>if __name__ == “__main__”:</code> 其实只是在问一句：<strong>我现在是被直接运行，还是被别的文件导入？</strong> 只有被直接运行时，才执行测试代码或命令行入口。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "三种运行方式对照"
+    },
+    {
+      "type": "table",
+      "head": [
+        "方式",
+        "命令",
+        "<code>__name__</code>",
+        "典型用途"
+      ],
+      "rows": [
+        [
+          "交互式",
+          "<code>python</code>",
+          "<code>__main__</code>",
+          "试一行代码、验证表达式"
+        ],
+        [
+          "脚本",
+          "<code>python main.py</code>",
+          "<code>__main__</code>",
+          "完整程序"
+        ],
+        [
+          "模块",
+          "<code>python -m package.module</code>",
+          "<code>__main__</code>",
+          "让包内相对导入正常工作"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<code>-m</code> 这一行值得单独记住：它让 Python 先建立包上下文再执行模块，所以<strong>包内部的相对导入只有 <code>-m</code> 才能跑通</strong>。用 <code>python package/module.py</code> 跑同一个文件，<code>from . import x</code> 会直接报 <code>ImportError</code>。"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "为什么 <code>-m</code> 能解决相对导入",
+      "html": "直接跑文件时，<code>sys.path[0]</code> 是那个文件所在的目录，包结构对解释器不存在；<code>-m</code> 则先把当前目录放进 <code>sys.path</code>，再按模块名逐级导入，父包因此可见。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "常用开关"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>-i</code>：脚本跑完后进入交互式，变量全部保留，调试神器",
+        "<code>-c “...”</code>：直接执行一段字符串，适合一行验证",
+        "<code>-X utf8</code>：强制 UTF-8 模式（3.15 默认已是 UTF-8，老代码里还会见到）",
+        "<code>--version</code> / <code>-VV</code>：<code>-VV</code> 会连编译器和构建信息一起打印"
+      ]
+    },
+    {
+      "type": "quiz",
+      "question": "在包 <code>app/</code> 里执行 <code>python app/main.py</code>，文件中有 <code>from . import config</code>，会发生什么？",
+      "options": [
+        "正常运行，Python 会自动识别包结构",
+        "报 ImportError：attempted relative import with no known parent package",
+        "报 SyntaxError，相对导入语法不合法",
+        "会跳过这行导入，继续执行"
+      ],
+      "answer": 1,
+      "explain": "直接运行文件时，该文件被当作顶层脚本，<code>__package__</code> 为空，解释器不知道父包是谁，相对导入无从解析。改用 <code>python -m app.main</code> 即可。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "本页代码块可以直接改"
+    },
+    {
+      "type": "p",
+      "html": "下面这块是给你练手的：把 <code>3, 15</code> 改成一个更大的版本号，看看结果怎么变。按 <code>Ctrl+Enter</code>（macOS 上是 <code>Cmd+Enter</code>）运行。"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import sys\n\nrequired = (3, 15)\nprint(\"当前满足要求：\", sys.version_info[:2] >= required)",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "改代码比读代码有用",
+      "html": "每改一次，你都在验证一个关于语言的假设。看到不符合预期的结果时，先别怀疑环境——先怀疑自己的假设。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "三种运行方式共用同一个解释器，差别在入口和 <code>__name__</code>。",
+        "<code>if __name__ == “__main__”:</code> 是在判断“我是不是入口”。",
+        "包内相对导入要用 <code>-m</code> 运行，否则父包不可见。",
+        "排错第一步永远是：确认当前解释器是谁、版本是多少。"
+      ]
+    }
+  ],
+  "prev": null,
+  "next": "s0-02-docs-map"
+}

@@ -1,0 +1,147 @@
+{
+  "id": "s4-91-inspect-signature",
+  "order": 91,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "函数签名与 inspect",
+  "concepts": [
+    "inspect.signature",
+    "bind",
+    "parameter validation",
+    "decorator transparency"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "读取并校验任何函数的签名"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "读取签名"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "bind：不调用也能校验参数"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "验证装饰器：bind 的实战"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：inspect",
+      "url": "https://docs.python.org/3/library/inspect.html"
+    },
+    {
+      "title": "Library Reference：Signature 对象",
+      "url": "https://docs.python.org/3/library/inspect.html#inspect.Signature"
+    }
+  ],
+  "prereq": [
+    90
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "读取并校验任何函数的签名"
+    },
+    {
+      "type": "p",
+      "html": "<code>inspect.signature</code> 把函数的参数表变成可操作的对象：名字、类型注解、默认值、kind（位置/关键字）。<strong>验证装饰器、API 参数校验、自动生成文档</strong>都建立在它上面。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "读取签名"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import inspect\n\n\ndef transfer(amount: float, *, to: str, note: str = \"\") -> bool:\n    return amount > 0\n\n\nsig = inspect.signature(transfer)\nprint(list(sig.parameters))\nprint(sig.parameters[\"to\"].kind.name)\nprint(sig.parameters[\"note\"].default)",
+      "runnable": true,
+      "editable": true,
+      "expect": "['amount', 'to', 'note']\nKEYWORD_ONLY"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "bind：不调用也能校验参数"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import inspect\n\n\ndef transfer(amount: float, *, to: str) -> str:\n    return f\"转账 {amount} 给 {to}\"\n\n\nsig = inspect.signature(transfer)\n\nbound = sig.bind(50.5, to=\"Bob\")\nprint(bound.arguments)\n\ntry:\n    sig.bind(50.5, \"Bob\")\nexcept TypeError as exc:\n    print(\"校验失败：\", exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "{'amount': 50.5, 'to': 'Bob'}\n校验失败： too many positional arguments"
+    },
+    {
+      "type": "p",
+      "html": "<code>bind</code> 把实参按签名规则匹配并校验——<strong>缺参数、多余参数、重复赋值都在这里被抓</strong>。这就是\"参数校验装饰器\"的核心：签名 bind 一遍，通过才调原函数。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "验证装饰器：bind 的实战"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "import functools\nimport inspect\n\n\ndef strict(fn):\n    sig = inspect.signature(fn)\n\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        bound = sig.bind(*args, **kwargs)\n        bound.apply_defaults()\n        for name, value in bound.arguments.items():\n            ann = sig.parameters[name].annotation\n            if ann is inspect.Parameter.empty:\n                continue\n            origin = getattr(ann, \"__origin__\", None)\n            if origin is int or ann is int:\n                if not isinstance(value, int) or isinstance(value, bool):\n                    raise TypeError(f\"{name} 需要 int，得到 {type(value).__name__}\")\n        return fn(*bound.args, **bound.kwargs)\n\n    return wrapper\n\n\n@strict\ndef repeat(text: str, times: int = 1) -> str:\n    return text * times\n\n\nprint(repeat(\"ab\", 2))\ntry:\n    repeat(\"ab\", \"2\")\nexcept TypeError as exc:\n    print(\"拦截：\", exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "abab\n拦截： times 需要 int，得到 str"
+    },
+    {
+      "type": "p",
+      "html": "注意 <code>\"2\"</code>（字符串）能在运行时被 <code>text * \"2\"</code> 接住吗？不能——会抛 TypeError，但错误信息是解释器层面的。<code>strict</code> 装饰器把错误变成<strong>面向调用方的明确提示</strong>。这个模式正是 pydantic / FastAPI 参数校验的简化版。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>sig.bind(*args, **kwargs)</code> 与直接调用函数相比，多了什么能力？",
+      "options": [
+        "bind 会执行函数并返回结果",
+        "bind 只做参数匹配与校验，不执行函数体",
+        "bind 可以绕过类型检查",
+        "bind 会自动转换参数类型"
+      ],
+      "answer": 1,
+      "explain": "bind 按签名规则把实参映射成参数名→值的字典，缺参/多参/重复都会抛 TypeError。先 bind 再决定是否调用，是「验证装饰器」的实现核心。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>signature(f)</code> 拿到参数名、kind、默认值、注解的完整描述。",
+        "<code>bind</code>/<code>bind_partial</code> 做参数校验而不执行函数。",
+        "<code>apply_defaults</code> 把默认值也补进 arguments。",
+        "验证装饰器 = bind 校验 + 按参数注解检查 + wraps 透传。"
+      ]
+    }
+  ],
+  "prev": "s4-90-annotations-runtime",
+  "next": "s4-92-module-getattr"
+}

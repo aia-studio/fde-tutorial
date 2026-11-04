@@ -1,0 +1,193 @@
+{
+  "id": "s0-08-list-tuple",
+  "order": 8,
+  "stage": "s0",
+  "stage_title": "起步",
+  "official_group": "beginner",
+  "title": "列表与元组",
+  "concepts": [
+    "list",
+    "tuple",
+    "mutability",
+    "aliasing",
+    "unpacking"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "一个能改，一个不能改"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "列表的基本操作"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "元组：不可变，所以能当键"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "那个著名的嵌套列表陷阱"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 5.1：列表的更多特性",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#more-on-lists"
+    },
+    {
+      "title": "Library Reference：序列类型",
+      "url": "https://docs.python.org/3/library/stdtypes.html#sequence-types-list-tuple-range"
+    }
+  ],
+  "prereq": [
+    7
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "一个能改，一个不能改"
+    },
+    {
+      "type": "p",
+      "html": "<code>list</code> 和 <code>tuple</code> 长得像，用法也像，区别只有一条：<strong>列表可变，元组不可变</strong>。这一条差别决定了它们各自的用途，也制造了 Python 里最经典的一个陷阱。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "列表的基本操作"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "nums = [3, 1, 2]\n\nnums.append(4)\nnums.sort()\nprint(nums)\nprint(nums[1:3])\nprint(len(nums), sum(nums))",
+      "runnable": true,
+      "editable": true,
+      "expect": "[1, 2, 3, 4]\n[2, 3]\n4 10"
+    },
+    {
+      "type": "p",
+      "html": "注意 <code>sort()</code> 是<strong>原地排序</strong>，返回 <code>None</code>："
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "nums = [3, 1, 2]\n\nresult = nums.sort()\nprint(result)\nprint(nums)",
+      "runnable": true,
+      "editable": true,
+      "expect": "None\n[1, 2, 3]"
+    },
+    {
+      "type": "p",
+      "html": "写成 <code>nums = nums.sort()</code> 会让 <code>nums</code> 变成 <code>None</code>，这是新手最常见的错误之一。要新列表就用 <code>sorted(nums)</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "元组：不可变，所以能当键"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "point = (3, 4)\nx, y = point\n\nprint(x, y)\nprint(point[0])\n\ntry:\n    point[0] = 9\nexcept TypeError as exc:\n    print(type(exc).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "3 4\n3\nTypeError"
+    },
+    {
+      "type": "p",
+      "html": "元组最常见的用途不是\"只读的列表\"，而是<strong>把几个值绑成一个整体</strong>：坐标、数据库行、函数返回多个值。它可哈希，所以能当字典的键；列表不能。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "那个著名的嵌套列表陷阱"
+    },
+    {
+      "type": "code",
+      "id": "c4",
+      "lang": "python",
+      "code": "grid = [[0] * 2] * 2\ngrid[0][0] = 1\nprint(grid)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[[1, 0], [1, 0]]"
+    },
+    {
+      "type": "p",
+      "html": "只改了一个格子，两行都变了。因为 <code>[[0]*2] * 2</code> 复制的不是内层列表，而是<strong>指向同一个内层列表的引用</strong>。外层确实有两个元素，但它们指向同一个对象——和第 3 课的名字绑定是同一回事。"
+    },
+    {
+      "type": "p",
+      "html": "单步跑一遍，注意 <code>grid[0]</code> 和 <code>grid[1]</code> 旁边的色块是不是同一个："
+    },
+    {
+      "type": "step",
+      "title": "单步看：为什么两行一起变了",
+      "code": "grid = [[0] * 2] * 2\ngrid[0][0] = 1\nprint(grid)\n"
+    },
+    {
+      "type": "p",
+      "html": "正确写法是让每一行独立创建："
+    },
+    {
+      "type": "code",
+      "id": "c5",
+      "lang": "python",
+      "code": "grid = [[0] * 2 for _ in range(2)]\ngrid[0][0] = 1\nprint(grid)",
+      "runnable": true,
+      "editable": true,
+      "expect": "[[1, 0], [0, 0]]"
+    },
+    {
+      "type": "callout",
+      "kind": "warn",
+      "title": "凡是 <code>[x] * n</code> 都要停一下",
+      "html": "如果 <code>x</code> 是不可变值（数字、字符串），复制没问题。如果 <code>x</code> 是列表、字典、集合这类可变对象，<code>* n</code> 得到的是 n 个指向同一对象的引用。推导式才是安全的建表方式。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>row = [0] * 3</code> 之后 <code>grid = [row] * 2</code>，再执行 <code>grid[1][0] = 9</code>，<code>grid[0][0]</code> 是多少？",
+      "options": [
+        "0",
+        "9",
+        "None",
+        "报错"
+      ],
+      "answer": 1,
+      "explain": "grid 的两个元素指向同一个 row 对象，改任何一个位置都是改同一个列表，所以两行同时变成 [9, 0, 0]。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>list</code> 可变、<code>tuple</code> 不可变；<code>sort()</code> 原地改并返回 <code>None</code>。",
+        "元组适合打包多个值，且能当字典键。",
+        "<code>[x] * n</code> 复制的是引用，嵌套可变对象必须用推导式。",
+        "解包 <code>a, b = pair</code> 是元组最常见的用法。"
+      ]
+    }
+  ],
+  "prev": "s0-07-bytes",
+  "next": "s0-09-dict-set"
+}

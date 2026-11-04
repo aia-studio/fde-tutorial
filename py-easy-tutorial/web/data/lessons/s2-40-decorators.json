@@ -1,0 +1,185 @@
+{
+  "id": "s2-40-decorators",
+  "order": 40,
+  "stage": "s2",
+  "stage_title": "抽象",
+  "official_group": "moderate",
+  "title": "装饰器基础",
+  "concepts": [
+    "decorator",
+    "wraps",
+    "higher-order function",
+    "wrapper"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "@ 语法只是函数调用的糖"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "最小装饰器"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "忘了 wraps 会怎样"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "装饰器在导入时执行"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：functools.wraps",
+      "url": "https://docs.python.org/3/library/functools.html#functools.wraps"
+    },
+    {
+      "title": "PEP 318：函数装饰器",
+      "url": "https://peps.python.org/pep-0318/"
+    }
+  ],
+  "prereq": [
+    39
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "@ 语法只是函数调用的糖"
+    },
+    {
+      "type": "p",
+      "html": "<code>@deco</code> 上面一行等价于 <code>func = deco(func)</code>。装饰器接收一个函数，<strong>返回一个新函数</strong>（通常是包装了原函数的 wrapper）。就这么简单——复杂的是保持原函数的\"身份\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "最小装饰器"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import functools\n\n\ndef timed(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        print(\"->\", fn.__name__)\n        result = fn(*args, **kwargs)\n        print(\"<-\", fn.__name__)\n        return result\n\n    return wrapper\n\n\n@timed\ndef work(n):\n    return n * 2\n\n\nprint(work(21))\nprint(work.__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "-> work\n<- work\n42\nwork"
+    },
+    {
+      "type": "p",
+      "html": "<code>wrapper</code> 用 <code>*args, **kwargs</code> 透传所有参数，所以它能包住任何签名的函数。装饰后的 <code>work</code> 其实是 <code>wrapper</code>——但因为 <code>@functools.wraps(fn)</code>，名字、docstring 都还是原函数的。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "忘了 wraps 会怎样"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "def bad(fn):\n    def wrapper(*args, **kwargs):\n        return fn(*args, **kwargs)\n\n    return wrapper\n\n\n@bad\ndef work():\n    return 1\n\n\nprint(work.__name__)\nprint(work.__doc__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "wrapper\nNone"
+    },
+    {
+      "type": "p",
+      "html": "函数名变成 <code>wrapper</code>，docstring 丢失。测试框架、文档生成器、日志器全都会被误导。<strong>写装饰器必加 <code>functools.wraps</code>，没有例外。</strong>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "装饰器在导入时执行"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "_registry = []\n\n\ndef register(fn):\n    _registry.append(fn.__name__)\n    return fn\n\n\n@register\ndef handler_a():\n    pass\n\n\n@register\ndef handler_b():\n    pass\n\n\nprint(_registry)",
+      "runnable": true,
+      "editable": true,
+      "expect": "['handler_a', 'handler_b']"
+    },
+    {
+      "type": "p",
+      "html": "装饰发生在<strong>函数定义时</strong>（模块导入时），不是调用时。这个\"定义期执行\"的特性正是注册表模式的基础——第 89 课的插件系统全靠它。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "什么时候用装饰器",
+      "html": "横切逻辑（计时、缓存、重试、权限检查）适合装饰器：每个函数都要、又不属于函数本职。让装饰器<strong>委托给原函数</strong>而不是自己实现业务——装饰器做包装，函数做事情。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>@deco</code> 上面一行等价于哪句代码？",
+      "options": [
+        "deco()",
+        "func = deco(func)",
+        "deco(func())",
+        "func.__wrapped__ = deco"
+      ],
+      "answer": 1,
+      "explain": "装饰器语法只是函数调用的糖：把紧随其后的函数对象传给装饰器，再把返回值绑定回原名。所以装饰器必须返回可调用对象（或函数本身）。"
+    },
+    {
+      "type": "exercise",
+      "id": "s2-40-ex1",
+      "title": "写一个 @shout 装饰器",
+      "prompt": "实现 <code>@shout</code>：被装饰的函数返回的字符串要变成<strong>大写</strong>，并在末尾加 <code>!</code>。要求保留原函数的 <code>__name__</code>。",
+      "starter": "import functools\n\n\ndef shout(fn):\n    # 在这里包装\n    pass\n\n\n@shout\ndef hi(name):\n    return \"hi \" + name\n",
+      "solution": "import functools\n\n\ndef shout(fn):\n    @functools.wraps(fn)\n    def wrapper(*args, **kwargs):\n        return fn(*args, **kwargs).upper() + \"!\"\n    return wrapper\n\n\n@shout\ndef hi(name):\n    return \"hi \" + name\n",
+      "tests": [
+        {
+          "name": "测试 1",
+          "code": "assert hi('ada') == 'HI ADA!', '应该是大写并加感叹号'"
+        },
+        {
+          "name": "测试 2",
+          "code": "assert hi('bob') == 'HI BOB!', '参数要透传给原函数'"
+        },
+        {
+          "name": "测试 3",
+          "code": "assert hi.__name__ == 'hi', '必须用 functools.wraps 保留函数名'"
+        }
+      ],
+      "hints": [
+        "wrapper 里拿到 fn 的返回值后再加工，最后 return。",
+        "包装函数要接收并透传 *args, **kwargs。",
+        "在 def wrapper 上面加 @functools.wraps(fn)。"
+      ],
+      "xp": 10
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>@deco</code> ≡ <code>func = deco(func)</code>，装饰发生在定义时。",
+        "wrapper 用 <code>*args, **kwargs</code> 透传，返回原函数的结果。",
+        "<strong>必加 <code>@functools.wraps(fn)</code></strong>，否则函数身份（名字、文档）丢失。",
+        "横切逻辑才用装饰器；装饰器做包装，函数做事情。"
+      ]
+    }
+  ],
+  "prev": "s2-39-context-managers",
+  "next": "s2-41-decorators-advanced"
+}

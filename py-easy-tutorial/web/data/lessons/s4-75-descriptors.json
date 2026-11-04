@@ -1,0 +1,158 @@
+{
+  "id": "s4-75-descriptors",
+  "order": 75,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "moderate",
+  "title": "描述符协议",
+  "concepts": [
+    "descriptor",
+    "__get__",
+    "__set__",
+    "__set_name__",
+    "binding"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "self 的魔法从哪来"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "数据描述符与非数据描述符"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "方法绑定：__get__ 在起作用"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "__set_name__：描述符知道自己的名字"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "HOWTO：描述符指南",
+      "url": "https://docs.python.org/3/howto/descriptor.html"
+    },
+    {
+      "title": "Language Reference：实现描述符",
+      "url": "https://docs.python.org/3/reference/datamodel.html#implementing-descriptors"
+    }
+  ],
+  "prereq": [
+    74
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "<code>self</code> 的魔法从哪来"
+    },
+    {
+      "type": "p",
+      "html": "上一课留了一个问题：方法为什么能自动拿到 <code>self</code>。答案是<strong>描述符</strong>——函数对象实现了 <code>__get__</code>。<code>property</code>、<code>classmethod</code>、<code>staticmethod</code>、<code>__slots__</code>，全部建立在同一个协议上。理解描述符，Python 的属性系统就\"透明\"了。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "数据描述符与非数据描述符"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Ten:\n    def __get__(self, obj, objtype=None):\n        return 10\n\n\nclass A:\n    x = Ten()\n\n\na = A()\nprint(a.x)",
+      "runnable": true,
+      "editable": true,
+      "expect": "10"
+    },
+    {
+      "type": "p",
+      "html": "实现了 <code>__get__</code> 的类是描述符；<strong>再实现 <code>__set__</code></strong> 就是数据描述符（否则是非数据描述符）。这个区分决定优先级：数据描述符 &gt; 实例字典 &gt; 非数据描述符 &gt; <code>__getattr__</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "方法绑定：<code>__get__</code> 在起作用"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import types\n\n\ndef add(self, other):\n    return self.value + other\n\n\nclass Box:\n    def __init__(self, value):\n        self.value = value\n\n    add = add\n\n\nb = Box(10)\nprint(b.add(5))\nprint(type(b.add).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "15\nmethod"
+    },
+    {
+      "type": "p",
+      "html": "把函数赋给类属性后，通过实例访问它，拿到的是<strong>绑定方法</strong>——<code>function.__get__(instance, owner)</code> 返回一个把实例绑进去的 method 对象。这就是 <code>self</code> 的全部来源：不是语法，是描述符。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__set_name__</code>：描述符知道自己的名字"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class Positive:\n    def __set_name__(self, owner, name):\n        self.name = name\n\n    def __get__(self, obj, objtype=None):\n        if obj is None:\n            return self\n        return obj.__dict__[self.name]\n\n    def __set__(self, obj, value):\n        if value <= 0:\n            raise ValueError(f\"{self.name} 必须为正数\")\n        obj.__dict__[self.name] = value\n\n\nclass Order:\n    qty = Positive()\n    price = Positive()\n\n    def __init__(self, qty, price):\n        self.qty = qty\n        self.price = price\n\n\norder = Order(2, 10)\nprint(order.qty, order.price)\n\ntry:\n    order.qty = -1\nexcept ValueError as exc:\n    print(\"拒收：\", exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "2 10\n拒收： qty 必须为正数"
+    },
+    {
+      "type": "p",
+      "html": "这个 <code>Positive</code> 是<strong>可复用的校验字段</strong>——<code>property</code> 每个属性要写一份，描述符写一次到处用。<code>__set_name__</code> 在类创建时把属性名传进来，描述符因此知道自己保管的是哪个键。"
+    },
+    {
+      "type": "callout",
+      "kind": "why",
+      "title": "这就是 ORM 字段的原理",
+      "html": "<code>Column(\"qty\")</code> 这类 ORM 字段、<code>pydantic</code> 的字段校验，核心都是 <code>__set_name__</code> + <code>__set__</code>。理解描述符后，这些框架不再是魔法。"
+    },
+    {
+      "type": "quiz",
+      "question": "实例属性、非数据描述符、数据描述符、<code>__getattr__</code> 的查找优先级是？",
+      "options": [
+        "实例属性 &gt; 数据描述符 &gt; 非数据描述符 &gt; __getattr__",
+        "数据描述符 &gt; 实例属性 &gt; 非数据描述符 &gt; __getattr__",
+        "非数据描述符 &gt; 数据描述符 &gt; 实例属性 &gt; __getattr__",
+        "四者优先级相同，按定义顺序"
+      ],
+      "answer": 1,
+      "explain": "数据描述符最高（它可能校验/缓存，必须拦在实例字典之前），其次实例字典，再非数据描述符，最后才是 __getattr__ 兜底。property 是数据描述符，函数是非数据描述符。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "有 <code>__get__</code> 是描述符；再加 <code>__set__</code> 是数据描述符。",
+        "方法绑定 = 函数的 <code>__get__</code> 返回 method，<code>self</code> 由此而来。",
+        "数据描述符优先于实例字典，所以能拦截赋值。",
+        "<code>__set_name__</code> 让描述符知道属性名，从而可复用（校验字段、ORM 列）。"
+      ]
+    }
+  ],
+  "prev": "s4-74-object-model",
+  "next": "s4-76-attribute-interception"
+}

@@ -1,0 +1,201 @@
+{
+  "id": "s1-25-exceptions",
+  "order": 25,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "异常处理",
+  "concepts": [
+    "try",
+    "except",
+    "finally",
+    "raise",
+    "exception chaining",
+    "custom exception"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "异常是控制流，不是灾难"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "四个子句各管一段"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "自定义异常：让调用方分得清"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "异常链：别丢掉根因"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 8：错误与异常",
+      "url": "https://docs.python.org/3/tutorial/errors.html"
+    },
+    {
+      "title": "Library Reference：内置异常",
+      "url": "https://docs.python.org/3/library/exceptions.html"
+    }
+  ],
+  "prereq": [
+    24
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "异常是控制流，不是灾难"
+    },
+    {
+      "type": "p",
+      "html": "Python 用异常表示\"这件事做不成\"，而且鼓励用它来传递失败：<code>int(\"x\")</code> 抛 <code>ValueError</code>，<code>d[\"missing\"]</code> 抛 <code>KeyError</code>。学会精确捕获，比到处 <code>try: except: pass</code> 有价值得多。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "四个子句各管一段"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "def parse(text):\n    try:\n        value = int(text)\n    except ValueError:\n        return \"不是整数\"\n    else:\n        return value * 2\n    finally:\n        print(\"清理\")\n\n\nprint(parse(\"21\"))\nprint(parse(\"x\"))",
+      "runnable": true,
+      "editable": true,
+      "expect": "清理\n42\n清理\n不是整数"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>try</code> 里只放<strong>可能失败的那一句</strong>，范围越小越不容易误捕获。",
+        "<code>except</code> 指定异常类型，捕获面越窄越好。",
+        "<code>else</code> 在 try 没异常时执行——把\"成功后的逻辑\"移出 try，避免它自己的异常被同一个 except 吞掉。",
+        "<code>finally</code> 无论成败都执行，适合释放资源（其实 <code>with</code> 更合适）。"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "自定义异常：让调用方分得清"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class ConfigError(Exception):\n    pass\n\n\ndef load(value):\n    if value < 0:\n        raise ConfigError(f\"配置不能为负：{value}\")\n    return value\n\n\ntry:\n    load(-1)\nexcept ConfigError as exc:\n    print(type(exc).__name__, exc)",
+      "runnable": true,
+      "editable": true,
+      "expect": "ConfigError 配置不能为负：-1"
+    },
+    {
+      "type": "p",
+      "html": "自定义异常的价值在于<strong>可区分</strong>：调用方可以只捕获 <code>ConfigError</code>，让其他异常照常冒泡。继承 <code>Exception</code> 而不是 <code>BaseException</code>——后者是给 <code>KeyboardInterrupt</code> 这种系统级信号用的。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "异常链：别丢掉根因"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "try:\n    try:\n        int(\"x\")\n    except ValueError as exc:\n        raise RuntimeError(\"解析配置失败\") from exc\nexcept RuntimeError as exc:\n    print(type(exc).__name__)\n    print(type(exc.__cause__).__name__)",
+      "runnable": true,
+      "editable": true,
+      "expect": "RuntimeError\nValueError"
+    },
+    {
+      "type": "p",
+      "html": "<code>raise ... from exc</code> 把原始异常存进 <code>__cause__</code>，traceback 会显示 \"The above exception was the direct cause...\"。这在一层层包装的函数里至关重要——否则你只能看到最后一层，根因丢了。"
+    },
+    {
+      "type": "callout",
+      "kind": "danger",
+      "title": "不要写 <code>except Exception: pass</code>",
+      "html": "它会把 <code>KeyError</code>、拼写错误、甚至 <code>MemoryError</code> 一起吞掉，程序继续带着错误状态运行。至少要 <code>except Exception as exc: logger.exception(...)</code>，或者干脆别捕获。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>try</code> 里 <code>return</code> 之后，<code>finally</code> 还会执行吗？",
+      "options": [
+        "不会，return 直接结束函数",
+        "会，finally 在函数真正返回前执行",
+        "只有抛异常时才执行",
+        "取决于是否写了 else"
+      ],
+      "answer": 1,
+      "explain": "finally 在离开 try 语句前一定执行，包括 return、break、continue 和异常路径。这也是它适合做清理的原因。"
+    },
+    {
+      "type": "exercise",
+      "id": "s1-25-ex1",
+      "title": "安全地转成整数",
+      "prompt": "实现 <code>safe_int(text, default=0)</code>：能转就返回整数，转不了返回 default。不要用 <code>if text.isdigit()</code> 之类的预判，用异常处理。",
+      "starter": "def safe_int(text, default=0):\n    # 在这里实现\n    pass\n",
+      "solution": "def safe_int(text, default=0):\n    try:\n        return int(text)\n    except (TypeError, ValueError):\n        return default\n",
+      "tests": [
+        {
+          "name": "测试 1",
+          "code": "assert safe_int('42') == 42, '正常数字应该转成功'"
+        },
+        {
+          "name": "测试 2",
+          "code": "assert safe_int('x') == 0, '非法输入回退到默认值'"
+        },
+        {
+          "name": "测试 3",
+          "code": "assert safe_int('x', -1) == -1, '默认值可以被覆盖'"
+        },
+        {
+          "name": "测试 4",
+          "code": "assert safe_int('3.5') == 0, '小数不算整数'"
+        },
+        {
+          "name": "测试 5",
+          "code": "assert safe_int(None) == 0, 'None 也要兜住'"
+        }
+      ],
+      "hints": [
+        "int() 在解析失败时抛 ValueError，类型不对时抛 TypeError。",
+        "把两个异常一起捕获：<code>except (TypeError, ValueError):</code>。",
+        "不要先判断再转换——预判总会漏掉边界情况。"
+      ],
+      "xp": 10
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>try</code> 范围要小，<code>except</code> 类型要窄。",
+        "<code>else</code> 放成功路径，<code>finally</code> 做清理（但资源释放优先用 <code>with</code>）。",
+        "自定义异常继承 <code>Exception</code>，让调用方能精确捕获。",
+        "<code>raise ... from exc</code> 保留根因，不要用 <code>except: pass</code> 掩盖问题。"
+      ]
+    }
+  ],
+  "prev": "s1-24-structured-data",
+  "next": "s1-26-debugging"
+}

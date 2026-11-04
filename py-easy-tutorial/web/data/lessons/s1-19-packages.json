@@ -1,0 +1,162 @@
+{
+  "id": "s1-19-packages",
+  "order": 19,
+  "stage": "s1",
+  "stage_title": "组织",
+  "official_group": "beginner",
+  "title": "包与项目结构",
+  "concepts": [
+    "package",
+    "__init__.py",
+    "namespace package",
+    "relative import",
+    "layout"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "目录也是模块"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "建一个包，然后导入它"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "点号就是层级"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "相对导入只认包上下文"
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Tutorial 6.4：包",
+      "url": "https://docs.python.org/3/tutorial/modules.html#packages"
+    },
+    {
+      "title": "Python Packaging User Guide：项目布局",
+      "url": "https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/"
+    }
+  ],
+  "prereq": [
+    18
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "目录也是模块"
+    },
+    {
+      "type": "p",
+      "html": "包就是\"带 <code>__init__.py</code> 的目录\"。这层目录结构决定了 <code>import</code> 怎么找、名字怎么拼。项目一大，布局选错会连带影响测试、打包、导入路径三件事。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "建一个包，然后导入它"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "import os\nimport sys\n\nos.makedirs(\"shop\", exist_ok=True)\nwith open(\"shop/__init__.py\", \"w\", encoding=\"utf-8\") as f:\n    f.write('VERSION = \"1.0\"\\n')\nwith open(\"shop/cart.py\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"def total(prices):\\n    return sum(prices)\\n\")\n\nif os.getcwd() not in sys.path:\n    sys.path.insert(0, os.getcwd())\n\nfrom shop import cart\nimport shop\n\nprint(cart.total([10, 20, 30]))\nprint(shop.VERSION)",
+      "runnable": true,
+      "editable": true,
+      "expect": "60\n1.0"
+    },
+    {
+      "type": "p",
+      "html": "<code>shop/__init__.py</code> 在包被导入时执行，通常用来放版本号、导出公共接口。<code>shop/cart.py</code> 是子模块，导入名是 <code>shop.cart</code>。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "点号就是层级"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "import os\nimport sys\n\nos.makedirs(\"shop2\", exist_ok=True)\nwith open(\"shop2/__init__.py\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"\")\nwith open(\"shop2/pricing.py\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"RATE = 0.9\\n\")\n\nsys.path.insert(0, os.getcwd())\nimport shop2.pricing\n\nprint(\"shop2.pricing\" in sys.modules)\nprint(shop2.pricing.RATE)",
+      "runnable": true,
+      "editable": true,
+      "expect": "True\n0.9"
+    },
+    {
+      "type": "p",
+      "html": "<code>import shop2.pricing</code> 会把 <code>shop2</code> 和 <code>shop2.pricing</code> 都放进 <code>sys.modules</code>，但只把 <code>shop2</code> 绑到当前命名空间——所以访问要写全路径。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "相对导入只认包上下文"
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "# shop/cart.py 里可以写：\n# from . import pricing\n# from .pricing import RATE",
+      "runnable": true,
+      "editable": true,
+      "expect": null
+    },
+    {
+      "type": "p",
+      "html": "<code>from . import x</code> 里的点表示\"当前包\"。它<strong>只在包内被导入时有效</strong>；直接 <code>python shop/cart.py</code> 运行会报 <code>ImportError: attempted relative import with no known parent package</code>——因为此时 <code>__package__</code> 是空的。"
+    },
+    {
+      "type": "p",
+      "html": "这就是为什么包内模块要用 <code>python -m shop.cart</code> 运行（第 1 课讲过）。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "布局选择的实际影响",
+      "html": "<code>src/</code> 布局（<code>src/mypkg/...</code>）能防止\"在仓库根目录下 import 到未安装的包\"，测试跑的是安装后的版本，更接近用户环境。小项目用扁平布局没问题，要发布就换 <code>src/</code>。"
+    },
+    {
+      "type": "quiz",
+      "question": "在包 <code>app/</code> 内的 <code>app/main.py</code> 里写 <code>from . import config</code>，直接执行 <code>python app/main.py</code> 会怎样？",
+      "options": [
+        "正常导入同级模块",
+        "报 ImportError：没有已知的父包",
+        "自动把 app 加入 sys.path 后成功",
+        "报 SyntaxError"
+      ],
+      "answer": 1,
+      "explain": "直接运行文件时该文件是顶层脚本，__package__ 为空，解释器不知道父包是谁，相对导入无从解析。改用 python -m app.main。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "包 = 含 <code>__init__.py</code> 的目录；子模块用点号访问。",
+        "<code>__init__.py</code> 在导入包时执行，适合放版本号和导出。",
+        "相对导入（<code>from . import x</code>）只在包上下文里有效，要用 <code>-m</code> 运行。",
+        "要发布的项目优先 <code>src/</code> 布局，避免拿到未安装的源码。"
+      ]
+    }
+  ],
+  "prev": "s1-18-modules",
+  "next": "s1-20-io-format"
+}

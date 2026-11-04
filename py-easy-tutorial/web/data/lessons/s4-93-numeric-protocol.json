@@ -1,0 +1,158 @@
+{
+  "id": "s4-93-numeric-protocol",
+  "order": 93,
+  "stage": "s4",
+  "stage_title": "深入",
+  "official_group": "advanced",
+  "title": "数值与运算符协议",
+  "concepts": [
+    "__radd__",
+    "__iadd__",
+    "__index__",
+    "NotImplemented",
+    "reflected"
+  ],
+  "outline": [
+    {
+      "anchor": "sec-1",
+      "level": 1,
+      "text": "3 + obj 时，Python 问谁"
+    },
+    {
+      "anchor": "sec-2",
+      "level": 2,
+      "text": "反射运算：10 + obj"
+    },
+    {
+      "anchor": "sec-3",
+      "level": 2,
+      "text": "__iadd__：原地修改的运算"
+    },
+    {
+      "anchor": "sec-4",
+      "level": 2,
+      "text": "__index__：当对象需要\"当整数用\""
+    },
+    {
+      "anchor": "sec-5",
+      "level": 2,
+      "text": "小结"
+    }
+  ],
+  "doc_refs": [
+    {
+      "title": "Library Reference：模拟数字类型",
+      "url": "https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types"
+    },
+    {
+      "title": "PEP 3141：数字类型层次",
+      "url": "https://peps.python.org/pep-3141/"
+    }
+  ],
+  "prereq": [
+    91
+  ],
+  "requires_python": "3.15",
+  "allow_network": false,
+  "xp": 20,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "html": "3 + obj 时，Python 问谁"
+    },
+    {
+      "type": "p",
+      "html": "第 37 课实现了 <code>__add__</code>；这一课补全数值协议的另一半：<strong>反射运算</strong>（<code>__radd__</code>）、<strong>原地运算</strong>（<code>__iadd__</code>）和 <code>__index__</code>。三者合起来，自定义类才能无缝参与所有内置运算。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "反射运算：<code>10 + obj</code>"
+    },
+    {
+      "type": "code",
+      "id": "c1",
+      "lang": "python",
+      "code": "class Vector:\n    def __init__(self, x):\n        self.x = x\n\n    def __add__(self, other):\n        if isinstance(other, (int, float)):\n            return Vector(self.x + other)\n        if isinstance(other, Vector):\n            return Vector(self.x + other.x)\n        return NotImplemented\n\n    __radd__ = __add__\n\n    def __repr__(self):\n        return f\"Vector({self.x})\"\n\n\nprint(Vector(1) + Vector(2))\nprint(Vector(1) + 10)\nprint(10 + Vector(1))",
+      "runnable": true,
+      "editable": true,
+      "expect": "Vector(3)\nVector(11)\nVector(11)"
+    },
+    {
+      "type": "p",
+      "html": "第三行：<code>int.__add__</code> 不认识 Vector，返回 <code>NotImplemented</code> → Python 试 <code>Vector.__radd__(10)</code> → 成功。把 <code>__radd__ = __add__</code>（加法满足交换律时）是标准快捷写法。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__iadd__</code>：原地修改的运算"
+    },
+    {
+      "type": "code",
+      "id": "c2",
+      "lang": "python",
+      "code": "class Accumulator:\n    def __init__(self):\n        self.total = 0\n\n    def __iadd__(self, other):\n        self.total += other\n        return self\n\n\nacc = Accumulator()\nacc += 5\nacc += 3\nprint(acc.total)",
+      "runnable": true,
+      "editable": true,
+      "expect": "8"
+    },
+    {
+      "type": "p",
+      "html": "<code>acc += 5</code> 优先找 <code>__iadd__</code>（原地），没有则退回 <code>__add__</code> 再重新绑定。<strong>可变类实现 <code>__iadd__</code> 要返回 self</strong>；不可变类（如 tuple）只实现 <code>__add__</code>，<code>+=</code> 自动变成\"新对象重新绑定\"。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "<code>__index__</code>：当对象需要\"当整数用\""
+    },
+    {
+      "type": "code",
+      "id": "c3",
+      "lang": "python",
+      "code": "class Quantity:\n    def __init__(self, n):\n        self.n = n\n\n    def __index__(self):\n        return self.n\n\n\nq = Quantity(1)\nprint([10, 20, 30][q])\nprint([\"a\", \"b\", \"c\"][q:])",
+      "runnable": true,
+      "editable": true,
+      "expect": "20\n['b', 'c']"
+    },
+    {
+      "type": "p",
+      "html": "切片、下标、<code>range</code>、<code>hex()</code> 都要求<strong>真正的 int</strong>。<code>__index__</code> 是对象\"声明自己是整数语义\"的方式——它比 <code>__int__</code> 更严格：<code>__int__</code> 允许有损转换（3.9 → 3），<code>__index__</code> 必须无损（q 必须能用同一个整数还原）。"
+    },
+    {
+      "type": "callout",
+      "kind": "tip",
+      "title": "NotImplemented 的完整流程",
+      "html": "<code>a + b</code> 的完整尝试顺序：<code>type(a).__add__(a, b)</code> → <code>type(b).__radd__(b, a)</code> → 都 NotImplemented 才抛 TypeError。两步都是为了让「左侧不认识，右侧认识」的混合运算能工作——<code>10 + Vector(1)</code> 就是靠第二步。"
+    },
+    {
+      "type": "quiz",
+      "question": "<code>10 + Vector(1)</code> 的求值顺序是？",
+      "options": [
+        "Vector.__radd__ 先执行，int.__add__ 不会执行",
+        "先试 int.__add__，返回 NotImplemented 后再试 Vector.__radd__",
+        "直接抛 TypeError",
+        "由解释器自动转换 10 为 Vector"
+      ],
+      "answer": 1,
+      "explain": "完整顺序：左侧 __add__ →（若 NotImplemented）→ 右侧 __radd__ →（若仍 NotImplemented）→ TypeError。反射方法给「右操作数自己知道怎么算」的场景留了机会。"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "html": "小结"
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "items": [
+        "<code>__radd__</code> 等反射方法处理\"数值在左、对象在右\"的混合运算。",
+        "可变类实现 <code>__iadd__</code> 返回 self；不可变类只用 <code>__add__</code>。",
+        "<code>__index__</code> 让对象在需要 int 的位置（下标、切片）无损使用。",
+        "加法等交换运算可直接 <code>__radd__ = __add__</code>。"
+      ]
+    }
+  ],
+  "prev": "s4-92-module-getattr",
+  "next": "s4-94-c-extensions"
+}

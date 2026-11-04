@@ -43,7 +43,9 @@ python scripts/check.py --book <书目录> --chapter chNN
 
 ### 跨章重复
 
-5-gram 重叠超过阈值，通常有两种原因：
+X04 量的是**最长连续重复**（≥20 字才算），不是共享 5-gram 的个数：
+后者会把「这一节解决…」这类套话碎片累积成告警，却对整段复制不敏感。
+章间重复通常有两种原因：
 
 - 同一段铺垫被两章都写了一遍（删一处，留引用）
 - 同一个例子被复用（要么合并，要么明确说是"复用 Ch05 的例子"）
@@ -72,11 +74,27 @@ python scripts/check.py --book <书目录> --chapter chNN
    去 `claims.jsonl` 取权威值，把错的一边改成与账本一致。账本没有就补登来源，
    **绝不自己算一个数填进去**
 2. **改动预算 20%。** 单章改动超过 20% 正文，或触及结论段，打回原写手重跑。
-   缝合 agent 没有章纲的完整上下文，大改必然把文风带偏
+   缝合 agent 没有章纲的完整上下文，大改必然把文风带偏。
+   预算现在可度量，不用拍脑袋：
+
+   ```bash
+   python scripts/stitch.py --budget --before chapters/ch08.md --after ch08.new.md
+   ```
+
+   用 `difflib` 量非 equal 的改动行数占原文比例，超 20% 即 rc=1 打回
+   （`--limit` 可调）。这一条从约定变成脚本。
 
 ### patch 格式
 
-先出清单再落地，不要边看边改：
+清单骨架不用手写，`check.py --json` 的 finding 可以直接转：
+
+```bash
+python scripts/stitch.py --book <书目录> --wave 3
+python scripts/stitch.py --book <书目录> --wave 3 --out patches/wave-3.md
+```
+
+生成器会排除章纲/配置类问题（G4、P12、B01、S19、S24）——那些不在缝合 agent
+的权限内。先出清单再落地，不要边看边改：
 
 ```
 ## 波次 3 缝合清单
@@ -98,8 +116,8 @@ python scripts/check.py --book <书目录> --chapter chNN
 
 | 专项 | 检查什么 |
 | --- | --- |
-| 术语归一 | 全书扫一遍，`glossary` 里每条的实际首现章是否等于 `first_chapter` |
-| 承诺结清 | `promises.jsonl` 里 `status: open` 必须清零；`dropped` 的要进 FAQ |
+| 术语归一 | X10 全书比对实际首现章与 `first_chapter`，不一致判 error；X09 抓正文里的别名替代正名 |
+| 承诺结清 | `promises.jsonl` 里 `status: open` 必须清零；`dropped` 的要进 FAQ。`check.py` 报 X06，`assemble.py` 自己也读账本并拒绝产出 `final/` |
 | 能力阶梯 | `ladder.jsonl` 是否单调；末章 `after` 是否覆盖所有学习目标 |
 | 衔接重写 | 每章「下一章」必须真的对应下一章；统稿阶段的章节顺序可能变过 |
 

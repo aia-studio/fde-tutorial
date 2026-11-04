@@ -2,12 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://aia-handbook.local/schemas/contract.schema.json",
   "title": "chapter contract",
-  "description": "跨波传递的唯一载体（SPEC §5）。下游只读合同，不读上游全文。",
+  "description": "跨波传递的唯一载体（SPEC §5）。下游只读合同，不读上游全文。评审 B5：写作波次允许先用章纲 provides 作草案级合同（status=draft，放 .book/contract-drafts/），终稿合同出来后由 dep_brief.py --check-signatures 做签名比对；.book/contracts/ 下只放 status=final 的合同。",
   "type": "object",
   "required": ["chapter", "defines", "provides", "assumes", "hook"],
   "additionalProperties": false,
   "properties": {
     "chapter": { "type": "string", "pattern": "^ch\\d{2}$" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "final"],
+      "default": "final",
+      "description": "draft：章纲 provides 签名先行，仅供派活；final：写完即产出，供下游消费。"
+    },
+    "draft_of": {
+      "type": "string",
+      "description": "草案来源（章纲路径或草案合同 id），便于终稿出来后做签名比对。"
+    },
     "defines": {
       "type": "array",
       "items": {

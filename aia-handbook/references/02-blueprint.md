@@ -71,6 +71,22 @@ python scripts/plan.py --book <书目录>
 **最大扇出是最容易被忽略的一个。** 被 15 章依赖的第 3 章，一旦写歪，
 15 章都要返工。这种章要么拆，要么写到无可挑剔。
 
+### plan.py 另外产出的两张表与 G4 章纲闸门
+
+`plan.py` 除依赖图与指标外，同时写 `.book/writing-waves.json` 与 `.book/project-curve.json`：
+
+- `writing-waves.json`：按 `01-outline.md` 的篇或 `concurrency` 切分的**写作波次**，只用于派活，
+  不改变闸门顺序，也不改变装配顺序。别和 `waves.json` 的依赖波次混为一谈。
+- `project-curve.json`：仅 `spine: capstone` 的书产出，取章纲 front-matter 的
+  `project_stage` 串成项目推进曲线；章纲没写 `project_stage` 时脚本显式打印「已跳过」，
+  不冒充通过。`check.py` 的 S24 会在连续 ≥3 章 stage 不推进时给 warn。
+
+`plan.py` 还带一道 **G4 章纲闸门**：按 genre 的 `plan_required_fields` 校验章纲
+front-matter 的必填字段与类型、章纲数是否等于 `book.yaml` 的 `scale.chapters`，
+并要求每章有非空的「## 与相邻章的边界」段。缺字段、类型错、章数不符、章纲根本没有
+front-matter 都会阻断 `plan.py`（rc=1）；边界段缺失只给 warn。`check.py` 的 G4 把同一份
+结论写进 JSON，装配前就能看到。
+
 ## 五、环的问题其实不存在
 
 真实目录看起来一定有环（讲检索时提评测，讲评测时又用检索举例）。
@@ -93,10 +109,13 @@ python scripts/plan.py --book <书目录>
 ## 六、产出与验收
 
 ```
-01-outline.md        篇级大纲
-02-toc.md            章级目录（含五个字段）
-.book/dag.json       依赖图
-.book/waves.json     波次划分
+01-outline.md              篇级大纲
+02-toc.md                  章级目录（含五个字段）
+04-chapter-plans/chNN.md   章纲（含依赖声明与边界段）
+.book/dag.json             依赖图 + G4 结论
+.book/waves.json           阅读波次（闸门 / 装配顺序）
+.book/writing-waves.json   写作波次（只用于派活）
+.book/project-curve.json   项目推进曲线（仅 capstone，章纲写 project_stage 时）
 ```
 
 - [ ] 篇数 ∈ [3, 9]，每篇的「解决」是读者问题
@@ -105,6 +124,8 @@ python scripts/plan.py --book <书目录>
 - [ ] 关键路径 ≤ 8，最大扇出 ≤ ⅓ 章数，孤立节点 = 0
 - [ ] `dag.json` 无环
 - [ ] 首章难度 ≤ 2
+- [ ] G4 章纲闸门通过：字段齐备、章纲数 == `scale.chapters`、每章有边界段
+- [ ] `plan.py` 未打印「项目推进曲线已跳过」（capstone 书必须声明 `project_stage`）
 
 ## 七、这一阶段最常见的三个错
 

@@ -14,6 +14,50 @@
       "type": "object",
       "additionalProperties": { "type": "boolean" }
     },
+    "frozen_meta": {
+      "type": "object",
+      "description": "冻结时写入的文件哈希；--report 比对它来发现「冻结后偷偷改」。",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hash": { "type": "string" },
+          "at": { "type": "string" },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "missing": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "freeze_log": {
+      "type": "array",
+      "description": "冻结/解冻流水；解冻条目必须带 reason 与 recheck 章节清单。",
+      "items": {
+        "type": "object",
+        "required": ["at", "action", "target"],
+        "additionalProperties": false,
+        "properties": {
+          "at": { "type": "string" },
+          "action": { "enum": ["freeze", "unfreeze"] },
+          "target": { "type": "string" },
+          "reason": { "type": "string" },
+          "hash": { "type": "string" },
+          "recheck": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "phase_log": {
+      "type": "array",
+      "description": "阶段推进记录；phase 不再是只初始化一次就没人更新的字段。",
+      "items": {
+        "type": "object",
+        "required": ["at", "phase"],
+        "additionalProperties": false,
+        "properties": {
+          "at": { "type": "string" },
+          "phase": { "type": "string" }
+        }
+      }
+    },
     "writers": {
       "type": "object",
       "description": "已登记的写手。owner 冲突时用它判断归属。",
@@ -50,6 +94,29 @@
         "rev": { "type": "integer", "minimum": 0 },
         "updated_at": { "type": "string" },
         "last_error": { "type": ["string", "null"] },
+        "gate_passed_at": { "type": "string", "description": "置 done 前单章闸门通过的时刻（评审 B1）。" },
+        "gate_override": {
+          "type": "object",
+          "description": "用 --force 跳过单章闸门的留痕；不许无声放过。",
+          "additionalProperties": false,
+          "properties": {
+            "at": { "type": "string" },
+            "codes": { "type": "array", "items": { "type": "string" } },
+            "reason": { "type": "string" },
+            "note": { "type": "string" }
+          }
+        },
+        "transition_override": {
+          "type": "object",
+          "description": "非法状态迁移被 --force 放行时的留痕（评审 D4）。",
+          "additionalProperties": false,
+          "properties": {
+            "at": { "type": "string" },
+            "from": { "type": "string" },
+            "to": { "type": "string" },
+            "reason": { "type": "string" }
+          }
+        },
         "history": {
           "type": "array",
           "description": "repair 时保留的旧稿快照，用于回滚。",

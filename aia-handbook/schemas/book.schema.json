@@ -10,8 +10,8 @@
   "definitions": {
     "genre": {
       "type": "string",
-      "enum": ["practical", "principle", "project", "interview"],
-      "description": "单值或列表。列表时第一个为主类型，决定排他维度（骨架/spine），其余只贡献可叠加维度。"
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "description": "体裁名，不写死枚举：可用值由 genres/*.yaml 自动发现，schema_check.py 动态校验；新增体裁见 genres/README.md。单值或列表，列表第一个为主类型，决定排他维度（骨架/spine）。"
     },
     "path": { "type": "string", "minLength": 1 }
   },
@@ -57,8 +57,9 @@
 
     "lang": {
       "type": "string",
-      "enum": ["zh-CN", "zh-TW", "en"],
-      "default": "zh-CN"
+      "enum": ["zh-CN", "zh-TW"],
+      "default": "zh-CN",
+      "description": "评审 C1：当前字数、句读、禁用词/断言词表全为中文特化，英文书路径会失败；先把声明收窄到真实支持的集合，有真实需求再做语种分层。"
     },
 
     "audience": {
@@ -123,7 +124,7 @@
       "type": "string",
       "enum": ["hard", "soft"],
       "default": "hard",
-      "description": "hard：任一闸门不过即 repair，最多 2 次后转人工。soft：只出报告。"
+      "description": "评审 A6 已落地：hard 为默认（error 阻断）；soft 时 check.py 把所有 error 降级为 warn、退出码不带 1，只出报告。"
     },
 
     "concurrency": {
@@ -222,8 +223,14 @@
 
     "stack": {
       "type": "object",
-      "description": "技术栈声明，透传给写手与 README 生成，不做结构约束。",
+      "description": "技术栈声明，透传给写手与 README 生成。可选 language 键（python/go/node/rust，默认 python）：非 python 时 R07 import 图与 C04 版本锁显式跳过并标注 C00。",
       "additionalProperties": true
+    },
+
+    "tool_purposes": {
+      "type": "object",
+      "description": "评审 C3：附录 D 工具箱的「用途」说明。键按小写匹配 stack 的键；书级覆盖 genres/_core.yaml 与各 genre 的同名字段，换主题不用改脚本。",
+      "additionalProperties": { "type": "string" }
     },
 
     "paths": {

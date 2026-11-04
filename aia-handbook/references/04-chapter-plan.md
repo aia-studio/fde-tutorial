@@ -76,6 +76,18 @@ deliverable: 带引用的混合检索服务
 | `target_words` | ✓ | 目标汉字数，闸门允许 ±25% |
 | `difficulty` | ✓ | 1–5，判据见 SPEC 16.2 |
 | `deliverable` | ✓ | 名词，可验收 |
+| `project_stage` | | 仅 `spine: capstone` 需要：本章把贯穿项目推进到哪个阶段，供 `project-curve.json` 取用 |
+
+### G4 章纲闸门
+
+章纲不再只有人工自检清单。`plan.py` 会按 genre yaml 的 `plan_required_fields`
+逐份校：必填字段是否齐、类型/取值是否合法、章纲数是否等于 `book.yaml` 的
+`scale.chapters`、每份是否有非空的「## 与相邻章的边界」段；没有 front-matter 的
+章纲会显式报错并从 DAG 排除，不再静默漏章。
+
+字段缺失、类型错、章数不符、无 front-matter → 阻断 `plan.py`（rc=1）；
+边界段缺失或为空 → warn。`check.py` 的 G4 把同一份结论写进 JSON。
+**章纲是全局调度的输入，这一闸拦的就是「写一章发一章」。**
 
 `provides.modules` 尤其重要：它声明了本章的代码接口，
 下游章按这个路径 import，`check.py` 用它校验 import 图 ⊆ 章依赖图。
@@ -92,6 +104,11 @@ provides:
 
 原因：并行写作时，下游写手照**章纲的签名**写代码，不照上游的实际代码。
 签名不写清，两个写手会各造一个 `Hit` 类，缝合阶段就要动代码而不是动文字。
+
+这份签名同时是**写作波次的草案合同**：上游还没写完时，`dep_brief.py` 会把它标
+`[draft]` 放进摘要包，下游就能按篇派活；终稿合同产出后用
+`dep_brief.py --book <书目录> --check-signatures` 比对，签名对不上报 C08。
+`--strict` 可以关掉草案、只认终稿合同。
 
 ## 三、节结构的写法
 
@@ -131,6 +148,8 @@ provides:
 - [ ] 每节的「要点」都是判断句，不是话题
 - [ ] 每节都标了图/表或明确写「无」
 - [ ] 需要代码的节都给了 `src` 路径
+- [ ] 「与相邻章的边界」段存在且非空（G4 会查；`dep-brief/` 要读它）
+- [ ] front-matter 必填字段齐备、类型合法，章纲数与 `scale.chapters` 一致
 - [ ] 「本章容易写歪的地方」至少写了一条
 
 第五条最值钱。**写不出「容易写歪的地方」，说明你还没想清这章的边界。**

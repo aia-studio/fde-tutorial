@@ -12,6 +12,7 @@ updated: "2026-10"      # 内容基准年月，写在版本声明里
 # 单类型；混合写成 [project, practical]，第一个为主类型（决定骨架/标注/练习/spine）
 genre: practical
 
+# 评审 C1：字数/句读/禁用词/断言词表全为中文口径，暂时只支持 zh-CN / zh-TW
 lang: zh-CN
 
 audience:
@@ -33,6 +34,7 @@ scale:
 
 deliverables: [markdown, code, figures]
 
+# hard = error 阻断；soft = 只出报告（error 降级 warn，退出码不带 1）
 gates: hard
 concurrency: 4
 
@@ -64,12 +66,22 @@ claims:
   assertion_words: [准确率, 召回率, 幻觉率, 响应延迟, 单次成本, 标注一致率]
   tolerance: 0.005
 
+# language 决定代码类闸门口径：非 python 时 R07 / C04 显式跳过并标注 C00
 stack:
+  language: python
   python: "3.12"
   llm: "OpenAI 兼容接口 + Ollama 本地兜底"
   mock: true          # 没有 API Key 也能跑通全书示例
   vector_store: "SQLite + numpy 暴力检索（先跑通再选型）"
   framework: "FastAPI + Pydantic"
+
+# 附录 D 工具箱的用途说明（评审 C3）：书级覆盖 genres/_core.yaml 的通用表。
+# 换主题只改这里，不用改 assemble.py。键按小写匹配 stack。
+tool_purposes:
+  vector_store: 存向量与元数据，做暴力检索
+  model: 把文本压成向量
+  llm: 生成答案；Mock 模式可离线替代
+  mock: 没有 API Key 时仍能跑通示例
 
 # 目录名一般不用改
 # paths:

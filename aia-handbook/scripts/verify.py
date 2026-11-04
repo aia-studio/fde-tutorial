@@ -7,6 +7,7 @@
 用法:
     python scripts/verify.py --book ../my-book
     python scripts/verify.py --book ../my-book --strict     # warn 也算失败
+    python scripts/verify.py --book ../my-book --exec       # 实跑 src README 命令（C07）
     python scripts/verify.py --self-test                    # 跑闸门回归台
 """
 
@@ -33,7 +34,7 @@ def tail(text: str, n: int = 6) -> str:
     return "\n".join("    " + x for x in lines[-n:])
 
 
-def verify(book: Path, strict: bool) -> int:
+def verify(book: Path, strict: bool, exec_samples: bool = False) -> int:
     steps: list[tuple[str, bool, str]] = []
 
     code, out = run("plan.py", "--book", str(book), "--json")
@@ -46,7 +47,8 @@ def verify(book: Path, strict: bool) -> int:
             plan_ok = False
     steps.append(("plan 依赖图", plan_ok, out))
 
-    code, out = run("check.py", "--book", str(book), "--json")
+    check_args = ["--book", str(book), "--json"] + (["--exec"] if exec_samples else [])
+    code, out = run("check.py", *check_args)
     errs = warns = 0
     try:
         summary = json.loads(out)["summary"]
@@ -58,11 +60,15 @@ def verify(book: Path, strict: bool) -> int:
 
     code, out = run("dep_brief.py", "--book", str(book), "--json")
     missing = []
+    mismatches = []
     try:
-        missing = json.loads(out).get("missing", [])
+        payload = json.loads(out)
+        missing = payload.get("missing", [])
+        mismatches = payload.get("signature_mismatches", [])
     except json.JSONDecodeError:
         missing = ["无法解析 dep_brief 输出"]
-    steps.append((f"dep_brief 摘要（缺 {len(missing)}）", not missing, out))
+    steps.append((f"dep_brief 摘要（缺 {len(missing)} / 签名不符 {len(mismatches)}）",
+                  not missing and not mismatches, out))
 
     code, out = run("assemble.py", "--book", str(book), "--quiet")
     steps.append(("assemble 装配", code == 0, out))
@@ -113,6 +119,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="一本书的全链路校验")
     ap.add_argument("--book")
     ap.add_argument("--strict", action="store_true", help="warn 也视为失败")
+    ap.add_argument("--exec", dest="exec_samples", action="store_true",
+                    help="透传给 check.py：实跑 src README 的运行命令并比对实测输出")
     ap.add_argument("--self-test", action="store_true", help="跑闸门回归台")
     args = ap.parse_args()
 
@@ -126,7 +134,7 @@ def main() -> int:
     book = Path(args.book).resolve()
     if not (book / "book.yaml").exists():
         sys.exit(f"找不到 {book / 'book.yaml'}")
-    return verify(book, args.strict)
+    return verify(book, args.strict, args.exec_samples)
 
 
 if __name__ == "__main__":

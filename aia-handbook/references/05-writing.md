@@ -47,6 +47,21 @@ npx -y @mermaid-js/mermaid-cli -i figures/chNN/fig-08-1.mmd \
 
 ### 第 3 步：正文
 
+**章节文件开头必须写 front-matter**，至少含 `difficulty`，且与章纲一致：
+
+```markdown
+---
+chapter: "08"
+title: "混合检索"
+difficulty: 3
+---
+
+# Ch08 混合检索
+```
+
+S14 拿它和章纲比对；不写的话该章的一致性比对会**跳过并给 info**，
+等于少一道护栏。别把 front-matter 当成章纲专属——正文也要写。
+
 严格按章纲的节结构写，不改节标题、不增删节。
 
 每节开头第一句回答「这一节解决什么问题」，结尾一句自测。
@@ -93,6 +108,28 @@ python scripts/check.py --book <书目录> --chapter chNN
 - [ ] 每个「输出如下」都是真跑出来的，不是想象的
 - [ ] 引用的 `src/` 路径都真实存在
 - [ ] 新造的术语都登记进了 `glossary.json`，没有给已有概念另起名
+- [ ] 正文文件写了 front-matter，`difficulty` 与章纲一致（S14）
+- [ ] `src/chNN/` 里没有硬编码密钥：C02 现在扫 `src/**`，不只扫正文代码块
+
+`--exec` 会把书里的「实测输出」当真：
+
+```bash
+python scripts/check.py --book <书目录> --chapter chNN --exec
+python scripts/verify.py --book <书目录> --exec       # CI 里也实跑
+```
+
+它执行 `src/chNN/README.md` 声明的命令（超时 20 秒、去掉凭证类环境变量、
+cwd 限定在 `src/`），比对 README 贴的「实测输出」关键行；对不上报 C07。
+没写命令或没贴输出时会显式标 skipped，不把「没查」报成「通过」。
+
+交付时把状态置 `done` 不再靠自觉：
+
+```bash
+python scripts/state.py --book <书目录> --set chNN done
+```
+
+这条命令会先跑单章闸门，有 error 直接拒绝；`--force` 才能越过，
+且必须配 `--error` 写原因，留痕在 `state.json`。
 
 ## 五、不要做的事
 
@@ -104,6 +141,7 @@ python scripts/check.py --book <书目录> --chapter chNN
 | 用「稍后介绍」开空头支票 | 必须登记进 `promises.jsonl`，否则统稿会阻断 |
 | 为了凑字数拆句 | 字数不够是内容不够，不是句子太短 |
 | 编造 benchmark 数字 | 宁可写「本机实测约 X ms（环境：…）」 |
+| 把真实密钥写进 `src/` 文件 | C02 扫 `src/**`，硬编码凭证会直接被拦下 |
 | 贴整段完整代码 | 正文只放关键片段，完整代码在 `src/` |
 
 ## 六、写到一半发现章纲有问题怎么办

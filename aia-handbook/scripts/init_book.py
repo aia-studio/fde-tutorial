@@ -109,6 +109,16 @@ GITIGNORE = """__pycache__/
 src/**/.venv/
 """
 
+# 评审 A5：03-constitution.md 引用的 progress.md 此前无模板、无工具。
+PROGRESS = """# 进度与解冻记录
+
+> 阶段推进与宪法冻结/解冻的流水账。`state.py --freeze / --unfreeze / --phase`
+> 会写进 .book/state.json；解冻记录同时自动追加到本文件。
+
+| 时间 | 事件 | 原因 / 影响 |
+| --- | --- | --- |
+"""
+
 
 def set_line(text: str, key: str, value: str) -> str:
     """替换首个 `key: ...` 行，保留缩进与其余内容。"""
@@ -130,6 +140,8 @@ def main() -> int:
     ap.add_argument("--author", default="待填")
     ap.add_argument("--license", default="CC BY-NC-SA 4.0")
     ap.add_argument("--genre", default="practical", help="单值或用逗号分隔的列表")
+    ap.add_argument("--lang", default="zh-CN", choices=["zh-CN", "zh-TW"],
+                    help="评审 C1：统计口径中文特化，暂不开放 en")
     ap.add_argument("--preset", default="",
                     help="混合 genre 预设：project-practical / principle-practical / interview-principle")
     ap.add_argument("--spine", default="running-example",
@@ -160,6 +172,13 @@ def main() -> int:
         genres = list(presets[args.preset]["genre"])
     else:
         genres = [g.strip() for g in args.genre.split(",") if g.strip()]
+    # 评审 C4：可用 genre 从目录自动发现，不再只认四种硬编码值
+    valid = {p.stem for p in (HERE / "genres").glob("*.yaml")
+             if p.stem not in {"_core", "presets"}}
+    unknown = [g for g in genres if g not in valid]
+    if unknown:
+        sys.exit(f"找不到 genre：{'、'.join(unknown)}（可用：{'、'.join(sorted(valid))}；"
+                 f"新增体裁见 genres/README.md）")
     genre_val = genres[0] if len(genres) == 1 else "[" + ", ".join(genres) + "]"
     if "project" in genres and args.spine != "capstone":
         print("! genre 含 project，spine 已强制为 capstone", file=sys.stderr)
@@ -170,6 +189,7 @@ def main() -> int:
     text = set_line(text, "license", args.license)
     text = set_line(text, "updated", f'"{date.today():%Y-%m}"')
     text = set_line(text, "genre", genre_val)
+    text = set_line(text, "lang", args.lang)
     text = set_line(text, "spine", args.spine)
     text = set_line(text, "chapters", str(args.chapters))
     text = set_line(text, "words_per_chapter", f"[{args.words}]")
@@ -197,6 +217,7 @@ def main() -> int:
     (dest / "00-positioning.md").write_text(POSITIONING, encoding="utf-8")
     for name, body in STUBS.items():
         (dest / name).write_text(body, encoding="utf-8")
+    (dest / "progress.md").write_text(PROGRESS, encoding="utf-8")
     (dest / ".gitignore").write_text(GITIGNORE, encoding="utf-8")
 
     # 5) 四本账 + 状态
@@ -211,6 +232,9 @@ def main() -> int:
         "created": date.today().isoformat(),
         "phase": "0-intake",
         "frozen": {"positioning": False, "toc": False, "constitution": False},
+        "frozen_meta": {},
+        "freeze_log": [],
+        "phase_log": [],
         "chapters": {},
     }
     (dest / ".book" / "state.json").write_text(

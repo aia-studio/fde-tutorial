@@ -40,19 +40,42 @@ python scripts/assemble.py --book tests/fixture-project
 1. **正例**：有数据也应该 0 error，说明闸门不会因为"有账本"就乱报。
 2. **注入基底**：`tests/run_tests.py` 在它的临时副本上故意造违规，断言每个错误码真能抓到。
 
-注入用例（现 9 个）：
+注入用例（现 29 个）：
 
 | 注入 | 期望 |
 | --- | --- |
 | 删掉一条 claim | `F01` |
 | claim 去掉 source | `F02` |
-| 承诺改 open | `X06` + 装配阻断 |
+| 承诺改 open | `X06` + 装配阻断；**且带对照实验**：把 status 改回 `kept` 后同一份装配必须成功，确保阻断真的归因于承诺状态，而不是缺 `00-positioning.md` 的前言占位（旧用例的假阳性已修） |
 | 清空 promises | `X02` |
 | 阶梯倒退 | `X03` |
 | 同一别名挂两个术语 | `X08` |
 | 首现术语未登记 | `X01` |
 | 有 `src/chNN/` 无 `versions.lock` | `C04` |
 | 合同缺必填字段 | `C06` |
+
+### 评审后新增的注入（证明新闸门「能抓到」）
+
+| 组 | 注入 | 期望 |
+| --- | --- | --- |
+| A 类漂移 | 章纲缺必填字段 / 无 front-matter | `G4` + `plan.py` 阻断 / 显式报漏章 |
+| A 类漂移 | 正文用别名替代正名 | `X09`（warn） |
+| A 类漂移 | `first_chapter` 与实际首现章不符 | `X10`（error） |
+| A 类漂移 | 登记了却没进正文的死 claim | `F04`（warn） |
+| A 类漂移 | `spine_constraint` 被违反 | `P12` |
+| A 类漂移 | `lang: en` | `B01` |
+| A 类漂移 | 未知 genre | `schema_check.py` 动态发现拦下 |
+| B 类机制 | `--set done` 未过闸门 | 拒绝；`--force` 必须留 `gate_override` |
+| B 类机制 | 冻结 / 解冻 / `--phase` | 哈希、原因、需重跑章节、`freeze_log` 齐全 |
+| B 类机制 | `--exec` 实测输出不符 | `C07` |
+| B 类机制 | 写作波次 / capstone 项目曲线 | `plan.py` 产出两张表 |
+| B 类机制 | 草案合同 / 终稿签名不符 | `[draft]` 标注 / `C08` |
+| B 类机制 | 缝合改动超 20% | `stitch.py --budget` rc=1 |
+| C/D 类 | `gates: soft` / 闸门组拼错 | 只出报告 / 显式报错 |
+| C/D 类 | `src/**` 里的密钥 | `C02` |
+| C/D 类 | FAQ 按骨架 id 收集 | 附录 E 含「风险登记」 |
+
+所有样本的章纲都已补齐非空的「与相邻章的边界」段，G4 基线因此保持全绿。
 
 ## 各样本验证的重点
 

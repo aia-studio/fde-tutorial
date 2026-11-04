@@ -59,6 +59,9 @@
 ```
 
 `first_chapter` 现在填目录里的预计首现章，统稿时用实际首现校正。
+这个字段最容易在章序调整后腐化：`check.py` 的 X10 会全书比对实际首现章，
+不一致直接判 error；X09 会扫正文（含小节标题与引用块），已登记的 `aliases`
+出现而同章从未用正名时给 warn——别名只能是读者的搜索入口，不能替代正名行文。
 
 **判据：** 如果两个概念的 `def` 写出来几乎一样，合并它们。
 术语表里出现近义词对，说明概念没收敛。
@@ -76,16 +79,26 @@
 
 ## 五、冻结
 
-宪法定稿后计算哈希，写进文件尾：
+冻结由 `state.py` 工具化，哈希写进 `.book/state.json` 的 `frozen_meta`，不是手贴在文件尾的注释：
 
-```markdown
-<!-- frozen: sha256:8f3a... 2026-10-29 -->
+```bash
+python scripts/state.py --book <书目录> --freeze constitution   # positioning / toc / constitution 三选一
+python scripts/state.py --book <书目录> --freeze-report          # 看冻结状态与哈希是否仍一致
 ```
 
-之后任何写手 agent 只读不写。要改必须：
+`--freeze-report` 会报「已冻结但文件内容变了（哈希不符）」——冻结后偷改文件瞒不过去。
 
-1. 显式解冻，在 `progress.md` 记录原因
-2. 改完重新冻结
+要改必须走解冻，且**必须写 `--reason`**：
+
+```bash
+python scripts/state.py --book <书目录> --unfreeze constitution --reason "术语表改了两条定义"
+```
+
+`--unfreeze` 会自动列出需要重跑闸门的已完稿章节，并往 `progress.md` 追加一条记录。
+`progress.md` 由 `init_book.py` 生成，不用自己建。之后：
+
+1. 改完重新 `--freeze`
+2. 用 `--freeze-report` 确认哈希重新对上
 3. **重跑所有已完稿章节的闸门**——宪法变了，旧稿可能不再合规
 
 第 3 条最容易被跳过，也是"改了规范但书没跟上"的根源。
@@ -93,16 +106,18 @@
 ## 六、产出与验收
 
 ```
-03-style-guide.md          差异版宪法（≤200 行）+ 冻结哈希
+03-style-guide.md          差异版宪法（≤200 行）
 .book/glossary.json        术语表（≤ max_core_terms 条）
 .book/style-fingerprint.json  指纹初值（source: genre-default）
+.book/state.json           冻结标志 / 哈希 / 解冻流水（由 state.py 维护）
+progress.md                阶段推进与解冻记录（init_book.py 生成模板）
 ```
 
 - [ ] 宪法没有重复 genre 的内容
 - [ ] 骨架别名表与 genre 完全一致（逐条比对）
 - [ ] 每个术语都有 `def`，且没有两条定义雷同
-- [ ] 术语数 ≤ `max_core_terms`
-- [ ] 已写入冻结哈希
+- [ ] 术语数 ≤ `max_core_terms`，且 X10 首现章一致
+- [ ] `--freeze` 已把哈希写进 `state.json`，`--freeze-report` 显示一致
 - [ ] 书级追加项（断言词、阈值）写在 `book.yaml` 而不是宪法里
 
 ## 七、常见的退化

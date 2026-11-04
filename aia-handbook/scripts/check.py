@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -129,6 +130,17 @@ def _cn2num(text: str) -> tuple[str, list[tuple[float, str]]]:
     return CN_PCT.sub(pct, CN_DEC.sub(dec, text)), found
 
 GENRE_DIR = Path(__file__).resolve().parent.parent / "genres"
+
+# 代码栈不同，README 该出现的运行命令词也不同（C03）。
+RUN_COMMAND_WORDS = {
+    "python": r"python|运行|命令|uv |pip ",
+    "go": r"go run|go test|运行|命令",
+    "node": r"node |npm |pnpm |运行|命令",
+    "rust": r"cargo |运行|命令",
+}
+DEFAULT_RUN_WORDS = r"运行|命令|执行"
+# 非 Python 栈时这些检查整段失效，必须显式标注跳过（沿用 X00 的诚实口径）。
+PYTHON_ONLY_GATES = "R07 import 图 · C04 版本锁 · assemble versions.lock 生成"
 
 
 # ---------------------------------------------------------------- 数据模型
@@ -263,7 +275,16 @@ def load_repo(book_dir: Path) -> Repo:
         "plan_required_fields": list(main.get("plan_required_fields", [])),
         "assertion_words": list(BUILTIN_ASSERTION_WORDS),
         "tolerance": 0.005,
+        # 评审 A4/A7/C2/C3/A6：这些字段此前加载了或声明了却没人消费。
+        "genre_docs": [main],
+        "spine_constraints": [(genres[0], main.get("exclusive", {}).get("spine_constraint"))],
+        "difficulty_curves": [(genres[0], main.get("defaults", {}).get("difficulty_curve"))],
+        "tool_purposes": dict(core.get("tool_purposes", {}) or {}),
+        "code_lang": str((book.get("stack") or {}).get("language", "python")),
+        "lang": book.get("lang", "zh-CN"),
+        "gate_mode": book.get("gates", "hard"),
     }
+    cfg["tool_purposes"].update(main.get("tool_purposes", {}) or {})
     for w in main.get("assertion_words", []) or book.get("claims", {}).get("assertion_words", []):
         if w not in cfg["assertion_words"]:
             cfg["assertion_words"].append(w)
@@ -296,6 +317,13 @@ def load_repo(book_dir: Path) -> Repo:
         for w in sub.get("assertion_words", []):
             if w not in cfg["assertion_words"]:
                 cfg["assertion_words"].append(w)
+        for f in sub.get("plan_required_fields", []) or []:
+            if f not in cfg["plan_required_fields"]:
+                cfg["plan_required_fields"].append(f)
+        cfg["genre_docs"].append(sub)
+        cfg["spine_constraints"].append((g, sub.get("exclusive", {}).get("spine_constraint")))
+        cfg["difficulty_curves"].append((g, sub.get("defaults", {}).get("difficulty_curve")))
+        cfg["tool_purposes"].update(sub.get("tool_purposes", {}) or {})
         if sub.get("exclusive", {}).get("skeleton") != cfg["exclusive"].get("skeleton"):
             print(f"! 排他维度冲突：{cfg['main_genre']}={cfg['exclusive'].get('skeleton')} "
                   f"vs {g}={sub.get('exclusive', {}).get('skeleton')}（已按主类型处理）",
@@ -319,6 +347,10 @@ def load_repo(book_dir: Path) -> Repo:
         defaults["words_per_chapter"] = tuple(scale["words_per_chapter"])
     if scale.get("chapters"):
         cfg["chapters"] = scale["chapters"]
+
+    # 书级 tool_purposes 覆盖 genre：换主题不用改 genre yaml（评审 C3）
+    cfg["tool_purposes"].update(
+        {str(k).lower(): str(v) for k, v in (book.get("tool_purposes") or {}).items()})
 
     cfg["book"] = book
     plans = {}
@@ -876,8 +908,13 @@ def gate_structure(ch: Chapter, repo: Repo) -> list[Finding]:
                                f"信息密度 {density:.2f} < {dens_min}（每千字可操作单元）",
                                "补步骤/表/图/代码/练习，不要注水"))
 
-    # S14 difficulty 与章纲一致
-    if ch.fm.get("difficulty") is not None and plan.get("difficulty") is not None:
+    # S14 difficulty 与章纲一致。正文 front-matter 缺字段时必须明说「没查」，
+    # 否则新写手照手册写的章节会永远查不到（评审 D5）。
+    if ch.fm.get("difficulty") is None:
+        out.append(Finding("info", "structure", "S14", ch.name,
+                           "正文 front-matter 未写 difficulty，S14 一致性比对已跳过",
+                           "章节文件开头写 front-matter：difficulty 与章纲一致（见 05-writing.md）"))
+    elif plan.get("difficulty") is not None:
         try:
             if int(ch.fm["difficulty"]) != int(plan["difficulty"]):
                 out.append(Finding("error", "structure", "S14", ch.name,
@@ -958,6 +995,7 @@ def gate_reference(ch: Chapter, repo: Repo) -> list[Finding]:
                            f"引用了未声明的章：{'、'.join('Ch' + u for u in sorted(undeclared))}",
                            "在章纲 front-matter 补 requires/references"))
     out.extend(_figure_license(ch, repo))
+    out.extend(_figure_staleness(ch, repo))
     return out
 
 
@@ -975,24 +1013,26 @@ def gate_code(ch: Chapter, repo: Repo) -> list[Finding]:
             out.append(Finding("error", "code", "C01", ch.name,
                                f"代码块 {n} 行 > {max_lines}", "拆块或移到 src/ 只引用路径"))
 
-    # C02 密钥扫描（占位符不算）
+    # C02 密钥扫描（占位符不算）：正文代码块 + src/ 仓库文件
     for b in ch.code_blocks:
         for ln in b:
             if SECRET.search(ln) and not SECRET_PLACEHOLDER.search(ln):
                 out.append(Finding("error", "code", "C02", ch.name,
                                    "代码块疑似硬编码密钥", "改用占位符或环境变量"))
                 break
+    out.extend(_src_secrets(ch, repo))
 
     # C03 README 运行命令（仅当该章存在 src/chNN/ 时检查）
     src_ch = repo.root / "src" / ch.name
+    words = RUN_COMMAND_WORDS.get(repo.cfg["code_lang"], DEFAULT_RUN_WORDS)
     if src_ch.is_dir():
         readme = src_ch / "README.md"
         if not readme.exists():
             out.append(Finding("error", "code", "C03", ch.name,
                                f"{src_ch.name}/README.md 缺失", "写明运行命令与实测输出"))
-        elif not re.search(r"python|运行|命令|uv |pip ", readme.read_text(encoding="utf-8", errors="ignore")):
+        elif not re.search(words, readme.read_text(encoding="utf-8", errors="ignore"), re.I):
             out.append(Finding("warn", "code", "C03", ch.name,
-                               "README 未给出运行命令", "补三条命令跑起来"))
+                               f"README 未给出 {repo.cfg['code_lang']} 运行命令", "补三条命令跑起来"))
     out.extend(_version_lock(ch, repo))
     return out
 
@@ -1087,6 +1127,24 @@ def gate_consistency(ch: Chapter, repo: Repo) -> list[Finding]:
             out.append(Finding("error", "consistency", "X01", ch.name,
                                f"术语「{m.group(1)}」首现但未登记 glossary", "登记或去掉英文全称格式"))
 
+    # X09 别名替代正名：别名可以作为读者的搜索入口，但不能替代正名行文。
+    # 判据：本章出现了已登记的 alias，却一次都没出现它的正名 → warn（评审 A3）。
+    # 扫全章行（含标题与引用块），只扫 countable 会漏掉「小节标题里用别名」这种最隐蔽的写法。
+    alias_hay = "\n".join(ch.lines) + "\n" + "\n".join(ch.quotes)
+    for t in led["glossary"]:
+        if not isinstance(t, dict):
+            continue
+        zh = str(t.get("zh") or "")
+        if not zh or zh in alias_hay:
+            continue
+        for a in t.get("aliases", []) or []:
+            alias = str(a)
+            if alias and alias != zh and alias in alias_hay:
+                out.append(Finding("warn", "consistency", "X09", ch.name,
+                                   f"用别名「{alias}」替代了正名「{zh}」（本章未出现正名）",
+                                   "正文统一用正名；别名只留在术语表的搜索入口"))
+                break
+
     # X02 承诺登记：触发词，或「下一章」骨架段里的前向引用。
     # 旧实现只看触发词，而「下一章」段的写法是「Ch05 补一条字面检索通道」，
     # 一个触发词都不含——于是整章最明确的一条承诺永远不入账，账本长期为空。
@@ -1119,9 +1177,9 @@ def gate_book_level(repo: Repo, chapters: list[Chapter]) -> list[Finding]:
     out: list[Finding] = []
     led = repo.ledger
 
-    # R07 import 图 ⊆ 章依赖图
+    # R07 import 图 ⊆ 章依赖图（Python 特化；其它栈由 _stack_scope 显式标跳过）
     src = repo.root / "src"
-    if src.is_dir():
+    if src.is_dir() and repo.cfg["code_lang"] == "python":
         for chdir in sorted(src.glob("ch*")):
             if not chdir.is_dir():
                 continue
@@ -1229,13 +1287,21 @@ def gate_book_level(repo: Repo, chapters: list[Chapter]) -> list[Finding]:
     out.extend(_preface(repo))
     out.extend(_param_overrides(repo))
     out.extend(_lock_missing(repo))
+    # 评审新增：G4 章纲闸门 / 术语首现章 / 死 claim / spine 约束 / 栈边界 / 项目曲线
+    out.extend(_plan_gates(repo))
+    out.extend(_term_first_chapter(repo, chapters))
+    out.extend(_dead_claims(repo, chapters))
+    out.extend(_spine_constraints(repo))
+    out.extend(_stack_scope(repo))
+    out.extend(_project_curve(repo))
+    out.extend(_lang_scope(repo))
     return out
 
 
 def _lock_missing(repo: Repo) -> list[Finding]:
     """C04：有章级代码却没有 versions.lock，版本锁校验会整段跳过。"""
     src = repo.root / "src"
-    if not src.is_dir():
+    if not src.is_dir() or repo.cfg["code_lang"] != "python":
         return []
     if not any(re.fullmatch(r"ch\d{2}", p.name) for p in src.iterdir() if p.is_dir()):
         return []
@@ -1309,6 +1375,13 @@ def _preface(repo: Repo) -> list[Finding]:
         if miss:
             out.append(Finding("warn", "structure", "P02", "-",
                                f"阅读路径不全，缺 {'、'.join(miss)}", "三条路径都要给"))
+    # P06：评审 B6 的一致性核对。P01–P05 是**关键词存在性提示**，不是一致性闸门；
+    # 这里补一条 info 级核对，把 audience.who 的原串与前言对上，且不冒充硬闸门。
+    who = str((repo.book.get("audience") or {}).get("who") or "").strip()
+    if who and who not in txt:
+        out.append(Finding("info", "structure", "P06", "-",
+                           "前言没有原样包含 book.yaml 的 audience.who（一致性提示）",
+                           "把读者画像原串写进前言，避免画像与定位打架"))
     return out
 
 
@@ -1373,7 +1446,7 @@ def _version_lock(ch: Chapter, repo: Repo) -> list[Finding]:
     out: list[Finding] = []
     lock = repo.root / "versions.lock"
     src_ch = repo.root / "src" / ch.name
-    if not src_ch.is_dir() or not lock.exists():
+    if not src_ch.is_dir() or not lock.exists() or repo.cfg["code_lang"] != "python":
         return out
     try:
         deps = (yaml.safe_load(lock.read_text(encoding="utf-8")) or {}).get("dependencies", {}) or {}
@@ -1456,7 +1529,13 @@ def _data_repro(repo: Repo) -> list[Finding]:
 
 
 def _difficulty_curve(repo: Repo) -> list[Finding]:
-    """16.2 难度曲线：首章 ≤2、连续高难度、跃升。"""
+    """16.2 难度曲线：首章 ≤2、连续高难度、跃升。
+
+    评审 A7：genre 的 `difficulty_curve`（ramp / flat / wave）此前只写在 yaml 里，
+    没有任何消费者；SPEC 16.2 的「连续 3 章不升提示」同样没实现。这里按声明的
+    曲线类型给出不同判据——曲线检查是**提示**（info）而不是新的阻断闸门，
+    避免给只有一本真书样本的阈值再加噪音。
+    """
     out: list[Finding] = []
     names = sorted(repo.plans)
     diffs: list[int] = []
@@ -1465,6 +1544,11 @@ def _difficulty_curve(repo: Repo) -> list[Finding]:
             diffs.append(int(repo.plans[n].get("difficulty")))
         except (TypeError, ValueError):
             diffs.append(0)
+    curve = next((c for _, c in repo.cfg["difficulty_curves"] if c), None)
+    out.append(Finding("info", "structure", "S19", "-",
+                       f"难度曲线口径：{curve or 'ramp（genre 未声明，按默认）'}；"
+                       f"按 {curve or 'ramp'} 判据检查 {len(diffs)} 章",
+                       "声明在 genres/<genre>.yaml 的 defaults.difficulty_curve"))
     if diffs and diffs[0] > 2:
         out.append(Finding("error", "structure", "S19", names[0],
                            f"首章 difficulty {diffs[0]} > 2", "首章降到 ≤2"))
@@ -1479,9 +1563,249 @@ def _difficulty_curve(repo: Repo) -> list[Finding]:
         else:
             run = 0
     for i in range(1, len(diffs)):
-        if diffs[i] - diffs[i - 1] > 2:
+        jump = diffs[i] - diffs[i - 1]
+        if jump > 2:
             out.append(Finding("warn", "structure", "S19", names[i],
                                f"难度从 {diffs[i - 1]} 跃升到 {diffs[i]}", "中间插过渡章"))
+        if curve == "flat" and abs(jump) > 1:
+            out.append(Finding("warn", "structure", "S19", names[i],
+                               f"flat 曲线却从 {diffs[i - 1]} 跳到 {diffs[i]}",
+                               "原理书/面试本难度应平稳，或改声明为 wave"))
+
+    if curve == "wave" and diffs and len(set(diffs)) == 1:
+        out.append(Finding("info", "structure", "S19", "-",
+                           "声明 wave 曲线，但全书 difficulty 完全一致",
+                           "项目书应有攻坚期与平缓期；或改声明为 flat"))
+
+    # SPEC 16.2「连续 3 章不升 → 只提示不阻断」
+    flat_run = 1
+    for i in range(1, len(diffs)):
+        flat_run = flat_run + 1 if diffs[i] <= diffs[i - 1] else 1
+        if flat_run >= 3 and curve != "flat":
+            out.append(Finding("info", "structure", "S19", names[i],
+                               f"连续 3 章难度不升（{curve or 'ramp'} 曲线）",
+                               "可能是正常的平缓区；若非有意，插一章递进内容"))
+            flat_run = 0
+    return out
+
+
+# ---------------------------------------------------------------- 评审新增闸门
+
+def _plan_gates(repo: Repo) -> list[Finding]:
+    """G4：章纲齐备从「人工自检清单」变成机器闸门（评审 A4）。
+
+    真正的校验实现放在 plan.py（章纲是它的输入），这里只把同一份结论接进
+    check.py 的 JSON 输出，避免两处口径分叉。
+    """
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import plan
+    except ImportError:
+        return []
+    problems, warns = plan.validate_plans(repo.root, book=repo.book)
+    out = [Finding("error", "structure", "G4", "-", p,
+                   "补齐章纲 front-matter / 章数，重跑 plan.py") for p in problems]
+    out += [Finding("warn", "structure", "G4", "-", w,
+                    "在章纲里补「与相邻章的边界」段") for w in warns]
+    return out
+
+
+def _term_first_chapter(repo: Repo, chapters: list[Chapter]) -> list[Finding]:
+    """X10：术语实际首现章必须等于 glossary.first_chapter（评审 A2）。
+
+    章序一调，这个字段最容易腐化；此前它只在附录 A 里被展示，没有任何校验。
+    """
+    out: list[Finding] = []
+    if not repo.ledger["exists"] or not chapters:
+        return out
+    for t in repo.ledger["glossary"]:
+        if not isinstance(t, dict):
+            continue
+        zh, en = str(t.get("zh") or ""), str(t.get("en") or "")
+        first = str(t.get("first_chapter") or "")
+        if not zh or not first:
+            continue
+        actual = None
+        for ch in sorted(chapters, key=lambda c: c.name):
+            text = "\n".join(ch.lines)
+            if zh in text or (en and en in text):
+                actual = ch.name
+                break
+        if actual is None:
+            out.append(Finding("warn", "consistency", "X10", "-",
+                               f"术语「{zh}」登记首现 {first}，但全书正文没出现过",
+                               "删掉腐化条目，或把它写进相应章节"))
+        elif actual != first:
+            out.append(Finding("error", "consistency", "X10", first,
+                               f"术语「{zh}」first_chapter={first}，实际首现 {actual}",
+                               "章序调过就同步更新 glossary.json；附录 A 依赖这个字段"))
+    return out
+
+
+def _dead_claims(repo: Repo, chapters: list[Chapter]) -> list[Finding]:
+    """F04：登记了却从没在正文出现的死 claim（评审 D7）。
+
+    事实闸门此前是单向的：只查「正文数字已登记」，不查账本腐化。
+    附录 B 会把这些条目的 source 当成参考文献列出来，所以必须报。
+    """
+    out: list[Finding] = []
+    if not repo.ledger["exists"] or not chapters or not repo.ledger["claims"]:
+        return out
+    text = "\n".join("\n".join(c.lines) for c in chapters)
+    for c in repo.ledger["claims"]:
+        if not isinstance(c, dict):
+            continue
+        vals = [c.get("value")] + list(c.get("values") or [])
+        vals = [v for v in vals if v is not None]
+        if not vals:
+            continue
+        hit = False
+        for v in vals:
+            try:
+                s = f"{float(v):g}"
+            except (TypeError, ValueError):
+                s = str(v)
+            if s in text:
+                hit = True
+                break
+        if not hit:
+            out.append(Finding("warn", "facts", "F04", str(c.get("chapter", "-")),
+                               f"claim {c.get('id', '?')} 登记了 {c.get('value')}，"
+                               "但全书正文从未出现这个值（死 claim）",
+                               "删掉死条目，或补回正文；附录 B 不该出现无正文支撑的出处"))
+    return out
+
+
+def _spine_constraints(repo: Repo) -> list[Finding]:
+    """P12：把 genre 的 exclusive.spine_constraint 真正执行（评审 C5）。
+
+    spine 是排他维度，由主类型说了算；副类型的约束被忽略也要显式说明，
+    不能静默调和（硬规则第 8 条）。
+    """
+    out: list[Finding] = []
+    spine = repo.book.get("spine")
+    for g, c in repo.cfg["spine_constraints"][1:]:
+        if c is not None and c != spine:
+            out.append(Finding("info", "structure", "P12", "-",
+                               f"副类型 {g} 的 spine_constraint={c} 未生效（排他维度由主类型决定）",
+                               "这是设计取舍，不是错误；想让它生效就把该类型放到 genre 列表首位"))
+    main_g, main_c = repo.cfg["spine_constraints"][0]
+    if main_c is not None and spine != main_c:
+        out.append(Finding("error", "structure", "P12", "-",
+                           f"主类型 {main_g} 要求 spine={main_c}，book.yaml 写的是 {spine}",
+                           "改 spine，或调整 genre 列表顺序"))
+    if any(g == "project" for g in repo.cfg["genre_list"]) and spine != "capstone":
+        out.append(Finding("error", "structure", "P12", "-",
+                           "genre 含 project，spine 必须为 capstone",
+                           "改 spine=capstone 并给 spine_name"))
+    return out
+
+
+def _stack_scope(repo: Repo) -> list[Finding]:
+    """C00：非 Python 栈时，把失效的检查显式说出来（评审 C2，沿用 X00 口径）。"""
+    lang = repo.cfg["code_lang"]
+    if lang == "python":
+        return []
+    return [Finding("info", "code", "C00", "-",
+                    f"代码栈声明为 {lang}（book.yaml stack.language），"
+                    f"{PYTHON_ONLY_GATES} 已跳过",
+                    "这些检查按 Python import 特化；非 Python 栈请人工核对依赖与版本")]
+
+
+def _project_curve(repo: Repo) -> list[Finding]:
+    """S24：capstone 项目推进曲线落地后的「连续原地不动」检查（评审 A8）。
+
+    曲线由 plan.py 产出 .book/project-curve.json；没有章纲 project_stage 时
+    显式标「已跳过」，不把「没查」报成「通过」。
+    """
+    if repo.book.get("spine") != "capstone":
+        return []
+    p = repo.root / ".book" / "project-curve.json"
+    if not p.exists():
+        return [Finding("info", "structure", "S24", "-",
+                        "capstone 项目推进曲线未生成（章纲缺 project_stage 或未跑 plan.py），检查已跳过",
+                        "章纲 front-matter 写 project_stage 后跑 plan.py（见 02-blueprint.md）")]
+    try:
+        stages = (json.loads(p.read_text(encoding="utf-8")) or {}).get("stages", [])
+    except (OSError, json.JSONDecodeError):
+        return [Finding("warn", "structure", "S24", "-",
+                        ".book/project-curve.json 不是合法 JSON", "重跑 plan.py")]
+    if not stages:
+        return [Finding("info", "structure", "S24", "-",
+                        "项目推进曲线为空，连续性检查已跳过", "给章纲补 project_stage")]
+    run, worst, prev = 0, 0, None
+    for row in stages:
+        cur = row.get("stage")
+        run = run + 1 if cur and cur == prev else 1
+        worst = max(worst, run)
+        prev = cur
+    if worst >= 3:
+        return [Finding("warn", "structure", "S24", "-",
+                        f"capstone 连续 {worst} 章项目原地不动（stage 未推进）",
+                        "无推进的章要么改纲要么合并（SPEC §10/§11）")]
+    return []
+
+
+def _lang_scope(repo: Repo) -> list[Finding]:
+    """B01：语言口径的诚实边界（评审 C1）。
+
+    schema 已把 lang 收窄到 zh-CN / zh-TW；这里再守一道，防止有人绕过 schema
+    直接改 book.yaml 后拿到一份「全绿但根本没按中文统计」的报告。
+    """
+    if repo.cfg["lang"] in ("zh-CN", "zh-TW"):
+        return []
+    return [Finding("error", "structure", "B01", "-",
+                    f"lang={repo.cfg['lang']} 不在已支持集合（zh-CN / zh-TW）："
+                    "字数、句读、禁用词与断言词表全是中文特化",
+                    "先做口径分层再扩语种；当前不要用它产英文书")]
+
+
+def _src_secrets(ch: Chapter, repo: Repo) -> list[Finding]:
+    """C02：密钥扫描扩到 src/** ——真正会进 git 仓库的是这些文件（评审 B3）。"""
+    out: list[Finding] = []
+    src = repo.root / "src" / ch.name
+    if not src.is_dir():
+        return out
+    for p in sorted(src.rglob("*")):
+        if not p.is_file() or p.suffix.lower() not in {
+                ".py", ".js", ".ts", ".go", ".rs", ".java", ".yaml", ".yml",
+                ".json", ".toml", ".env", ".ini", ".cfg", ".sh", ".md", ".txt"}:
+            continue
+        try:
+            lines = p.read_text(encoding="utf-8", errors="ignore").splitlines()
+        except OSError:
+            continue
+        for i, ln in enumerate(lines, 1):
+            if SECRET.search(ln) and not SECRET_PLACEHOLDER.search(ln):
+                out.append(Finding("error", "code", "C02", ch.name,
+                                   f"{p.relative_to(repo.root).as_posix()}:{i} 疑似硬编码密钥",
+                                   "改用环境变量或占位符；不要提交真实凭证"))
+                break
+    return out
+
+
+def _figure_staleness(ch: Chapter, repo: Repo) -> list[Finding]:
+    """R08：图源码改过但 SVG 没重渲（评审 D6）。
+
+    R01 只验产物存在；这里补上新旧关系。没有 .mmd 源码时跳过并说明。
+    """
+    assets = repo.root / "assets" / ch.name
+    figures = repo.root / "figures" / ch.name
+    if not assets.is_dir():
+        return []
+    if not figures.is_dir():
+        return [Finding("info", "reference", "R08", ch.name,
+                        "assets/ 有产物但 figures/ 无 .mmd 源码，图源新旧校验已跳过",
+                        "把图源码放进 figures/chNN/，才能验证产物是否过期")]
+    out: list[Finding] = []
+    for svg in sorted(assets.glob("*.svg")):
+        mmd = figures / (svg.stem + ".mmd")
+        if not mmd.exists():
+            continue
+        if svg.stat().st_mtime + 1 < mmd.stat().st_mtime:
+            out.append(Finding("warn", "reference", "R08", ch.name,
+                               f"{svg.name} 比源码 {mmd.name} 旧，图与源码已漂移",
+                               "按 SPEC §9 重新 mmdc 渲染一次"))
     return out
 
 
@@ -1496,6 +1820,80 @@ DEFAULT_GATES = "structure,reference,code,facts,consistency"
 
 
 # ---------------------------------------------------------------- 输出
+
+EXEC_TIMEOUT = 20
+SECRET_ENV_MARKERS = ("KEY", "TOKEN", "SECRET", "PASSWORD", "CREDENTIAL")
+
+
+def _exec_samples(repo: Repo, ch_dir: Path, names: list[str]) -> list[Finding]:
+    """C07：真实执行 src/chNN/README.md 的运行命令，比对「实测输出」（评审 B2）。
+
+    「不许编造运行输出」是全书最重的一条硬规则，此前只有写手的诚实撑着。
+    这是**可选闸门**（--exec 才跑）：带超时、去掉凭证类环境变量、限定 cwd 到 src/。
+    没有命令或没贴输出时显式标 skipped，不把「没查」报成「通过」。
+    """
+    out: list[Finding] = []
+    src = repo.root / "src"
+    env = {k: v for k, v in os.environ.items()
+           if not any(m in k.upper() for m in SECRET_ENV_MARKERS)}
+    env["PYTHONPATH"] = str(src)
+    for name in names:
+        readme = src / name / "README.md"
+        if not readme.exists():
+            continue
+        txt = readme.read_text(encoding="utf-8", errors="ignore")
+        cmds: list[str] = []
+        for block in re.findall(r"```(?:bash|sh|shell|console)?\s*\n(.*?)```", txt, re.S):
+            for ln in block.splitlines():
+                s = ln.strip()
+                if not s or s.startswith("#"):
+                    continue
+                if re.match(r"^(?:python|python3|uv|pip|go|node|npm|pnpm|cargo)\b", s):
+                    cmds.append(s)
+        m = re.search(r"(?:实测输出|输出如下|Expected output|Example output)[^\n]*\n+"
+                      r"```[^\n]*\n(.*?)```", txt, re.S | re.I)
+        expected = [x.strip() for x in m.group(1).splitlines()
+                    if x.strip() and not re.fullmatch(r"[-=]{3,}", x.strip())] if m else []
+        if not cmds:
+            out.append(Finding("info", "code", "C07", name,
+                               "src README 未声明可执行的运行命令，--exec 已跳过",
+                               "写明三条命令（见 05-writing.md 第 1 步）"))
+            continue
+        for cmd in cmds[:3]:
+            try:
+                r = subprocess.run(cmd, shell=True, cwd=str(src), env=env,
+                                   capture_output=True, text=True, timeout=EXEC_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                out.append(Finding("error", "code", "C07", name,
+                                   f"运行命令超时（>{EXEC_TIMEOUT}s）：{cmd}",
+                                   "缩短示例，或把耗时步骤移到脚本参数"))
+                continue
+            except OSError as e:
+                out.append(Finding("error", "code", "C07", name,
+                                   f"运行命令无法启动：{cmd}（{e}）", "检查运行环境与命令"))
+                continue
+            if r.returncode != 0:
+                snippet = ((r.stderr or r.stdout or "").strip().splitlines() or [""])[-1][:100]
+                out.append(Finding("error", "code", "C07", name,
+                                   f"命令跑不通：{cmd}（rc={r.returncode}）{snippet}",
+                                   "先让代码真跑通，再写正文里的「输出如下」"))
+                continue
+            if not expected:
+                out.append(Finding("info", "code", "C07", name,
+                                   f"{cmd} 实跑通过，但 README 没贴「实测输出」关键行，输出比对已跳过",
+                                   "补一段可核对的实测输出"))
+                continue
+            got = (r.stdout or "") + (r.stderr or "")
+            miss = [line for line in expected if line not in got]
+            if miss:
+                out.append(Finding("error", "code", "C07", name,
+                                   f"实测输出与 README 不符，缺 {len(miss)} 行（如「{miss[0][:40]}」）",
+                                   "不许编造运行输出：先跑代码，再贴真实输出"))
+            else:
+                out.append(Finding("info", "code", "C07", name,
+                                   f"{cmd} 实跑通过，{len(expected)} 行实测输出全部命中", ""))
+    return out
+
 
 def _suggest_promises(repo: Repo, ch_dir: Path, names: list[str]) -> int:
     """X02 报出的缺口，直接给成可粘贴的 JSONL——比让写手手写 JSON 省事且不出格式错。"""
@@ -1540,6 +1938,8 @@ def main() -> int:
     ap.add_argument("--quiet", action="store_true", help="只输出问题")
     ap.add_argument("--suggest", action="store_true",
                     help="按缺口生成 promises.jsonl 草稿（粘贴后请人工确认）")
+    ap.add_argument("--exec", dest="exec_samples", action="store_true",
+                    help="实跑 src/chNN/README.md 的运行命令并比对实测输出（C07，带超时）")
     args = ap.parse_args()
 
     root = Path(args.book).resolve()
@@ -1547,7 +1947,12 @@ def main() -> int:
         sys.exit(f"找不到 {root / 'book.yaml'}")
 
     repo = load_repo(root)
-    gates = [g.strip() for g in args.gates.split(",") if g.strip() in GATES]
+    # 评审 D2：拼错的组名此前被静默丢弃，会让人以为跑了 facts 组其实没跑。
+    requested = [g.strip() for g in args.gates.split(",") if g.strip()]
+    unknown = [g for g in requested if g not in GATES]
+    if unknown:
+        sys.exit(f"--gates 里有未知组：{'、'.join(unknown)}（可选：{'/'.join(GATES)}）")
+    gates = requested or list(GATES)
     ch_dir = root / repo.book.get("paths", {}).get("chapters", "chapters")
 
     names = args.chapter or sorted(p.stem for p in ch_dir.glob("ch*.md"))
@@ -1579,6 +1984,24 @@ def main() -> int:
                                      "未发现 .book/ 账本，事实/一致性闸门已跳过",
                                      "先跑 init_book.py 初始化账本"))
 
+    if args.exec_samples:
+        book_findings.extend(_exec_samples(repo, ch_dir, names))
+
+    # 评审 A6：book.yaml 的 gates: soft 此前没有任何消费者。soft = 只出报告，
+    # 把所有 error 降级为 warn，退出码不带 1；hard 保持默认。
+    gate_mode = repo.cfg["gate_mode"]
+    if gate_mode == "soft":
+        for v in results.values():
+            for f in v:
+                if f.level == "error":
+                    f.level = "warn"
+        for f in book_findings:
+            if f.level == "error":
+                f.level = "warn"
+
+    skipped = sorted({f.code for v in list(results.values()) + [book_findings]
+                      for f in v if f.level == "info"})
+
     errs = sum(1 for v in results.values() for f in v if f.level == "error")
     warns = sum(1 for v in results.values() for f in v if f.level == "warn")
     errs += sum(1 for f in book_findings if f.level == "error")
@@ -1588,6 +2011,8 @@ def main() -> int:
         print(json.dumps({
             "book": str(root),
             "genre": repo.cfg["genre_list"],
+            "gate_mode": gate_mode,
+            "skipped": skipped,
             "results": {k: [f.as_dict() for f in v] for k, v in results.items()},
             "book_level": [f.as_dict() for f in book_findings],
             "summary": {"error": errs, "warn": warns},
@@ -1595,7 +2020,8 @@ def main() -> int:
         return 1 if errs else 0
 
     print(f"检查 {root}")
-    print(f"  genre: {'+'.join(repo.cfg['genre_list'])}   闸门: {','.join(gates)}")
+    print(f"  genre: {'+'.join(repo.cfg['genre_list'])}   闸门: {','.join(gates)}   "
+          f"gates 模式: {gate_mode}" + ("（error 已降级为 warn）" if gate_mode == "soft" else ""))
     print()
     for name, found in results.items():
         flag = "✗" if any(f.level == "error" for f in found) else ("!" if found else "✓")

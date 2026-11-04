@@ -70,6 +70,18 @@ facts:
   dispute_policy: 主流说法 + 待确认并列，不站队
   forbid_fabricated_stats: true
 
+# ── 附录 D 工具箱的用途说明（评审 C3）──
+# 此前硬编码在 assemble.py 的 TOOL_PURPOSE 里，全是 RAG 样例书的领域语义。
+# 下沉到这里后：换主题只需改配置；genre 可用同名字段覆盖单个键。
+# key 按小写匹配 book.yaml stack 的键，值为一句话用途。
+tool_purposes:
+  python: 运行全书示例
+  llm: 生成答案；Mock 模式可离线替代
+  mock: 没有 API Key 时仍能跑通示例
+  framework: 对外提供 HTTP 接口
+  database: 只读从库，读业务数据
+  language: 示例代码语言（python / go / node / rust）；非 python 时 import 类闸门显式跳过
+
 # ── 通用反模式（关键词触发，用于扫描） ──
 anti_pattern_keywords:
   - 此处省略

@@ -36,6 +36,18 @@
     },
     "metrics": { "type": "object" },
     "problems": { "type": "array", "items": { "type": "string" } },
-    "warnings": { "type": "array", "items": { "type": "string" } }
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "plan_gates": {
+      "type": "object",
+      "description": "G4 章纲闸门结论（评审 A4）：problems 阻断编译，warnings 是提示。与 check.py 的 G4 共用一份实现。"
+    },
+    "writing_waves": {
+      "type": "object",
+      "description": "写作波次表（SPEC §6.1、评审 B5）：按篇/并发切分，仅用于派活，不改变装配与闸门顺序。"
+    },
+    "project_curve": {
+      "type": "object",
+      "description": "capstone 项目推进曲线（SPEC §10/§11、评审 A8）；未声明 project_stage 时为 skipped。"
+    }
   }
 }

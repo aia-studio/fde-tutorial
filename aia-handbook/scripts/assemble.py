@@ -34,6 +34,16 @@ GEN_FILES = {"README.md", "00-preface.md", "99-afterword.md", "LICENSE"}
 IMG = re.compile(r"!\[[^\]]*\]\(([^)\s]+)")
 # 装配产物里不该出现的占位写法（中英文都算）
 PLACEHOLDER_WORDS = ("（待补", "（待定", "待补充", "FIXME", "XXX", "此处省略")
+# 评审 C3：FAQ 按骨架段 id 收集，不再写死「常见坑 / 常见问题」两个中文标题。
+FAQ_SKELETON_IDS = {"pitfalls", "mistakes", "risks", "boundary", "retro"}
+
+
+class PromisesOpenError(RuntimeError):
+    """承诺账本仍有 open 时拒绝产出 final/（评审 A1）。"""
+
+
+def _open_promises(repo: check.Repo) -> list[dict]:
+    return [p for p in repo.ledger.get("promises", []) if p.get("status") == "open"]
 
 
 # ---------------------------------------------------------------- 工具
@@ -74,10 +84,14 @@ def _split_h2(md: str) -> dict[str, str]:
 
 
 def _annotation_meanings(repo: check.Repo) -> dict[str, str]:
-    """从 genre 的 md 表格里抽 【标注】→ 含义。"""
+    """从 genre 的 md 表格里抽 【标注】→ 含义。
+
+    评审 C3：混合 genre 时合并**所有参与类型**的 md，副体裁的标注不再显示「（待补含义）」。
+    """
     meanings: dict[str, str] = {}
-    for f in [check.GENRE_DIR / "_core.md",
-              check.GENRE_DIR / f"{repo.cfg['main_genre']}.md"]:
+    files = [check.GENRE_DIR / "_core.md"] + [
+        check.GENRE_DIR / f"{g}.md" for g in repo.cfg["genre_list"]]
+    for f in files:
         if not f.exists():
             continue
         for ln in _read(f).splitlines():
@@ -313,25 +327,15 @@ def _appendix_paths(repo: check.Repo, paths: dict[str, list[tuple[str, str]]]) -
     return "\n".join(lines) + "\n"
 
 
-TOOL_PURPOSE = {
-    "python": "运行全书示例",
-    "llm": "生成答案；Mock 模式可离线替代",
-    "mock": "没有 API Key 时仍能跑通示例",
-    "vector_store": "存向量与元数据，做暴力检索",
-    "framework": "对外提供 HTTP 接口",
-    "database": "只读从库，读业务数据",
-    "model": "把文本压成向量",
-}
-
-
 def _appendix_toolbox(repo: check.Repo) -> str:
+    """评审 C3：用途字典下沉到 genres/*.yaml 的 tool_purposes，换主题不再改脚本。"""
     stack = repo.book.get("stack", {}) or {}
+    purposes = {str(k).lower(): str(v) for k, v in
+                (repo.cfg.get("tool_purposes") or {}).items()}
     lines = ["# 附录 D 工具箱", "",
              "| 类别 | 选型 | 用途 |", "| --- | --- | --- |"]
     for k, v in stack.items():
-        purpose = TOOL_PURPOSE.get(str(k).lower())
-        if purpose is None and str(k).lower() == "mock":
-            purpose = "离线兜底"
+        purpose = purposes.get(str(k).lower())
         lines.append(f"| {k} | {v} | {purpose or '—'} |")
     reqs = sorted((repo.root / "src").rglob("requirements.txt")) if (repo.root / "src").is_dir() else []
     if reqs:
@@ -343,23 +347,34 @@ def _appendix_toolbox(repo: check.Repo) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _faq_titles(repo: check.Repo) -> set[str]:
+    """把所有参与 genre 骨架里 FAQ 类段的别名收集成标题集合。"""
+    titles: set[str] = set()
+    for doc in repo.cfg.get("genre_docs", []):
+        for item in doc.get("skeleton", []) or []:
+            if item.get("id") in FAQ_SKELETON_IDS:
+                titles |= {check._norm(a) for a in (item.get("aliases") or [])}
+    return titles
+
+
 def _appendix_faq(repo: check.Repo, chapters: list[check.Chapter]) -> str:
     lines = ["# 附录 E 常见问题", ""]
+    titles = _faq_titles(repo)
     any_pit = False
     for ch in chapters:
         for h2 in ch.h2:
-            if h2.title.strip() in ("常见坑", "常见问题"):
+            if check._norm(h2.title) in titles:
                 body = "\n".join(h2.body).strip()
                 if body:
                     any_pit = True
-                    lines += [f"## Ch{ch.name[-2:]}", "", body, ""]
+                    lines += [f"## Ch{ch.name[-2:]} · {h2.title.strip()}", "", body, ""]
     dropped = [p for p in repo.ledger.get("promises", []) if p.get("status") == "dropped"]
     if dropped:
         lines += ["## 书中未展开的承诺", ""]
         for p in dropped:
             lines.append(f"- {p.get('text', '')}（原因：{p.get('reason', '未写')}）")
     if not any_pit and not dropped:
-        lines.append("（各章暂无「常见坑」段，承诺账本也没有 dropped 项）")
+        lines.append("（各章暂无 FAQ 类骨架段，承诺账本也没有 dropped 项）")
     return "\n".join(lines) + "\n"
 
 
@@ -398,6 +413,10 @@ def write_versions_lock(repo: check.Repo) -> None:
     """
     lock = repo.root / "versions.lock"
     src = repo.root / "src"
+    if repo.cfg["code_lang"] != "python":
+        print(f"  ! 代码栈={repo.cfg['code_lang']}，versions.lock 生成已跳过"
+              "（按 Python import 特化，见 C00 标注）")
+        return
     if lock.exists() or not src.is_dir():
         return
     pkgs: set[str] = set()
@@ -439,6 +458,14 @@ def write_versions_lock(repo: check.Repo) -> None:
 
 def assemble(book_dir: Path) -> tuple[int, list[str]]:
     repo = check.load_repo(book_dir)
+    # 评审 A1：open 承诺必须在装配器里真正阻断，不能只靠 check.py 的 X06。
+    # 直接跑 assemble.py（不经 verify.py）时也要拦得住。
+    opens = _open_promises(repo)
+    if opens:
+        ids = "、".join(str(p.get("id") or "?") for p in opens[:5])
+        raise PromisesOpenError(
+            f"promises.jsonl 仍有 {len(opens)} 条 status=open（{ids}）；"
+            "结清或标记 dropped 并写 reason 后才能产出 final/")
     book = repo.book
     final = book_dir / book.get("paths", {}).get("final", "final")
     final.mkdir(parents=True, exist_ok=True)
@@ -513,7 +540,12 @@ def main() -> int:
     if not (root / "book.yaml").exists():
         sys.exit(f"找不到 {root / 'book.yaml'}")
 
-    stats, problems = assemble(root)
+    try:
+        stats, problems = assemble(root)
+    except PromisesOpenError as e:
+        print(f"✗ 装配被阻断：{e}", file=sys.stderr)
+        print("  → 修复承诺后重跑；verify.py 会在 check 阶段先报 X06。", file=sys.stderr)
+        return 1
     if not args.quiet:
         print(f"装配完成 {root / 'final'}")
         print(f"  {stats['chapters']} 章 · {stats['words']:,} 字 · "

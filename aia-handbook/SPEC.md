@@ -1,7 +1,9 @@
 # 技术书生成 SKILL · 设计规格
 
-> 状态：v1.0 · 规格锁定，§16 待定项不阻塞开工
+> 状态：v1.1 · 2026-11-05 评审修复版（宣称与实现对齐）
 > 本文件定义 skill 的调度模型与验收标准。实现以本文件为准。
+> v1.1 补：G4 章纲闸门、冻结工具化、done 前置闸门、写作波次/合同草案、
+> 缝合工具化、兼容边界收窄。宣称—实现对照表见 §19。
 
 ## 1. 一句话
 
@@ -58,6 +60,13 @@ deliverable: 带引用的问答服务   # 本章产出的可验收物，必须�
 
 **反向校验**（`check.py`）：正文出现 `ChNN`，但 `NN` 既不在 `requires` 也不在
 `references` → 报警；反之声明了却没引用 → 提示清理。
+
+**章纲闸门（G4，v1.1 落地）**：`plan.py` 消费 genre yaml 的 `plan_required_fields`，
+校章纲 front-matter 字段齐备与类型、章纲数 == `scale.chapters`、
+`## 与相邻章的边界` 段存在且非空；无 front-matter 的章纲不再被静默跳过，
+而是显式报错并从 DAG 排除。字段/章数/front-matter 问题阻断编译（rc=1），
+边界段缺失给 warn。同一份结论由 `check.py` 的 G4 写进 JSON，不另立口径。
+章纲是全局调度的输入，也是「写一章发一章」死法唯一的机器防线。
 
 ## 4. 代码依赖规则
 
@@ -172,6 +181,12 @@ Ch06 的写手就能照着草案写，实际签名对不齐的部分交给缝合
 代价：并行写作会出现签名对不齐、概念定义微差，靠缝合修。
 所以 `provides` 必须写到函数签名级，光给路径等于没给。
 
+**v1.1 落地**：`plan.py` 产出 `.book/writing-waves.json`（按 `01-outline.md` 的篇，
+缺省按 `concurrency` 切组）；`dep_brief.py` 默认接受章纲 `provides` 签名作**草案级合同**
+（摘要标 `[draft]`），`--strict` 只认终稿合同，`--check-signatures` 比对终稿与草案的
+函数签名（不一致报 C08）；`state.py --report --basis writing` 按草案合同判 ready。
+写作波次只用于派活，闸门与装配顺序仍按阅读波次。
+
 ## 7. 一致性的三重保证（非人力）
 
 ### 7.1 概念注册表 `.book/glossary.json`
@@ -185,6 +200,10 @@ Ch06 的写手就能照着草案写，实际签名对不齐的部分交给缝合
 - 宪法阶段建立初版（从定位与目录中抽取）
 - 写手只能用注册过的术语；造新词必须登记，不得为已有概念另起名
 - `check.py` 双向查：未登记术语出现 / 同一 id 出现两种定义
+- **v1.1 补齐另外两侧**：X09 扫正文（含标题与引用块），已登记的 `aliases` 出现而
+  同章从未出现正名 → warn（别名只能当搜索入口，不能替代正名行文）；
+  X10 全书比对实际首现章与 `first_chapter`，章序调动后字段腐化 → error。
+  X08 仍然只管 glossary 内部别名撞车，正文里的同义词替换现在有人管了。
 
 ### 7.2 文风指纹 `.book/style-fingerprint.json`
 
@@ -213,7 +232,7 @@ Ch06 的写手就能照着草案写，实际签名对不齐的部分交给缝合
 ### 7.3 波次整合（每波结束跑一次）
 
 ```
-术语碰撞 → 跨章重复段落（5-gram 重叠）→ 前向依赖违规 → 指纹偏离
+术语碰撞 → 跨章重复段落（最长连续重复，X04）→ 前向依赖违规 → 指纹偏离
 ```
 
 在下一波发射**之前**完成。用增量方式换回一部分串行的一致性，
@@ -242,15 +261,20 @@ Ch06 的写手就能照着草案写，实际签名对不齐的部分交给缝合
 工作方式：**先出 patch 清单（章节 / 位置 / 问题 / 修法 / 依据），再逐条落地**，
 每波一个 commit，可整体回滚。
 
+**v1.1 落地**：`scripts/stitch.py --book <书> --wave N` 把 `check.py --json` 的
+error/warn 转成 `templates/patch.md` 格式的清单骨架；
+`--budget --before <旧稿> --after <新稿>` 用 `difflib` 量改动行数占比，
+超过 20%（可 `--limit` 改）即 rc=1 打回原写手。权责边界与预算从约定变成可执行。
+
 ## 8. 闸门（全硬，5 组）
 
 | 组   | 条目                                                             | 不过的处理        |
 | --- | -------------------------------------------------------------- | ------------ |
 | 结构  | 骨架段落齐全（按别名表匹配）· 汉字数 ≥ `target_words × 0.75` · 节数 ∈ [4,6] · 每节 ≥1 图或表 · 章首导图存在 · 信息密度 ≥ 下限 · `difficulty` 与章纲一致 | repair       |
 | 引用  | 图产物存在 · 图 `source` 已声明 · `src/` 路径存在 · 无前向 `requires` · 交叉引用止于章级 · import 图 ⊆ 章依赖图 | repair       |
-| 一致性 | 术语未登记/多定义 · 标注越界 · 禁用词命中 · 跨章重复 · 承诺未兑现（`promises.jsonl` 中仍为 `open`） | 记入缝合清单，不阻断   |
+| 一致性 | 术语未登记/多定义 · 术语首现章号一致（X10）· 别名替代正名（X09）· 标注越界 · 禁用词命中 · 跨章重复 · 承诺未兑现（`promises.jsonl` 中仍为 `open`） | 记入缝合清单，不阻断   |
 | 代码  | 每章 README 含运行命令与实测输出 · `python -m` 可执行 · 正文代码块 ≤30 行 · 密钥扫描       | repair       |
-| 事实  | 正文数字必须在 `claims.jsonl` 登记 · 每条 claim 有 source+date · 术语首现章号一致    | repair       |
+| 事实  | 正文数字必须在 `claims.jsonl` 登记 · 每条 claim 有 source+date · 死 claim 清理（F04） | repair       |
 
 **统计口径：** 汉字数只计正文与表格；代码块、图注（`> 图 x-x …`）、引用块不计。
 句子按 `。！？；` 切分，代码块内不计；段落按空行分隔。
@@ -263,6 +287,25 @@ Ch06 的写手就能照着草案写，实际签名对不齐的部分交给缝合
 **字数纪律：** 低于 `0.75 × target` 判不合格；高于 `1.25 × target` 不报错，
 但要求回改**章纲**的 `target_words`——字数是纲估错的信号，不是压字能解决的。
 两侧同样 ±25%，处理方式不同。
+
+**v1.1 补充检查码**（全书级与资产级，详见 §18）：
+
+| 码 | 级别 | 查什么 |
+| --- | --- | --- |
+| G4 | error/warn | 章纲字段/章数/front-matter 齐备；边界段 |
+| X09 / X10 | warn / error | 别名替代正名；术语实际首现章 vs `first_chapter` |
+| F04 | warn | 死 claim：登记了却从未在正文出现，附录 B 不该列它的出处 |
+| C02 | error | 密钥扫描扩到 `src/**`（不只是正文代码块） |
+| C07 | error/info | `--exec`：实跑 `src/chNN/README.md` 命令并比对「实测输出」，跳过要明说 |
+| C08 | error | 终稿合同签名与章纲草案不一致（`dep_brief.py`） |
+| C00 | info | 非 Python 栈时 R07 / C04 显式跳过 |
+| P12 / B01 | error | 主类型 `spine_constraint`；语言口径边界 |
+| R08 | warn | `.mmd` 比 `.svg` 新（图源码改过没重渲） |
+| S19 / S24 | info/warn | 消费 `difficulty_curve` 与「连续 3 章不升」；capstone 项目原地不动 |
+| P06 | info | 前言是否原样包含 `audience.who` |
+
+`gates: soft`（`book.yaml`）现在真的会被消费：全部 error 降级为 warn、退出码不带 1；
+`hard` 为默认。`--gates` 拼错组名直接报错退出，不再静默丢弃。
 
 ### 8.1 事实账本与溯源策略
 
@@ -335,22 +378,33 @@ npx -y @mermaid-js/mermaid-cli \
 `spine: capstone` 时额外产出一条「项目推进曲线」：逐章标注项目推进到哪一步，
 检测是否出现连续多章项目原地不动。
 
+**v1.1 落地**：章纲 front-matter 可选 `project_stage`（阶段名），`plan.py` 汇总为
+`.book/project-curve.json`；`check.py` 的 S24 在连续 ≥3 章 stage 未推进时给 warn。
+章纲未声明 `project_stage` 时 `plan.py` 显式打印「已跳过」、S24 给 info——
+不把「没查」报成「通过」。见 `references/02-blueprint.md` §四。
+
 ## 11. 参数化
 
 一本书的全部可变部分集中在 `book.yaml`：
 
 ```yaml
 title: 《XXX》
-genre: practical          # practical | principle | project | interview
-lang: zh-CN
+genre: practical          # 可用值从 genres/*.yaml 自动发现，见 genres/README.md
+lang: zh-CN               # v1.1 收窄：只支持 zh-CN / zh-TW（口径中文特化）
 audience: {who: 后端转 AI 的工程师, level: 中级, prerequisite: [Python, HTTP]}
 spine: capstone           # capstone | running-example | none
 scale: {chapters: 30, words_per_chapter: [5000, 7000]}
 deliverables: [markdown, code, figures]
-gates: hard
+gates: hard               # soft = 只出报告（error 降级 warn，退出码不带 1）
 concurrency: 4
-stack: {python: "3.12", llm: "OpenAI 兼容 + Ollama", mock: true}
+stack: {language: python, python: "3.12", llm: "OpenAI 兼容 + Ollama", mock: true}
+tool_purposes: {vector_store: 存向量与元数据}   # 附录 D 用途，书级覆盖
 ```
+
+`stack.language` 决定代码类闸门口径：非 `python` 时 R07 import 图、C04 版本锁与
+`assemble.py` 的 `versions.lock` 生成显式跳过并标 C00（沿用「跳过要明说」传统），
+而不是静默不查。`tool_purposes` 合并顺序：`genres/_core.yaml` → 参与 genre 的
+yaml → `book.yaml`，后者覆盖前者。
 
 ### spine 三档
 
@@ -525,7 +579,12 @@ v1 的验收标准：**拿一本 10 章的书从头跑到 `final/`，全程除�
 - **终稿在装配时**：回填真实章数、图数、代码量、版本号。
   初稿里的「约 30 章」必须变成确定数字。
 
-### 前言必须包含的五项（闸门）
+### 前言必须包含的五项（存在性提示，不是一致性强闸门）
+
+P01–P05 是**关键词存在性提示**（warn 级）：出现「给谁看」三个字就能过 P01，
+不能当成一致性核对。v1.1 另加 P06（info）做 `audience.who` 原串包含匹配，
+把「画像与定位打架」显式说出来。`references/07-assembly.md` 已统一改口径，
+不再写「闸门会查」。
 
 1. 读者画像与前置知识——须与 `book.yaml` 的 `audience` 一致，不得矛盾
 2. 三条阅读路径（快速 / 完整 / 复习）——须与附录的路径表一致
@@ -585,6 +644,11 @@ density = 可操作单元数 / 汉字数 × 1000
 - 连续 3 章不升 → 只提示不阻断（可能是正常的平缓区）
 - 全书曲线由 genre 的 `difficulty_curve` 决定：`ramp` / `flat` / `wave`
 
+**v1.1**：`check.py` 的 S19 现在真的读 `defaults.difficulty_curve`：
+`ramp` 按连续 3 章不升给 info、`flat` 对相邻跃升 >1 给 warn、`wave` 对全书难度
+完全无起伏给 info，并在输出里声明本次采用的曲线口径。曲线类检查保持提示级，
+避免给只有一本真书样本的阈值再加噪音。
+
 ### 16.3 能力阶梯 `.book/ladder.jsonl`
 
 ```json
@@ -610,7 +674,7 @@ density = 可操作单元数 / 汉字数 × 1000
 ```json
 {"id": "P007", "opened_in": "ch03",
  "text": "为什么大多数场景不该上微调",
- "kind": "forward", "fulfilled_in": "ch11", "status": "done"}
+ "kind": "forward", "fulfilled_in": "ch11", "status": "kept"}
 ```
 
 `kind` 三种：`forward`（后面会讲）/ `artifact`（后面会给代码）/ `promise`（承诺读者能做到）。
@@ -620,8 +684,11 @@ density = 可操作单元数 / 汉字数 × 1000
 - 写手每章必须登记本章新开的所有承诺
 - 正文出现「后面会」「接下来」「稍后」「下一章」「留到」等触发词，但本章
   `promises.jsonl` 没有新增记录 → 报警
-- `status: open` 在统稿时非空 → **阻断装配**
+- `status: open` 在统稿时非空 → **阻断装配**：`check.py` 报 X06，
+  `assemble.py` 自己也读 `promises.jsonl` 并拒绝产出 `final/`（v1.1 修复此前
+  「只有 check 会拦、直接跑装配却能出书」的漏洞）
 - `dropped` 必须写 `reason`，并自动收进 FAQ 附录
+- 状态取值统一为 `kept` / `dropped` / `open`；旧文档里写 `done` 是漂移，已更正
 
 ### 16.5 阅读路径
 
@@ -722,17 +789,19 @@ dependencies:
 | `assemble.py` | 自包含装配 `final/`：前言/附录/结语/README/LICENSE、assets 复制与路径重写、`versions.lock` 生成 |
 | `schema_check.py` | 按 `schemas/*.json` 校验 book/state/dag/contract；缺 jsonschema 时降级为 info |
 | `verify.py` | 一条命令跑完 plan→check→dep_brief→assemble→产物扫描→状态漂移，供 CI |
-| `tests/run_tests.py` | 闸门回归台：6 个基线 + 9 个注入用例 |
+| `tests/run_tests.py` | 闸门回归台：6 个基线 + 29 个注入用例 |
+| `stitch.py` | 缝合 patch 清单骨架 + `difflib` 改动预算度量 |
 
 ### check.py 闸门
 
 | 组 | 已落地的检查 |
 | --- | --- |
-| 结构 S01–S22 + P00–P05 + P11 | 字数、骨架齐全/顺序/乱序、小节数、每节支撑物、导图、标注白名单与上限、禁用词（含人称；带省略号的短语转正则）、半成品标记、规定人称、句长/段长、**连续超限段**、信息密度、difficulty 一致、阅读路径、未知 H2、难度曲线、**标注是否堆在章末**、**文风指纹比对**；前言五项；书级参数覆盖留痕 |
-| 引用 R01–R07 + G01–G03 | 图产物、src 路径、前向依赖、越级引用、声明使用一致、import 图 ⊆ 章依赖图；图许可、capstone 快照（无 git 时显式标 skipped） |
-| 代码 C01–C06 | 代码块行数、密钥扫描、README 运行命令、版本锁主版本（含"有 src 无 lock"提示）、示例数据 SEED、**合同契约校验** |
-| 事实 F01–F03 | 断言数字登记（**带单位或同段断言词**，汉字数字归一化、单位不互顶、按显示精度记账、逐条全报）、claim 须有 source+date、**source 中的路径须存在** |
-| 一致性 X01–X08 | 术语登记（含别名与半角括号）、承诺入账（触发词**或「下一章」段前向引用**，按条数比对）、ladder 单调、**跨章连续重复**、术语多定义、promises open 阻断、别名上限、**别名撞车** |
+| 结构 S01–S24 + P00–P06 + P11 + G4 | 原有 S01–S22、前言五项、书级覆盖留痕；新增 **G4 章纲闸门**、S19 消费 `difficulty_curve` 与连续 3 章不升、S24 capstone 项目推进曲线、P06 audience.who 一致性提示 |
+| 引用 R01–R08 + G01–G03 | 图产物、src 路径、前向依赖、越级引用、声明使用一致、import 图 ⊆ 章依赖图；图许可、capstone 快照；新增 **R08 图源码比 SVG 新** |
+| 代码 C00–C08 | 代码块行数、密钥扫描（新增 **src/**）、README 运行命令、版本锁主版本、示例数据 SEED、合同契约校验；新增 **C07 `--exec` 实跑示例**、**C00 非 Python 栈跳过标注**、C08 由 dep_brief 报 |
+| 事实 F01–F04 | 断言数字登记（带单位或同段断言词，汉字数字归一化、单位不互顶、按显示精度记账）、claim source+date、source 路径存在；新增 **F04 死 claim** |
+| 一致性 X01–X10 | 术语登记、承诺入账、ladder 单调、跨章连续重复、多定义、promises open 阻断、别名上限/撞车；新增 **X09 别名替代正名**、**X10 术语首现章一致** |
+| 边界 B01 / P12 | lang 口径边界；主类型 `spine_constraint` 执行（副类型忽略给 info） |
 
 依赖账本的组在 `.book/` 缺失或为空时优雅跳过，并在输出标注（X00）。
 全会级 Finding 输出带归属章号。
@@ -751,6 +820,9 @@ annotation.must_be_inline / glossary.max_aliases / forbid_synonym_swap`。
 - 已落地：信息密度(16.1)、难度曲线与首章约束(16.2)、能力阶梯单调(16.3)、
   承诺账本 open 阻断(16.4)、阅读路径标注与占比(16.5)、图许可(16.6)、
   版本锁主版本校验(16.7)、capstone 快照存在性(16.8)、示例数据 SEED(16.9)。
+- **v1.1 补齐**：16.2 的 `difficulty_curve` 与「连续 3 章不升」、§10/§11 的
+  capstone 项目推进曲线（plan.py + S24）、16.4 的装配器自身阻断、
+  §6.1 写作波次与合同草案、§7.3 缝合清单与 20% 预算、§5 的冻结工具化。
 - **文风指纹(7.2)现已闭环**：`state.py --calibrate` 用已完成章的中位数定基准、
   1.5 倍离散度作带宽；`check.py` S20 逐章比对。未校准只给 info，校准后两项以上
   偏离才算 warn（单项多为"这章本来图少"的正常起伏）。
@@ -779,6 +851,10 @@ README 的运行命令从 `src/` 里真实存在 `__main__` 的模块推导；�
 ### 仍未做（明确边界）
 
 - v2：读者模拟通读。
+- 英文书（`lang: en`）不做：schema 已收窄到 zh-CN / zh-TW，B01 会拦下。
+  要做需先把字数/句读/禁用词/断言词抽象成语种分层。
+- 非 Python 栈的完整代码闸门：当前只做到「显式跳过并标注」（C00），
+  没有为 Go / Node 实现 import 图与版本锁解析。
 - 「过密」类上限检查（连续小节全是表格、代码占比过高）未做：这类信号误报率高，
   没有第二本真书的分布做参照，先不加，避免噪音疲劳。
 - 单一 genre 样本量仍为 1（四本书各一本）。genre yaml 里的阈值（如面试本
@@ -796,4 +872,60 @@ README 的运行命令从 `src/` 里真实存在 `__main__` 的模块推导；�
 - `plan.py`：此前只打印 DAG，不落盘 `.book/dag.json` / `waves.json`（§13 要求）；已补。
 - `init_book.py`：此前漏生成 `style-fingerprint.json`、未带 mermaid 配置；已补。
 - `tests/`：四套 genre 样本齐全；`fixture/ch02` 保留为反例。
+
+### v1.1 评审修复记录（2026-11-05）
+
+- `assemble.py` 读 `promises.jsonl`，`open` 非空即拒绝产出 `final/`；
+  `inject_promise_open` 补 `00-positioning.md` 并加对照实验，排除旧假阳性。
+- `plan.py` 落地 G4 章纲闸门（消费 `plan_required_fields`）、写作波次表、
+  capstone 项目推进曲线；无 front-matter 的章纲不再静默跳过（D1）。
+- `state.py` 落地 `--phase` / `--freeze` / `--unfreeze --reason` / `--freeze-report`、
+  `--report --basis writing`；`--set done` 前置调 `check.py` 单章闸门并留痕（B1）；
+  状态迁移合法性校验（D4）。`init_book.py` 补 `progress.md` 模板。
+- `check.py` 落地 G4 / X09 / X10 / F04 / C02(src) / C07(--exec) / P12 / B01 / R08 /
+  S19(曲线) / S24 / P06 / C00；`--gates` 拼错即报错（D2）；`gates: soft` 生效（A6）。
+- `dep_brief.py` 支持草案合同与签名比对（B5），书中期不再噪音失败（D3）。
+- `assemble.py` 外围文本 genre 化：FAQ 按骨架 id、标注含义合并所有 genre、
+  `TOOL_PURPOSE` 下沉到 `_core.yaml` 的 `tool_purposes` 且书级可覆盖（C3）。
+- 边界收窄：`lang` 去掉 `en`（C1）；非 Python 栈显式跳过（C2）；
+  `spine_constraint` 执行（C5）；genre 从目录自动发现并写 `genres/README.md`（C4）。
+- 新增 `stitch.py`（缝合清单 + 20% 预算，B4）；`verify.py --exec` 透传。
+- 文档词汇统一：承诺状态 `kept`（非 `done`）、claims 口径字段 `scope`、
+  `check.py --suggest` 进 SKILL 速查表（A9）。
+- 测试：6 基线 + 29 注入；每个新增闸门都有「能抓到」的注入证明。
+
+---
+
+## 19. 宣称—实现对照表（防止再次漂移）
+
+评审里最危险的一类问题是「文档说会查、脚本没查」。v1.1 起，**规格里每写一条
+能力，必须能指出消费它的脚本与检查码/产物**；回归台必须有对应的注入用例证明
+「违规能被抓到」。没有这两样的描述，一律写进「仍未做」，不许写成「闸门会查」。
+
+| 规格声明 | 消费位置 | 检查码 / 产物 |
+| --- | --- | --- |
+| 章纲齐备（G4） | `plan.py::validate_plans`，`check.py::_plan_gates` | G4、`.book/dag.json.plan_gates` |
+| 术语首现章一致 | `check.py::_term_first_chapter` | X10 |
+| 同一概念不许换同义词 | `check.py::gate_consistency` | X09（正文）/ X08（账本内部） |
+| 承诺 open 阻断装配 | `check.py::gate_book_level` + `assemble.py::assemble` | X06、PromisesOpenError |
+| `plan_required_fields` | `plan.py::_plan_required_fields` | G4 |
+| `gates: hard/soft` | `check.py::main` | `gate_mode` / error 降级 |
+| `difficulty_curve` | `check.py::_difficulty_curve` | S19 |
+| `spine_constraint` | `check.py::_spine_constraints` | P12 |
+| 宪法冻结、解冻记录原因 | `state.py::cmd_freeze` / `cmd_freeze_report` | `frozen_meta`、`freeze_log`、`progress.md` |
+| `phase` 阶段推进 | `state.py::cmd_phase` | `phase_log` |
+| `done` 必须过闸门 | `state.py::cmd_set` → `check.py` | `gate_passed_at` / `gate_override` |
+| 阅读波次 / 写作波次分离 | `plan.py::writing_waves`、`dep_brief.py`、`state.py --basis writing` | `.book/writing-waves.json`、C08 |
+| capstone 项目推进曲线 | `plan.py::project_curve`、`check.py::_project_curve` | `.book/project-curve.json`、S24 |
+| 20% 改动预算 | `stitch.py::budget` | `--budget` 退出码 |
+| 不许编造运行输出 | `check.py::_exec_samples`（可选闸门） | C07 |
+| 密钥不进仓库 | `check.py::_src_secrets` | C02 |
+| 图与源码不漂移 | `check.py::_figure_staleness` | R08 |
+| 非 Python 栈跳过要明说 | `check.py::_stack_scope`、`assemble.py` | C00 |
+| 语言边界 | `book.schema.json`、`check.py::_lang_scope` | B01 |
+| 新增体裁不改脚本 | `schema_check.py::available_genres`、`init_book.py` | `genres/README.md` |
+| 前言五项 | `check.py::_preface` | P01–P05（**存在性提示**）+ P06（一致性提示） |
+
+**维护纪律**：加新检查 → 同轮加注入用例；改检查口径 → 同步改这张表与
+`tests/README.md` 的预期数量。基线数量锁的是「口径没意外变」，不是不许变。"
 

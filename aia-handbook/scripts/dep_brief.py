@@ -8,13 +8,18 @@
 
 **不读上游全文。** 这是上下文控制，也是一致性的来源。
 
-缺上游合同时，在摘要里写明确的警告块，并以退出码 1 结束——
-"没有合同就自己补定义"是分叉的起点，必须显式阻断。
+评审后的两点修正：
+- **D3**：书中期跑不再必然 exit 1。上游尚未完稿且没有合同草案的章被显式
+  标 skipped，不计入 missing；只有「上游已 done 却没合同」才是真失败。
+- **B5 写作波次**：允许把章纲 `provides` 的签名当作**草案级合同**（标 [draft]），
+  终稿合同出来后用 `--check-signatures` 做签名比对，不一致报 C08。
 
 用法:
     python scripts/dep_brief.py --book <书目录>
     python scripts/dep_brief.py --book <书目录> --chapter ch05
     python scripts/dep_brief.py --book <书目录> --json
+    python scripts/dep_brief.py --book <书目录> --strict          # 只认终稿合同
+    python scripts/dep_brief.py --book <书目录> --check-signatures --json
 """
 
 from __future__ import annotations
@@ -74,9 +79,77 @@ def _load_dag(book_dir: Path, book: dict) -> dict[str, list[str]]:
     return dag
 
 
+def _upstream_states(book_dir: Path) -> dict[str, str]:
+    p = book_dir / ".book" / "state.json"
+    if not p.exists():
+        return {}
+    try:
+        st = json.loads(_read(p))
+    except json.JSONDecodeError:
+        return {}
+    return {k: str(v.get("status", "pending"))
+            for k, v in (st.get("chapters") or {}).items() if isinstance(v, dict)}
+
+
+def _draft_provides(plans: Path, up: str) -> dict:
+    """从章纲 front-matter 的 provides 抽草案签名（B5）。
+
+    章纲写法见 04-chapter-plan.md：modules 可以是字符串列表，也可以是
+    {module, api} 对象列表；只有后者才算「签名级」草案。
+    """
+    meta = _fm(_read(plans / f"{up}.md"))
+    raw = meta.get("provides") or {}
+    if isinstance(raw, list):
+        raw = {"modules": raw}
+    if not isinstance(raw, dict):
+        return {"modules": [], "defines": []}
+    mods: list[tuple[str, str]] = []
+    for m in raw.get("modules") or []:
+        if isinstance(m, dict):
+            mods.append((str(m.get("module") or ""), str(m.get("api") or "")))
+        elif isinstance(m, str):
+            mods.append((m, ""))
+    defs = [(str(d.get("id") or ""), str(d.get("zh") or ""), str(d.get("en") or ""),
+             str(d.get("def") or "")) for d in (raw.get("concepts") or [])
+            if isinstance(d, dict)]
+    return {"modules": mods, "defines": defs, "has_signature": any(api for _, api in mods)}
+
+
+def _final_contract(contracts: Path, up: str) -> dict | None:
+    p = contracts / f"{up}.json"
+    if not p.exists():
+        return None
+    try:
+        return json.loads(_read(p))
+    except json.JSONDecodeError:
+        return None
+
+
+def _signature_mismatches(plans: Path, contracts: Path, dag: dict[str, list[str]]) -> list[dict]:
+    """C08：终稿合同的签名与章纲草案不一致，缝合阶段要动代码而不是动文字。"""
+    out: list[dict] = []
+    for up in sorted({r for reqs in dag.values() for r in reqs}):
+        final = _final_contract(contracts, up)
+        if not final:
+            continue
+        draft = _draft_provides(plans, up)
+        if not draft["has_signature"]:
+            continue
+        final_map = {str(m.get("module") or ""): str(m.get("api") or "")
+                     for m in final.get("provides") or [] if isinstance(m, dict)}
+        for mod, api in draft["modules"]:
+            if not api or mod not in final_map:
+                continue
+            if final_map[mod].strip() != api.strip():
+                out.append({"chapter": up, "module": mod,
+                            "draft_api": api, "final_api": final_map[mod]})
+    return out
+
+
 def _render(name: str, title: str, reqs: list[str],
             defines: list[tuple], provides: list[tuple], hooks: list[tuple],
-            boundary: str, missing: list[str]) -> str:
+            boundary: str, missing: list[str], skipped: list[str],
+            drafts: list[str]) -> str:
     lines = [
         f"# {name.upper()} 上游摘要包",
         "",
@@ -84,10 +157,19 @@ def _render(name: str, title: str, reqs: list[str],
         "> 消费者：本章写手。只信这里，不要回头读上游正文。",
         "",
     ]
+    if drafts:
+        lines += ["> ⓘ **草案级合同**：" + "、".join(drafts) +
+                  " 的签名来自章纲 `provides`，不是终稿合同。",
+                  "> 终稿合同产出后跑 `dep_brief.py --check-signatures` 做签名比对。", ">"]
     if missing:
         lines += ["> ⚠ 合同缺失，**暂停开写**：", ">"]
         for m in missing:
             lines.append(f"> - {m}")
+        lines.append(">")
+    if skipped:
+        lines += ["> ⓘ 上游尚未就绪（不阻断，本摘要待重生成）：", ">"]
+        for s in skipped:
+            lines.append(f"> - {s}")
         lines.append(">")
 
     if not reqs:
@@ -133,7 +215,7 @@ def _render(name: str, title: str, reqs: list[str],
     return "\n".join(lines)
 
 
-def build(book_dir: Path, only: str | None) -> tuple[list[str], list[str]]:
+def build(book_dir: Path, only: str | None, allow_draft: bool = True):
     book = yaml.safe_load(_read(book_dir / "book.yaml")) or {}
     dag = _load_dag(book_dir, book)
     if not dag:
@@ -143,9 +225,11 @@ def build(book_dir: Path, only: str | None) -> tuple[list[str], list[str]]:
     contracts = book_dir / ".book" / "contracts"
     out_dir = book_dir / "dep-brief"
     out_dir.mkdir(parents=True, exist_ok=True)
+    states = _upstream_states(book_dir)
 
     targets = [only] if only else sorted(dag)
     all_missing: list[str] = []
+    all_skipped: list[str] = []
     written: list[str] = []
 
     for name in targets:
@@ -156,28 +240,38 @@ def build(book_dir: Path, only: str | None) -> tuple[list[str], list[str]]:
         provides: list[tuple] = []
         hooks: list[tuple] = []
         missing: list[str] = []
+        skipped: list[str] = []
+        drafts: list[str] = []
 
         for up in reqs:
-            c = contracts / f"{up}.json"
-            if not c.exists():
-                msg = f"{name} 的上游 {up} 缺合同（.book/contracts/{up}.json）"
+            final = _final_contract(contracts, up)
+            if final is not None:
+                for d in final.get("defines", []) or []:
+                    defines.append((d.get("id", ""), d.get("zh", ""), d.get("en", ""),
+                                    d.get("def", ""), up))
+                for m in final.get("provides", []) or []:
+                    provides.append((m.get("module", ""), m.get("api", ""), up))
+                if final.get("hook"):
+                    hooks.append((str(final["hook"]), up))
+                continue
+
+            # 终稿合同不存在：已 done 才算真失败（D3），否则走草案 / 延后
+            if states.get(up) == "done":
+                msg = f"{name} 的上游 {up} 已 done 但缺终稿合同（.book/contracts/{up}.json）"
                 missing.append(msg)
                 all_missing.append(msg)
                 continue
-            try:
-                data = json.loads(_read(c))
-            except json.JSONDecodeError:
-                msg = f"{up} 的合同不是合法 JSON"
-                missing.append(msg)
-                all_missing.append(msg)
+            draft = _draft_provides(plans, up) if allow_draft else {"modules": []}
+            if draft.get("modules"):
+                for mod, api in draft["modules"]:
+                    provides.append((mod, (api or "（章纲未写签名）") + " [draft]", up))
+                for cid, zh, en, d in draft.get("defines", []):
+                    defines.append((cid, zh, en, d, up + " [draft]"))
+                drafts.append(up)
                 continue
-            for d in data.get("defines", []) or []:
-                defines.append((d.get("id", ""), d.get("zh", ""), d.get("en", ""),
-                                d.get("def", ""), up))
-            for m in data.get("provides", []) or []:
-                provides.append((m.get("module", ""), m.get("api", ""), up))
-            if data.get("hook"):
-                hooks.append((str(data["hook"]), up))
+            skipped.append(f"上游 {up} 未完稿（status={states.get(up, 'pending')}）"
+                           "且章纲无 provides 草案，本章摘要延后")
+            all_skipped.append(f"{name} ← {up}")
 
         plan_text = _read(plans / f"{name}.md")
         plan = _fm(plan_text)
@@ -185,11 +279,12 @@ def build(book_dir: Path, only: str | None) -> tuple[list[str], list[str]]:
         title = str(plan.get("title", ""))
 
         (out_dir / f"{name}.md").write_text(
-            _render(name, title, reqs, defines, provides, hooks, boundary, missing),
-            encoding="utf-8")
+            _render(name, title, reqs, defines, provides, hooks,
+                    boundary, missing, skipped, drafts), encoding="utf-8")
         written.append(name)
 
-    return written, all_missing
+    mismatches = _signature_mismatches(plans, contracts, dag)
+    return written, all_missing, all_skipped, mismatches
 
 
 def main() -> int:
@@ -197,25 +292,36 @@ def main() -> int:
     ap.add_argument("--book", required=True)
     ap.add_argument("--chapter", help="只生成指定章")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--strict", action="store_true",
+                    help="只认终稿合同，不接受章纲 provides 草案")
+    ap.add_argument("--check-signatures", action="store_true",
+                    help="比对终稿合同与章纲草案的函数签名（C08）")
     args = ap.parse_args()
 
     root = Path(args.book).resolve()
     if not (root / "book.yaml").exists():
         sys.exit(f"找不到 {root / 'book.yaml'}")
 
-    written, missing = build(root, args.chapter)
+    written, missing, skipped, mismatches = build(root, args.chapter,
+                                                  allow_draft=not args.strict)
 
     if args.json:
-        print(json.dumps({"book": str(root), "written": written, "missing": missing},
+        print(json.dumps({"book": str(root), "written": written, "missing": missing,
+                          "skipped": skipped, "signature_mismatches": mismatches},
                          ensure_ascii=False, indent=2))
     else:
         print(f"已生成 {len(written)} 份上游摘要 → {root / 'dep-brief'}")
         for m in missing:
             print(f"  ✗ {m}")
-        if not missing:
-            print("  ✓ 所有上游合同齐全")
+        for s in skipped:
+            print(f"  · 延后：{s}")
+        for mm in mismatches:
+            print(f"  ! [C08] {mm['chapter']} {mm['module']} 签名不一致："
+                  f"草案 {mm['draft_api']} / 终稿 {mm['final_api']}")
+        if not missing and not mismatches:
+            print("  ✓ 合同齐全（草案已明确标注，未就绪章延后生成）")
 
-    return 1 if missing else 0
+    return 1 if (missing or (args.check_signatures and mismatches)) else 0
 
 
 if __name__ == "__main__":

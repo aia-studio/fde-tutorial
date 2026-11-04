@@ -38,7 +38,7 @@ final/
 | 附录 B 参考文献 | `.book/claims.jsonl` 的 `source` | 全自动 | 留占位 |
 | 附录 C 阅读路径 | 各章 `> 路径：` 标注 | 全自动 | 留占位 |
 | 附录 D 工具箱 | `book.yaml` 的 `stack` + requirements | 半自动：用途需补一句 | 留占位 |
-| 附录 E FAQ | 各章「常见坑」+ `promises` 的 `dropped` | 半自动：合并同类项 | 留占位 |
+| 附录 E FAQ | 各章 FAQ 类骨架段（按 genre skeleton 的 id 收集）+ `promises` 的 `dropped` | 半自动：合并同类项 | 留占位 |
 | `99-afterword.md` | `.book/ladder.jsonl` 末章 `after` | 半自动 | 留占位 |
 | `LICENSE` | `book.yaml` 的 `license` | 自动 | 报错 |
 
@@ -62,7 +62,11 @@ final/
 
 初稿里所有模糊数字换成真实数字：「约 30 章」→「29 章」，「上百张图」→「142 张图」。
 
-### 前言必须含的五项（闸门会查）
+### 前言必须含的五项（存在性提示，不是一致性强闸门）
+
+P01–P05 是**关键词存在性提示**（warn 级）：前言里出现「给谁看」三个字就能过 P01。
+别把它当成一致性核对——那是人工统稿的活。脚本另给一条 P06（info）：
+把 `book.yaml` 的 `audience.who` 原串与前言做包含匹配，画像与定位打架时说出来。
 
 | # | 内容 | 一致性要求 |
 | --- | --- | --- |
@@ -79,11 +83,11 @@ final/
 
 | 附录 | 来源 | 方式 |
 | --- | --- | --- |
-| A 术语表 | `glossary.json` | 全自动：`zh / en / def / 首现章` |
-| B 参考文献 | `claims.jsonl` 的 `source` 去重 | 全自动：按出现顺序编号 |
+| A 术语表 | `glossary.json` | 全自动：`zh / en / def / 首现章`（X10 校过首现章） |
+| B 参考文献 | `claims.jsonl` 的 `source` 去重 | 全自动：按出现顺序编号（F04 会拦死 claim） |
 | C 阅读路径 | 各章小节的 `> 路径：必读/选读/参考` | 全自动 |
-| D 工具箱 | `book.yaml` 的 `stack` + `src/**/requirements.txt` | 半自动：补一句用途 |
-| E FAQ | 各章「常见坑」汇总 + 承诺账本 `dropped` 项 | 半自动：合并同类项 |
+| D 工具箱 | `book.yaml` 的 `stack` + `src/**/requirements.txt` | 用途取自 `_core.yaml` / 参与 genre / `book.yaml` 的 `tool_purposes`，换主题不用改脚本 |
+| E FAQ | 骨架段 id 为 `pitfalls / mistakes / risks / boundary / retro` 的 H2 + 承诺账本 `dropped` 项 | 半自动：按段 id 收集，不再只认「常见坑 / 常见问题」两个中文标题 |
 
 **维护账本的回报就在这一节。** 没有 `glossary.json`，术语表要手工整理两天；
 有了它，附录 A 是一次格式转换。
@@ -149,10 +153,10 @@ python scripts/check.py --book <书目录>
 
 - [ ] 全书 error = 0
 - [ ] 每章字数在 ±25% 内
-- [ ] `promises.jsonl` 无 `open`
-- [ ] 术语表条目数 ≤ `max_core_terms`
-- [ ] 前言五项齐全
+- [ ] `promises.jsonl` 无 `open`（`assemble.py` 自身也会拒绝产出 `final/`）
+- [ ] 术语表条目数 ≤ `max_core_terms`，X10 首现章一致
+- [ ] 前言五项齐全（P01–P05 提示 + P06 一致性提示）
 - [ ] 结语能力清单 ⊆ ladder 末章 `after`
-- [ ] README 的命令实跑通过
+- [ ] README 的命令实跑通过：`python scripts/verify.py --book <书目录> --exec`
 
 全过之后，这本书才算完成。**任何一个"差不多"，都会在读者那里变成"这本书没写完"。**

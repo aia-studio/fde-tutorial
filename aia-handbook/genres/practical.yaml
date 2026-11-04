@@ -86,6 +86,12 @@ fingerprint:
 # 领域断言词，与 _core.yaml 的通用表取并集
 assertion_words: [准确率, 召回率, 延迟, 吞吐, 成本, 命中率]
 
+# 评审 C3：附录 D 用途可按体裁覆盖 _core.yaml 的通用表；
+# 书级 book.yaml 的 tool_purposes 再覆盖这里。换主题不用改 assemble.py。
+tool_purposes:
+  vector_store: 存向量与元数据，做暴力检索
+  model: 把文本压成向量
+
 anti_patterns:
   - 讲完原理不落步骤
   - 步骤不可执行
